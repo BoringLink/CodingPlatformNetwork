@@ -140,3 +140,17 @@ export function useUpdateSubview() {
     },
   });
 }
+
+/**
+ * Delete a subview
+ */
+export function useDeleteSubview() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (subviewId: string) => apiClient.delete(`/api/subviews/${subviewId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: graphKeys.subviews() });
+    },
+  });
+}

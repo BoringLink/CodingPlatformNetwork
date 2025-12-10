@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -11,8 +12,12 @@ export default function Home() {
           基于知识图谱的教育数据分析平台
         </p>
         <div className="flex gap-4 justify-center">
-          <Button>开始使用</Button>
-          <Button variant="outline">了解更多</Button>
+          <Button asChild>
+            <Link href="/graph">开始使用</Link>
+          </Button>
+          <Button variant="outline" asChild>
+            <Link href="/reports">了解更多</Link>
+          </Button>
         </div>
       </div>
     </div>

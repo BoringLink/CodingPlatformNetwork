@@ -25,7 +25,13 @@ async function handleResponse<T>(response: Response): Promise<T> {
     );
   }
 
-  return response.json();
+  const result = await response.json();
+  // 处理后端返回的 { success: boolean, data: T } 结构
+  if (result && result.success && result.data !== undefined) {
+    return result.data as T;
+  }
+  // 如果不是预期的结构，直接返回结果
+  return result as T;
 }
 
 export const apiClient = {
@@ -187,7 +193,46 @@ export const apiClient = {
      * Generate a report
      */
     async generate(params?: Record<string, unknown>) {
-      return apiClient.get<import('../types/api').Report>('/api/reports', params);
+      const rawReport = await apiClient.get<any>('/api/reports', params);
+      
+      // Transform snake_case to camelCase and adjust structure to match frontend types
+      return {
+        graphStatistics: {
+          totalNodes: rawReport.graph_statistics.total_nodes,
+          nodesByType: rawReport.graph_statistics.node_type_distribution,
+          totalRelationships: rawReport.graph_statistics.total_relationships,
+          relationshipsByType: rawReport.graph_statistics.relationship_type_distribution,
+        },
+        studentPerformance: {
+          highFrequencyErrors: (rawReport.student_performance.high_frequency_errors || []).map((error: any) => ({
+            knowledgePoint: error.knowledge_point_name,
+            errorCount: error.total_occurrences,
+            affectedStudents: error.student_count,
+          })),
+          studentsNeedingAttention: (rawReport.student_performance.students_needing_attention || []).map((student: any) => ({
+            studentId: student.student_name,
+            errorCount: student.total_errors,
+            courses: [], // Not provided in backend response
+          })),
+        },
+        courseEffectiveness: {
+          courseMetrics: (rawReport.course_effectiveness.course_metrics || []).map((metric: any) => ({
+            courseId: metric.course_id,
+            courseName: metric.course_name,
+            participationRate: metric.participation || 0, // This is actually student count, not rate
+            errorRate: metric.error_rate || 0,
+            averageProgress: 0, // Not provided in backend response
+          })),
+        },
+        interactionPatterns: {
+          activeCommunities: (rawReport.interaction_patterns.social_networks || []).map((network: any) => ({
+            students: network.connected_students || [],
+            interactionCount: network.connection_count || 0,
+          })),
+          isolatedStudents: (rawReport.interaction_patterns.isolated_students || []).map((student: any) => student.student_id),
+        },
+        generatedAt: rawReport.generated_at,
+      } as import('../types/api').Report;
     },
   },
 };

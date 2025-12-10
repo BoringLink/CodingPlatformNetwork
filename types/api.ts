@@ -3,7 +3,14 @@
  */
 
 // Node Types
-export type NodeType = "Student" | "Teacher" | "Course" | "KnowledgePoint" | "ErrorType";
+import { ElementDefinition } from "cytoscape";
+
+export type NodeType =
+  | "Student"
+  | "Teacher"
+  | "Course"
+  | "KnowledgePoint"
+  | "ErrorType";
 
 // Relationship Types
 export type RelationshipType =
@@ -45,7 +52,7 @@ export interface Subgraph {
 }
 
 // Visualization data
-export interface VisualizationNode {
+export interface VisualizationNode extends ElementDefinition {
   id: string;
   label: string;
   type: NodeType;
@@ -54,7 +61,7 @@ export interface VisualizationNode {
   position?: { x: number; y: number };
 }
 
-export interface VisualizationEdge {
+export interface VisualizationEdge extends ElementDefinition {
   id: string;
   source: string;
   target: string;
