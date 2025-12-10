@@ -34,9 +34,9 @@ export default function CourseEffectiveness({ effectiveness }: CourseEffectivene
 
   return (
     <div className="space-y-6">
-      {/* Course Metrics - Bar Chart */}
+      {/* 课程指标 - 柱状图 */}
       <div>
-        <h3 className="text-lg font-medium mb-4">Course Metrics</h3>
+        <h3 className="text-lg font-medium mb-4">课程指标</h3>
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
@@ -52,18 +52,18 @@ export default function CourseEffectiveness({ effectiveness }: CourseEffectivene
               />
               <YAxis domain={[0, 100]} tickFormatter={(value) => `${value}%`} />
               <Tooltip formatter={(value) => [`${value}%`, '']} />
-              <Bar dataKey="participationRate" name="Participation Rate" fill={COLORS[0]} />
-              <Bar dataKey="averageProgress" name="Average Progress" fill={COLORS[1]} />
-              <Bar dataKey="errorRate" name="Error Rate" fill={COLORS[2]} />
+              <Bar dataKey="participationRate" name="参与率" fill={COLORS[0]} />
+              <Bar dataKey="averageProgress" name="平均进度" fill={COLORS[1]} />
+              <Bar dataKey="errorRate" name="错误率" fill={COLORS[2]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      {/* Course Comparison - Radar Chart */}
+      {/* 课程对比 - 雷达图 */}
       {safeEffectiveness.courseMetrics.length > 0 && (
         <div>
-          <h3 className="text-lg font-medium mb-4">Course Comparison</h3>
+          <h3 className="text-lg font-medium mb-4">课程对比</h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarChartData}>
@@ -71,21 +71,21 @@ export default function CourseEffectiveness({ effectiveness }: CourseEffectivene
                 <PolarAngleAxis dataKey="subject" />
                 <PolarRadiusAxis domain={[0, 100]} tickFormatter={(value) => `${value}%`} />
                 <Radar 
-                  name="Participation" 
+                  name="参与率" 
                   dataKey="participation" 
                   stroke={COLORS[0]} 
                   fill={COLORS[0]} 
                   fillOpacity={0.3} 
                 />
                 <Radar 
-                  name="Progress" 
+                  name="进度" 
                   dataKey="progress" 
                   stroke={COLORS[1]} 
                   fill={COLORS[1]} 
                   fillOpacity={0.3} 
                 />
                 <Radar 
-                  name="Error Rate" 
+                  name="错误率" 
                   dataKey="error" 
                   stroke={COLORS[2]} 
                   fill={COLORS[2]} 
@@ -98,24 +98,24 @@ export default function CourseEffectiveness({ effectiveness }: CourseEffectivene
         </div>
       )}
 
-      {/* Course Details Table */}
+      {/* 课程详情表格 */}
       <div>
-        <h3 className="text-lg font-medium mb-4">Course Details</h3>
+        <h3 className="text-lg font-medium mb-4">课程详情</h3>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+          <table className="w-full text-sm text-left text-gray-900">
+            <thead className="text-xs text-gray-900 uppercase bg-gray-50">
               <tr>
-                <th className="px-4 py-2">Course</th>
-                <th className="px-4 py-2">Participation</th>
-                <th className="px-4 py-2">Error Rate</th>
-                <th className="px-4 py-2">Progress</th>
+                <th className="px-4 py-2">课程</th>
+                <th className="px-4 py-2">参与率</th>
+                <th className="px-4 py-2">错误率</th>
+                <th className="px-4 py-2">平均进度</th>
               </tr>
             </thead>
             <tbody>
               {safeEffectiveness.courseMetrics.map((course, index) => (
                 <tr 
                   key={index} 
-                  className={`border-b ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
+                  className={`border-b ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} text-gray-900`}
                 >
                   <td className="px-4 py-3 font-medium">{course.courseName || `课程${index}`}</td>
                   <td className="px-4 py-3">{((course.participationRate || 0) * 100).toFixed(1)}%</td>
@@ -127,7 +127,7 @@ export default function CourseEffectiveness({ effectiveness }: CourseEffectivene
           </table>
           {safeEffectiveness.courseMetrics.length === 0 && (
             <div className="text-center py-4 text-muted-foreground">
-              No course data available.
+              暂无课程数据
             </div>
           )}
         </div>

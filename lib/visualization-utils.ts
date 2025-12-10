@@ -150,8 +150,7 @@ export function calculateGraphStatistics(data: VisualizationData) {
 
   // Count relationship types
   data.edges.forEach((edge) => {
-    relationshipTypeCount[edge.type] =
-      (relationshipTypeCount[edge.type] || 0) + 1;
+    relationshipTypeCount[edge.type] = (relationshipTypeCount[edge.type] || 0) + 1;
   });
 
   const nodeDegrees = calculateNodeDegrees(data.nodes, data.edges);

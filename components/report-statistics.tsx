@@ -54,13 +54,13 @@ export default function ReportStatistics({
   }));
 
   const summaryData = [
-    { name: "Total Nodes", value: safeStatistics.totalNodes || 0 },
-    { name: "Total Relationships", value: safeStatistics.totalRelationships || 0 },
+    { name: "总节点数", value: safeStatistics.totalNodes || 0 },
+    { name: "总关系数", value: safeStatistics.totalRelationships || 0 },
   ];
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {/* Summary Cards */}
+      {/* 摘要卡片 */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {summaryData.map((item, index) => (
           <Card key={index} className="hover:shadow-md transition-shadow">
@@ -72,11 +72,11 @@ export default function ReportStatistics({
         ))}
       </div>
 
-      {/* Nodes by Type - Pie Chart */}
+      {/* 节点类型分布 - 饼图 */}
       <Card className="hover:shadow-md transition-shadow">
         <CardContent className="p-4">
           <CardTitle className="text-lg font-medium mb-4">
-            Nodes by Type
+            节点类型分布
           </CardTitle>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
@@ -99,17 +99,17 @@ export default function ReportStatistics({
                   />
                 ))}
               </Pie>
-              <Tooltip formatter={(value) => [`${value} nodes`, "Count"]} />
+              <Tooltip formatter={(value) => [`${value} 个节点`, "数量"]} />
             </PieChart>
           </ResponsiveContainer>
         </CardContent>
       </Card>
 
-      {/* Relationships by Type - Bar Chart */}
+      {/* 关系类型分布 - 柱状图 */}
       <Card className="hover:shadow-md transition-shadow lg:col-span-2">
         <CardContent className="p-4">
           <CardTitle className="text-lg font-medium mb-4">
-            Relationships by Type
+            关系类型分布
           </CardTitle>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart
@@ -120,7 +120,7 @@ export default function ReportStatistics({
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip
-                formatter={(value) => [`${value} relationships`, "Count"]}
+                formatter={(value) => [`${value} 个关系`, "数量"]}
               />
               <Bar dataKey="value" fill="#8884d8">
                 {relationshipsByTypeData.map((entry, index) => (

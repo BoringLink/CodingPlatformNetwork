@@ -31,8 +31,8 @@ export default function InteractionPatterns({
   // Prepare data for charts
   const activeCommunitiesData = safePatterns.activeCommunities.map(
     (community, index) => ({
-      name: `Community ${index + 1}`,
-      students: (community.students?.length || 0),
+      name: `社区 ${index + 1}`,
+      students: community.students?.length || 0,
       interactions: community.interactionCount || 0,
     })
   );
@@ -40,24 +40,24 @@ export default function InteractionPatterns({
   // Data for pie chart showing community distribution
   const communityDistributionData = safePatterns.activeCommunities.map(
     (community, index) => ({
-      name: `Community ${index + 1}`,
-      value: (community.students?.length || 0),
+      name: `社区 ${index + 1}`,
+      value: community.students?.length || 0,
     })
   );
 
   // Add isolated students to distribution
   if (safePatterns.isolatedStudents.length > 0) {
     communityDistributionData.push({
-      name: "Isolated Students",
+      name: "孤立学生",
       value: safePatterns.isolatedStudents.length,
     });
   }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {/* Active Communities */}
+      {/* 活跃社区 */}
       <div className="space-y-6">
-        <h3 className="text-lg font-medium mb-4">Active Communities</h3>
+        <h3 className="text-lg font-medium mb-4">活跃社区</h3>
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
@@ -70,27 +70,23 @@ export default function InteractionPatterns({
               <Tooltip
                 formatter={(value, name) => [
                   `${value}`,
-                  name === "students" ? "Students" : "Interactions",
+                  name === "students" ? "学生数" : "交互次数",
                 ]}
               />
-              <Bar dataKey="students" name="Students" fill={COLORS[0]} />
-              <Bar
-                dataKey="interactions"
-                name="Interactions"
-                fill={COLORS[1]}
-              />
+              <Bar dataKey="students" name="学生数" fill={COLORS[0]} />
+              <Bar dataKey="interactions" name="交互次数" fill={COLORS[1]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
-        {/* Community Details */}
+        {/* 社区详情 */}
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+          <table className="w-full text-sm text-left text-gray-900">
+            <thead className="text-xs text-gray-900 uppercase bg-gray-50">
               <tr>
-                <th className="px-4 py-2">Community</th>
-                <th className="px-4 py-2">Students</th>
-                <th className="px-4 py-2">Interactions</th>
+                <th className="px-4 py-2">社区</th>
+                <th className="px-4 py-2">学生数</th>
+                <th className="px-4 py-2">交互次数</th>
               </tr>
             </thead>
             <tbody>
@@ -99,7 +95,7 @@ export default function InteractionPatterns({
                   key={index}
                   className={`border-b ${
                     index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                  }`}
+                  } text-gray-900`}
                 >
                   <td className="px-4 py-3 font-medium">{community.name}</td>
                   <td className="px-4 py-3">{community.students}</td>
@@ -111,9 +107,9 @@ export default function InteractionPatterns({
         </div>
       </div>
 
-      {/* Community Distribution */}
+      {/* 社区分布 */}
       <div className="space-y-6">
-        <h3 className="text-lg font-medium mb-4">Community Distribution</h3>
+        <h3 className="text-lg font-medium mb-4">社区分布</h3>
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
@@ -136,37 +132,37 @@ export default function InteractionPatterns({
                   />
                 ))}
               </Pie>
-              <Tooltip formatter={(value) => [`${value} students`, "Count"]} />
+              <Tooltip formatter={(value) => [`${value} 名学生`, "数量"]} />
             </PieChart>
           </ResponsiveContainer>
         </div>
 
-        {/* Isolated Students */}
+        {/* 孤立学生 */}
         <div className="bg-white border rounded-lg p-4 shadow-sm">
-          <h4 className="text-md font-medium mb-2">Isolated Students</h4>
-          <div className="text-2xl font-bold">
+          <h4 className="text-md font-medium mb-2 text-black">孤立学生</h4>
+          <div className="text-2xl font-bold text-black">
             {safePatterns.isolatedStudents.length}
           </div>
           <p className="text-sm text-muted-foreground mt-1">
-            Students with no recorded interactions
+            没有记录到交互的学生
           </p>
           {safePatterns.isolatedStudents.length > 0 && (
             <div className="mt-3">
-              <h5 className="text-sm font-medium mb-2">Student IDs:</h5>
+              <h5 className="text-sm font-medium mb-2">学生ID:</h5>
               <div className="flex flex-wrap gap-2">
                 {safePatterns.isolatedStudents
                   .slice(0, 10)
                   .map((studentId, index) => (
                     <span
                       key={index}
-                      className="px-2 py-1 bg-gray-100 rounded-full text-xs"
+                      className="px-2 py-1 bg-gray-100 rounded-full text-xs text-gray-900"
                     >
                       {studentId}
                     </span>
                   ))}
                 {safePatterns.isolatedStudents.length > 10 && (
-                  <span className="px-2 py-1 bg-gray-100 rounded-full text-xs">
-                    +{safePatterns.isolatedStudents.length - 10} more
+                  <span className="px-2 py-1 bg-gray-100 rounded-full text-xs text-gray-900">
+                    +{safePatterns.isolatedStudents.length - 10} 更多
                   </span>
                 )}
               </div>

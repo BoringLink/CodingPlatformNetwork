@@ -52,7 +52,7 @@ export interface Subgraph {
 }
 
 // Visualization data
-export interface VisualizationNode extends ElementDefinition {
+export interface VisualizationNode {
   id: string;
   label: string;
   type: NodeType;
@@ -61,7 +61,7 @@ export interface VisualizationNode extends ElementDefinition {
   position?: { x: number; y: number };
 }
 
-export interface VisualizationEdge extends ElementDefinition {
+export interface VisualizationEdge {
   id: string;
   source: string;
   target: string;
