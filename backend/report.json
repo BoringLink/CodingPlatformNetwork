@@ -1,0 +1,240 @@
+{
+  "graph_statistics": {
+    "total_nodes": 38,
+    "node_type_distribution": {
+      "Student": 5,
+      "Teacher": 3,
+      "Course": 5,
+      "KnowledgePoint": 15,
+      "ErrorType": 8,
+      "Subview": 2
+    },
+    "total_relationships": 125,
+    "relationship_type_distribution": {
+      "LEARNS": 32,
+      "TEACHES": 7,
+      "CONTAINS": 28,
+      "HAS_ERROR": 12,
+      "RELATES_TO": 35,
+      "CHAT_WITH": 8,
+      "LIKES": 3
+    },
+    "timestamp": "2025-12-10T10:35:33.174813"
+  },
+  "student_performance": {
+    "high_frequency_errors": [
+      {
+        "knowledge_point_id": "KP014",
+        "knowledge_point_name": "口语",
+        "error_type_id": "ET001",
+        "error_type_name": "计算错误",
+        "total_occurrences": 5,
+        "student_count": 5
+      },
+      {
+        "knowledge_point_id": "KP006",
+        "knowledge_point_name": "阅读理解",
+        "error_type_id": "ET001",
+        "error_type_name": "计算错误",
+        "total_occurrences": 5,
+        "student_count": 5
+      },
+      {
+        "knowledge_point_id": "KP007",
+        "knowledge_point_name": "写作技巧",
+        "error_type_id": "ET001",
+        "error_type_name": "计算错误",
+        "total_occurrences": 5,
+        "student_count": 5
+      },
+      {
+        "knowledge_point_id": "KP009",
+        "knowledge_point_name": "修辞",
+        "error_type_id": "ET001",
+        "error_type_name": "计算错误",
+        "total_occurrences": 5,
+        "student_count": 5
+      },
+      {
+        "knowledge_point_id": "KP002",
+        "knowledge_point_name": "几何",
+        "error_type_id": "ET001",
+        "error_type_name": "计算错误",
+        "total_occurrences": 5,
+        "student_count": 5
+      },
+      {
+        "knowledge_point_id": "KP012",
+        "knowledge_point_name": "词汇",
+        "error_type_id": "ET001",
+        "error_type_name": "计算错误",
+        "total_occurrences": 5,
+        "student_count": 5
+      },
+      {
+        "knowledge_point_id": "KP008",
+        "knowledge_point_name": "语法",
+        "error_type_id": "ET001",
+        "error_type_name": "计算错误",
+        "total_occurrences": 5,
+        "student_count": 5
+      },
+      {
+        "knowledge_point_id": "KP005",
+        "knowledge_point_name": "统计",
+        "error_type_id": "ET002",
+        "error_type_name": "概念理解错误",
+        "total_occurrences": 5,
+        "student_count": 5
+      },
+      {
+        "knowledge_point_id": "KP011",
+        "knowledge_point_name": "语法结构",
+        "error_type_id": "ET002",
+        "error_type_name": "概念理解错误",
+        "total_occurrences": 5,
+        "student_count": 5
+      },
+      {
+        "knowledge_point_id": "KP004",
+        "knowledge_point_name": "概率",
+        "error_type_id": "ET001",
+        "error_type_name": "计算错误",
+        "total_occurrences": 5,
+        "student_count": 5
+      }
+    ],
+    "students_needing_attention": [
+      {
+        "student_id": "S001",
+        "student_name": "学生1",
+        "total_errors": 3,
+        "error_types_count": 3
+      },
+      {
+        "student_id": "S002",
+        "student_name": "学生2",
+        "total_errors": 3,
+        "error_types_count": 3
+      },
+      {
+        "student_id": "S003",
+        "student_name": "学生3",
+        "total_errors": 2,
+        "error_types_count": 2
+      },
+      {
+        "student_id": "S004",
+        "student_name": "学生4",
+        "total_errors": 2,
+        "error_types_count": 2
+      },
+      {
+        "student_id": "S005",
+        "student_name": "学生5",
+        "total_errors": 2,
+        "error_types_count": 2
+      }
+    ],
+    "error_distribution": {
+      "计算错误": 5,
+      "概念理解错误": 5,
+      "错误类型1": 2
+    }
+  },
+  "course_effectiveness": {
+    "course_metrics": [
+      {
+        "course_id": "C001",
+        "course_name": "数学基础",
+        "participation": 4,
+        "students_with_errors": 3,
+        "total_errors": 240,
+        "error_rate": 0.75
+      },
+      {
+        "course_id": "C002",
+        "course_name": "语文阅读",
+        "participation": 4,
+        "students_with_errors": 1,
+        "total_errors": 45,
+        "error_rate": 0.25
+      },
+      {
+        "course_id": "C003",
+        "course_name": "英语写作",
+        "participation": 2,
+        "students_with_errors": 1,
+        "total_errors": 10,
+        "error_rate": 0.5
+      },
+      {
+        "course_id": "C004",
+        "course_name": "物理实验",
+        "participation": 0,
+        "students_with_errors": 1,
+        "total_errors": 11,
+        "error_rate": 0.0
+      },
+      {
+        "course_id": "C005",
+        "course_name": "化学入门",
+        "participation": 0,
+        "students_with_errors": 1,
+        "total_errors": 9,
+        "error_rate": 0.0
+      }
+    ]
+  },
+  "interaction_patterns": {
+    "social_networks": [
+      {
+        "student_id": "S002",
+        "student_name": "学生2",
+        "connection_count": 3,
+        "connected_students": [
+          "S001",
+          "S003",
+          "S004"
+        ]
+      },
+      {
+        "student_id": "S003",
+        "student_name": "学生3",
+        "connection_count": 3,
+        "connected_students": [
+          "S001",
+          "S002",
+          "S004"
+        ]
+      },
+      {
+        "student_id": "S001",
+        "student_name": "学生1",
+        "connection_count": 3,
+        "connected_students": [
+          "S002",
+          "S003",
+          "S005"
+        ]
+      },
+      {
+        "student_id": "S004",
+        "student_name": "学生4",
+        "connection_count": 2,
+        "connected_students": [
+          "S002",
+          "S003"
+        ]
+      }
+    ],
+    "isolated_students": [],
+    "interaction_statistics": {
+      "total_students": 5,
+      "students_with_interactions": 5,
+      "total_interactions": 22,
+      "interaction_rate": 1.0
+    }
+  },
+  "generated_at": "2025-12-10T10:35:33.195116"
+}

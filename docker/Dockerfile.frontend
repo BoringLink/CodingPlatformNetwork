@@ -1,0 +1,27 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# 复制 package 文件
+COPY package*.json ./
+
+# -------------------------------------------------------------------
+# 1. 配置 NPM 国内源 (阿里云) - 加速 npm install
+# 设置全局 registry，这样后续所有的 npm 操作都会自动走国内源
+# -------------------------------------------------------------------
+RUN npm config set registry https://registry.npmmirror.com
+
+# 安装 pnpm
+RUN npm install -g pnpm@latest-10
+
+# 安装依赖
+RUN pnpm install --no-cache
+
+# 复制应用代码
+COPY . .
+
+# 暴露端口
+EXPOSE 3000
+
+# 默认命令
+CMD ["pnpm", "run", "dev"]
