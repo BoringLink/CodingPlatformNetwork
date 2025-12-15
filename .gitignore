@@ -16,6 +16,8 @@
 # next.js
 /.next/
 /out/
+frontend/.next/
+frontend/out/
 
 # production
 /build
@@ -47,3 +49,12 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# Python cache
+backend/**/__pycache__/
+backend/venv/
+
+# IDE
+.kiro/
+.vscode/
+.trae/

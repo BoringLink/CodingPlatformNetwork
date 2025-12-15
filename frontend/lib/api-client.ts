@@ -43,7 +43,14 @@ export const apiClient = {
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
-          url.searchParams.append(key, String(value));
+          if (Array.isArray(value)) {
+            // 处理数组类型：只在数组非空时发送
+            if (value.length > 0) {
+              url.searchParams.append(key, value.join(','));
+            }
+          } else {
+            url.searchParams.append(key, String(value));
+          }
         }
       });
     }
