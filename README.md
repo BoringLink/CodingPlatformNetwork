@@ -1,218 +1,178 @@
-# 教育知识图谱系统 - 前端
+# 教育知识图谱系统
 
-基于 Next.js 15 的教育知识图谱可视化前端应用。
+## 1. 应用架构
 
-## 技术栈
+教育知识图谱系统是一个基于微服务架构的智能教育平台，主要包含以下组件：
 
-- **框架**: Next.js 16.0.6 (React 19)
-- **语言**: TypeScript 5.x
-- **样式**: Tailwind CSS 4.0
-- **UI 组件**: shadcn/ui
-- **状态管理**: Zustand 5.x
-- **数据获取**: TanStack Query v5
-- **图可视化**: Cytoscape.js 3.33 + react-cytoscapejs
+| 组件 | 技术栈 | 功能描述 |
+|------|--------|----------|
+| 后端 API | FastAPI | 提供 RESTful API 服务，处理业务逻辑 |
+| 前端应用 | Next.js | 提供用户交互界面 |
+| 图数据库 | Neo4j | 存储和管理知识图谱数据 |
+| 关系数据库 | PostgreSQL | 存储非图结构化数据 |
+| 缓存 & 消息队列 | Redis | 提供缓存服务和 Celery 消息代理 |
+| 异步任务处理 | Celery | 处理异步任务，如数据导入、模型训练 |
+| 任务监控 | Flower | 监控 Celery 任务执行状态 |
 
-## 项目结构
+## 2. 依赖要求
 
-```
-frontend/
-├── app/                    # Next.js App Router
-│   ├── layout.tsx         # 根布局
-│   ├── page.tsx           # 首页
-│   └── globals.css        # 全局样式
-├── components/            # React 组件
-│   ├── ui/               # shadcn/ui 组件
-│   └── providers/        # Context Providers
-├── hooks/                # 自定义 Hooks
-│   └── use-graph-data.ts # 图数据查询 Hooks
-├── lib/                  # 工具函数
-│   ├── utils.ts         # 通用工具
-│   └── api-client.ts    # API 客户端
-├── store/               # Zustand 状态管理
-│   ├── graph-store.ts   # 图状态
-│   └── ui-store.ts      # UI 状态
-├── types/               # TypeScript 类型定义
-│   └── api.ts          # API 类型
-└── public/             # 静态资源
+- Docker 20.10+ 
+- Docker Compose 2.0+
 
+## 3. 快速启动
+
+### 3.1 环境配置
+
+1. 复制环境变量示例文件：
+```bash
+cp .env.example .env
 ```
 
-## 开发指南
+2. 根据实际情况修改 `.env` 文件中的配置，特别是：
+   - `DASHSCOPE_API_KEY`：阿里云通义千问 API 密钥
+   - 数据库连接参数（如果需要自定义）
 
-### 安装依赖
+### 3.2 启动服务
+
+使用 Docker Compose 一键启动所有服务：
 
 ```bash
-npm install
+# 构建镜像（首次启动或代码更新后执行）
+docker-compose build
+
+# 启动服务
+docker-compose up -d
 ```
 
-### 环境变量
-
-复制 `.env.local.example` 到 `.env.local` 并配置：
-
-```env
-NEXT_PUBLIC_API_URL=http://localhost:8000
-```
-
-### 启动开发服务器
+### 3.3 停止服务
 
 ```bash
-npm run dev
+docker-compose down
 ```
 
-访问 [http://localhost:3000](http://localhost:3000)
+## 4. 服务访问地址
 
-### 构建生产版本
+| 服务 | 访问地址 | 说明 |
+|------|----------|------|
+| 后端 API 文档 | http://localhost:8000/docs | Swagger UI 接口文档 |
+| 前端应用 | http://localhost:3000 | 主应用界面 |
+| Neo4j 控制台 | http://localhost:7474 | 图数据库管理界面 |
+| Flower 监控 | http://localhost:5555 | Celery 任务监控 |
+| PostgreSQL | localhost:5432 | 关系数据库（需客户端连接） |
+| Redis | localhost:6379 | 缓存服务（需客户端连接） |
+
+## 5. 环境变量说明
+
+### 5.1 核心配置
+
+| 变量名 | 说明 | 默认值 |
+|--------|------|--------|
+| `DEBUG` | 调试模式开关 | `true` |
+| `APP_NAME` | 应用名称 | `教育知识图谱系统` |
+
+### 5.2 数据库配置
+
+| 变量名 | 说明 | 默认值 |
+|--------|------|--------|
+| `NEO4J_URI` | Neo4j 连接 URI | `bolt://localhost:7687` |
+| `NEO4J_USER` | Neo4j 用户名 | `neo4j` |
+| `NEO4J_PASSWORD` | Neo4j 密码 | `password` |
+| `POSTGRES_HOST` | PostgreSQL 主机 | `localhost` |
+| `POSTGRES_PORT` | PostgreSQL 端口 | `5432` |
+| `POSTGRES_USER` | PostgreSQL 用户名 | `postgres` |
+| `POSTGRES_PASSWORD` | PostgreSQL 密码 | `password` |
+| `POSTGRES_DB` | PostgreSQL 数据库名 | `education_kg` |
+| `REDIS_HOST` | Redis 主机 | `localhost` |
+| `REDIS_PORT` | Redis 端口 | `6379` |
+
+### 5.3 AI 服务配置
+
+| 变量名 | 说明 | 默认值 |
+|--------|------|--------|
+| `DASHSCOPE_API_KEY` | 阿里云通义千问 API 密钥 | - |
+| `QWEN_MODEL_SIMPLE` | 简单任务模型 | `qwen-turbo` |
+| `QWEN_MODEL_MEDIUM` | 中等任务模型 | `qwen-plus` |
+| `QWEN_MODEL_COMPLEX` | 复杂任务模型 | `qwen-max` |
+
+## 6. 开发说明
+
+### 6.1 后端开发
+
+后端服务使用 FastAPI 框架，代码位于 `./backend` 目录：
 
 ```bash
-npm run build
-npm start
+# 进入后端目录
+cd backend
+
+# 安装依赖
+pip install -e "[dev]"
+
+# 启动开发服务器
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-### 代码检查
+### 6.2 前端开发
+
+前端服务使用 Next.js 框架，代码位于 `./frontend` 目录：
 
 ```bash
-npm run lint
+# 进入前端目录
+cd frontend
+
+# 安装依赖
+pnpm install
+
+# 启动开发服务器
+pnpm run dev
 ```
 
-## 核心功能模块
+## 7. 日志管理
 
-### 1. 状态管理 (Zustand)
-
-#### Graph Store
-管理图谱数据和选择状态：
-- 节点和边数据
-- 选中的节点
-- 高亮的节点
-- 筛选条件
-- 当前子视图
-
-```typescript
-import { useGraphStore } from "@/store/graph-store";
-
-function MyComponent() {
-  const { nodes, setSelectedNode } = useGraphStore();
-  // ...
-}
-```
-
-#### UI Store
-管理 UI 状态：
-- 主题设置
-- 侧边栏状态
-- 筛选面板状态
-- 加载状态
-
-```typescript
-import { useUIStore } from "@/store/ui-store";
-
-function MyComponent() {
-  const { theme, toggleSidebar } = useUIStore();
-  // ...
-}
-```
-
-### 2. 数据获取 (TanStack Query)
-
-使用自定义 Hooks 获取数据：
-
-```typescript
-import { useNodes, useVisualization } from "@/hooks/use-graph-data";
-
-function GraphView() {
-  const { data: nodes, isLoading } = useNodes();
-  const { data: vizData } = useVisualization();
-  // ...
-}
-```
-
-### 3. API 客户端
-
-统一的 API 调用接口：
-
-```typescript
-import { apiClient } from "@/lib/api-client";
-
-// GET 请求
-const nodes = await apiClient.get("/api/nodes", { type: "Student" });
-
-// POST 请求
-const result = await apiClient.post("/api/subviews", { name: "My View" });
-```
-
-### 4. UI 组件 (shadcn/ui)
-
-使用预构建的 UI 组件：
-
-```typescript
-import { Button } from "@/components/ui/button";
-
-function MyComponent() {
-  return (
-    <Button variant="outline" size="lg">
-      点击我
-    </Button>
-  );
-}
-```
-
-## 添加新的 shadcn/ui 组件
-
-shadcn/ui 组件需要手动添加到项目中。使用以下命令：
+查看服务日志：
 
 ```bash
-npx shadcn@latest add [component-name]
+# 查看所有服务日志
+docker-compose logs
+
+# 查看特定服务日志
+docker-compose logs backend
+
+# 实时查看日志
+docker-compose logs -f backend
 ```
 
-例如：
+## 8. 常见问题
+
+### 8.1 端口冲突
+
+如果遇到端口冲突，可以在 `docker-compose.yml` 文件中修改对应服务的端口映射，例如：
+
+```yaml
+frontend:
+  ports:
+    - "3001:3000"  # 将主机端口改为 3001
+```
+
+### 8.2 服务启动失败
+
+查看详细日志定位问题：
 ```bash
-npx shadcn@latest add card
-npx shadcn@latest add dialog
-npx shadcn@latest add dropdown-menu
+docker-compose logs -f <service_name>
 ```
 
-## 性能优化
+### 8.3 数据库连接问题
 
-- 使用 React Server Components (RSC) 减少客户端 JavaScript
-- TanStack Query 自动缓存和重新验证
-- Zustand persist 中间件持久化状态
-- Next.js 自动代码分割和优化
+确保 `.env` 文件中的数据库连接参数与实际配置一致，尤其是用户名、密码和端口。
 
-## 开发规范
+## 9. 版本信息
 
-### 组件命名
-- 使用 PascalCase: `GraphVisualization.tsx`
-- 文件名与组件名一致
+- Docker 镜像版本：
+  - Neo4j: 5.15-community
+  - Redis: 7.2-alpine
+  - PostgreSQL: 17-alpine
+  - Python: 3.12-slim
+  - Node.js: 20-alpine
 
-### 类型定义
-- 所有 API 响应都有类型定义在 `types/api.ts`
-- 使用 TypeScript 严格模式
+## 10. 联系方式
 
-### 样式
-- 优先使用 Tailwind CSS 类
-- 使用 `cn()` 工具函数合并类名
-- 遵循 shadcn/ui 的设计系统
-
-### 状态管理
-- 全局状态使用 Zustand
-- 服务端状态使用 TanStack Query
-- 本地组件状态使用 React useState
-
-## 待实现功能
-
-根据任务列表，以下功能待实现：
-
-- [ ] 图可视化组件 (Cytoscape.js)
-- [ ] 交互功能（悬停、点击、高亮）
-- [ ] 筛选和子视图 UI
-- [ ] 数据导入 UI
-- [ ] 报告展示 UI
-- [ ] 响应式设计和暗色模式
-
-## 相关文档
-
-- [Next.js 文档](https://nextjs.org/docs)
-- [Tailwind CSS 文档](https://tailwindcss.com/docs)
-- [shadcn/ui 文档](https://ui.shadcn.com)
-- [TanStack Query 文档](https://tanstack.com/query/latest)
-- [Zustand 文档](https://zustand-demo.pmnd.rs)
-- [Cytoscape.js 文档](https://js.cytoscape.org)
+如有问题或建议，请联系开发团队。

@@ -172,7 +172,7 @@ services:
       - backend
     networks:
       - education-kg-network
-    command: npm run dev
+    command: pnpm dev
 
 networks:
   education-kg-network:
