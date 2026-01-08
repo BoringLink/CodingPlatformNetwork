@@ -171,7 +171,8 @@ export const GraphVisualization = ({
           "background-color": "#3b82f6",
         },
       },
-      { selector: "edge",
+      {
+        selector: "edge",
         style: {
           width: (ele: NodeSingular | EdgeSingular) => {
             // 基于权重的动态宽度调整，使用对数缩放
@@ -194,7 +195,8 @@ export const GraphVisualization = ({
         selector: "node.highlighted",
         style: { "border-width": 4, "border-color": "#10b981", opacity: 1 },
       },
-      { selector: "edge.highlighted",
+      {
+        selector: "edge.highlighted",
         style: {
           "line-color": "#10b981",
           "target-arrow-color": "#10b981",
@@ -306,6 +308,11 @@ export const GraphVisualization = ({
     try {
       // 只有当cy实例有元素时才执行batch操作
       if (cy.elements().length > 0) {
+        const isolated = cy
+          .nodes()
+          .filter((node) => node.connectedEdges().length === 0);
+        isolated.style({ display: "none" });
+
         cy.batch(() => {
           // 安全地取消选择所有节点
           const allNodes = cy.nodes();
@@ -338,7 +345,7 @@ export const GraphVisualization = ({
               const node = cy.getElementById(id);
               if (node.length > 0) {
                 node.addClass("highlighted");
-                
+
                 // 安全地处理连接的边
                 const connectedEdges = node.connectedEdges();
                 if (connectedEdges.length > 0) {
@@ -346,9 +353,10 @@ export const GraphVisualization = ({
                     const sourceId = edge.source()?.id();
                     const targetId = edge.target()?.id();
                     if (
-                      sourceId && targetId &&
+                      sourceId &&
+                      targetId &&
                       (highlightedNodeIds.includes(sourceId) ||
-                      highlightedNodeIds.includes(targetId))
+                        highlightedNodeIds.includes(targetId))
                     ) {
                       edge.addClass("highlighted");
                     }
@@ -356,11 +364,14 @@ export const GraphVisualization = ({
                 }
               }
             });
-            
+
             // 安全地添加淡化效果
             const allElements = cy.elements();
             if (allElements.length > 0) {
-              allElements.not(".highlighted").not(":selected").addClass("faded");
+              allElements
+                .not(".highlighted")
+                .not(":selected")
+                .addClass("faded");
             }
           }
         });

@@ -4,8 +4,8 @@ import { QueryProvider } from "@/components/providers/query-provider";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 export const metadata: Metadata = {
-  title: "教育知识图谱系统",
-  description: "基于知识图谱的教育数据分析平台",
+  title: "交互网络可视化系统",
+  description: "基于交互网络的可视化分析平台",
 };
 
 export default function RootLayout({

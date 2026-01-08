@@ -153,7 +153,7 @@ export default function GraphPage() {
       {/* Header */}
       <header className="p-4 border-b bg-white dark:bg-gray-900">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold md:text-3xl">教育知识图谱可视化</h1>
+          <h1 className="text-2xl font-bold md:text-3xl">交互网络可视化</h1>
           <div className="flex gap-2 items-center flex-wrap">
             {/* 图谱统计信息 */}
             {visualizationData && (
