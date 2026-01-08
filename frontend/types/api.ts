@@ -78,11 +78,11 @@ export interface VisualizationData {
 // Node details
 export interface NodeDetails {
   node: Node;
-  relationshipCounts: Record<RelationshipType, number>;
-  connectedNodes: {
-    type: NodeType;
-    count: number;
-  }[];
+  relationshipTypeCounts: Record<RelationshipType, number>;
+  // connectedNodesCounts: {
+  //   type: NodeType;
+  //   count: number;
+  // }[];
 }
 
 // Subview

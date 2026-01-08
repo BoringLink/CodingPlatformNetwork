@@ -45,9 +45,10 @@ export const apiClient = {
         if (value !== undefined && value !== null) {
           if (Array.isArray(value)) {
             // 处理数组类型：只在数组非空时发送
-            if (value.length > 0) {
-              url.searchParams.append(key, value.join(','));
-            }
+            if (value.length > 0)
+              value.forEach((item) =>
+                url.searchParams.append(key, String(item))
+              );
           } else {
             url.searchParams.append(key, String(value));
           }
@@ -117,14 +118,19 @@ export const apiClient = {
      * Get nodes with optional filters
      */
     async list(params?: Record<string, unknown>) {
-      return apiClient.get<{ nodes: import('../types/api').Node[] }>('/api/nodes', params);
+      return apiClient.get<{ nodes: import("../types/api").Node[] }>(
+        "/api/nodes",
+        params
+      );
     },
 
     /**
      * Get node details by ID
      */
     async getDetails(nodeId: string) {
-      return apiClient.get<import('../types/api').NodeDetails>(`/api/nodes/${nodeId}/details`);
+      return apiClient.get<import("../types/api").NodeDetails>(
+        `/api/nodes/${nodeId}/details`
+      );
     },
   },
 
@@ -133,7 +139,9 @@ export const apiClient = {
      * Get relationships with optional filters
      */
     async list(params?: Record<string, unknown>) {
-      return apiClient.get<{ relationships: import('../types/api').Relationship[] }>('/api/relationships', params);
+      return apiClient.get<{
+        relationships: import("../types/api").Relationship[];
+      }>("/api/relationships", params);
     },
   },
 
@@ -141,8 +149,12 @@ export const apiClient = {
     /**
      * Get subgraph by root node ID and depth
      */
-    async get(rootNodeId: string, depth: number, params?: Record<string, unknown>) {
-      return apiClient.get<import('../types/api').Subgraph>('/api/subgraph', {
+    async get(
+      rootNodeId: string,
+      depth: number,
+      params?: Record<string, unknown>
+    ) {
+      return apiClient.get<import("../types/api").Subgraph>("/api/subgraph", {
         rootNodeId,
         depth,
         ...params,
@@ -154,12 +166,19 @@ export const apiClient = {
     /**
      * Get visualization data for a subgraph
      */
-    async get(rootNodeId: string, depth: number, params?: Record<string, unknown>) {
-      return apiClient.get<import('../types/api').VisualizationData>('/api/visualization', {
-        rootNodeId,
-        depth,
-        ...params,
-      });
+    async get(
+      rootNodeId: string,
+      depth: number,
+      params?: Record<string, unknown>
+    ) {
+      return apiClient.get<import("../types/api").VisualizationData>(
+        "/api/visualization",
+        {
+          rootNodeId,
+          depth,
+          ...params,
+        }
+      );
     },
   },
 
@@ -168,21 +187,31 @@ export const apiClient = {
      * Get all subviews
      */
     async list() {
-      return apiClient.get<{ subviews: import('../types/api').Subview[] }>('/api/subviews');
+      return apiClient.get<{ subviews: import("../types/api").Subview[] }>(
+        "/api/subviews"
+      );
     },
 
     /**
      * Create a new subview
      */
-    async create(data: { name: string; filter: import('../types/api').GraphFilter }) {
-      return apiClient.post<import('../types/api').Subview>('/api/subviews', data);
+    async create(data: {
+      name: string;
+      filter: import("../types/api").GraphFilter;
+    }) {
+      return apiClient.post<import("../types/api").Subview>(
+        "/api/subviews",
+        data
+      );
     },
 
     /**
      * Get a subview by ID
      */
     async get(subviewId: string) {
-      return apiClient.get<import('../types/api').Subview>(`/api/subviews/${subviewId}`);
+      return apiClient.get<import("../types/api").Subview>(
+        `/api/subviews/${subviewId}`
+      );
     },
   },
 
@@ -190,8 +219,14 @@ export const apiClient = {
     /**
      * Import data batch
      */
-    async importBatch(data: { records: Record<string, unknown>[]; batchSize: number }) {
-      return apiClient.post<import('../types/api').ImportResult>('/api/import', data);
+    async importBatch(data: {
+      records: Record<string, unknown>[];
+      batchSize: number;
+    }) {
+      return apiClient.post<import("../types/api").ImportResult>(
+        "/api/import",
+        data
+      );
     },
   },
 
@@ -200,30 +235,37 @@ export const apiClient = {
      * Generate a report
      */
     async generate(params?: Record<string, unknown>) {
-      const rawReport = await apiClient.get<any>('/api/reports', params);
-      
+      const rawReport = await apiClient.get<any>("/api/reports", params);
+
       // Transform snake_case to camelCase and adjust structure to match frontend types
       return {
         graphStatistics: {
           totalNodes: rawReport.graph_statistics.total_nodes,
           nodesByType: rawReport.graph_statistics.node_type_distribution,
           totalRelationships: rawReport.graph_statistics.total_relationships,
-          relationshipsByType: rawReport.graph_statistics.relationship_type_distribution,
+          relationshipsByType:
+            rawReport.graph_statistics.relationship_type_distribution,
         },
         studentPerformance: {
-          highFrequencyErrors: (rawReport.student_performance.high_frequency_errors || []).map((error: any) => ({
+          highFrequencyErrors: (
+            rawReport.student_performance.high_frequency_errors || []
+          ).map((error: any) => ({
             knowledgePoint: error.knowledge_point_name,
             errorCount: error.total_occurrences,
             affectedStudents: error.student_count,
           })),
-          studentsNeedingAttention: (rawReport.student_performance.students_needing_attention || []).map((student: any) => ({
+          studentsNeedingAttention: (
+            rawReport.student_performance.students_needing_attention || []
+          ).map((student: any) => ({
             studentId: student.student_name,
             errorCount: student.total_errors,
             courses: [], // Not provided in backend response
           })),
         },
         courseEffectiveness: {
-          courseMetrics: (rawReport.course_effectiveness.course_metrics || []).map((metric: any) => ({
+          courseMetrics: (
+            rawReport.course_effectiveness.course_metrics || []
+          ).map((metric: any) => ({
             courseId: metric.course_id,
             courseName: metric.course_name,
             participationRate: metric.participation || 0, // This is actually student count, not rate
@@ -232,14 +274,18 @@ export const apiClient = {
           })),
         },
         interactionPatterns: {
-          activeCommunities: (rawReport.interaction_patterns.social_networks || []).map((network: any) => ({
+          activeCommunities: (
+            rawReport.interaction_patterns.social_networks || []
+          ).map((network: any) => ({
             students: network.connected_students || [],
             interactionCount: network.connection_count || 0,
           })),
-          isolatedStudents: (rawReport.interaction_patterns.isolated_students || []).map((student: any) => student.student_id),
+          isolatedStudents: (
+            rawReport.interaction_patterns.isolated_students || []
+          ).map((student: any) => student.student_id),
         },
         generatedAt: rawReport.generated_at,
-      } as import('../types/api').Report;
+      } as import("../types/api").Report;
     },
   },
 };

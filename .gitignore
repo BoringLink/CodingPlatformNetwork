@@ -51,6 +51,7 @@ next-env.d.ts
 # Python cache
 backend/**/__pycache__/
 backend/venv/
+backend/.venv/
 
 # IDE
 .kiro/

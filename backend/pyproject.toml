@@ -5,7 +5,7 @@ description = "教育知识图谱神经网络系统 - 后端服务"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "fastapi>=0.110.0",
+    "fastapi[standard]>=0.110.0",
     "uvicorn[standard]>=0.30.0",
     "pydantic>=2.0.0",
     "pydantic-settings>=2.0.0",
@@ -18,6 +18,7 @@ dependencies = [
     "python-multipart>=0.0.6",
     "python-jose[cryptography]>=3.3.0",
     "passlib[bcrypt]>=1.7.4",
+    "faker>=40.1.0",
 ]
 
 [project.optional-dependencies]

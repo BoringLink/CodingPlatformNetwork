@@ -67,7 +67,7 @@ class SubviewUpdateRequest(BaseModel):
         400: {"description": "无效的请求参数"},
         404: {"description": "根节点不存在"},
         500: {"description": "服务器内部错误"},
-    }
+    },
 )
 async def generate_visualization_get(
     rootNodeId: str,
@@ -98,6 +98,9 @@ async def generate_visualization_get(
     Raises:
         HTTPException: 请求参数无效或根节点不存在
     """
+    print(
+        f"生成可视化数据请求: rootNodeId={rootNodeId}, depth={depth}, nodeTypes={nodeTypes}, relationshipTypes={relationshipTypes}, layout={layout}, showLabels={showLabels}"
+    )
     # 处理逗号分隔的字符串参数
     processed_node_types = []
     if nodeTypes:
@@ -109,6 +112,7 @@ async def generate_visualization_get(
                 )
             else:
                 processed_node_types.append(node_type)
+    print(f"处理后的节点类型: {processed_node_types}")
 
     processed_relationship_types = []
     if relationshipTypes:
@@ -120,6 +124,8 @@ async def generate_visualization_get(
                 )
             else:
                 processed_relationship_types.append(rel_type)
+
+    print(f"处理后的关系类型: {processed_relationship_types}")
 
     # 构造请求对象
     request = VisualizationRequest(
@@ -166,7 +172,7 @@ async def generate_visualization(
     try:
         # 解析节点类型过滤
         node_types = None
-        if request.node_types is not None:  # 处理空列表情况
+        if request.node_types is not None:
             try:
                 node_types = [NodeType(nt) for nt in request.node_types]
             except ValueError as e:
@@ -174,6 +180,7 @@ async def generate_visualization(
                     status_code=400,
                     detail=f"无效的节点类型: {e}",
                 )
+        print(f"解析后的节点类型: {node_types}")
 
         # 解析关系类型过滤
         relationship_types = None
@@ -187,6 +194,7 @@ async def generate_visualization(
                     status_code=400,
                     detail=f"无效的关系类型: {e}",
                 )
+        print(f"解析后的关系类型: {relationship_types}")
 
         # 创建图过滤器
         graph_filter = GraphFilter(
@@ -613,8 +621,11 @@ async def get_node_details(
         # 构造响应数据，确保所有对象都转换为字典
         response_data = {
             "node": node_details["node"].to_dict(),
-            "relationships": [rel.to_dict() for rel in node_details["relationships"]],
-            "related_nodes": [rn.to_dict() for rn in node_details["related_nodes"]],
+            "relationshipTypeCounts": node_details["relationshipTypeCounts"],
+            # "relationshipCounts": [
+            #     rel.to_dict() for rel in node_details["relationshipCounts"]
+            # ],
+            # "related_nodes": [rn.to_dict() for rn in node_details["related_nodes"]],
         }
 
         return {

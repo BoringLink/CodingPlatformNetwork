@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from neo4j.time import DateTime
 from typing import Any, Dict, List, Optional
 import structlog
 
@@ -166,7 +167,6 @@ class QueryService:
         for record in records:
             neo4j_node = record["n"]
             node_data = dict(neo4j_node)
-            node_id = node_data.pop("id", None)
             created_at_raw = node_data.pop("created_at", None)
             updated_at_raw = node_data.pop("updated_at", None)
             labels = record.get("labels") or list(getattr(neo4j_node, "labels", []))
@@ -182,6 +182,14 @@ class QueryService:
             if not node_type_value:
                 # 从节点属性中获取类型
                 node_type_value = node_data.get("type")
+
+            # 确保id不为None，使用neo4j节点的原生id或生成唯一id
+            node_id = node_data.pop("id", None)
+            if not node_id:
+                node_id = str(
+                    getattr(neo4j_node, "id", None)
+                    or getattr(neo4j_node, "element_id", None)
+                )
 
             # 如果找不到有效的 NodeType，跳过该节点
             if (
@@ -201,12 +209,36 @@ class QueryService:
             created_at = (
                 datetime.fromisoformat(created_at_raw)
                 if isinstance(created_at_raw, str)
-                else created_at_raw or datetime.utcnow()
+                else (
+                    datetime(
+                        created_at_raw.year,
+                        created_at_raw.month,
+                        created_at_raw.day,
+                        created_at_raw.hour,
+                        created_at_raw.minute,
+                        created_at_raw.second,
+                        created_at_raw.nanosecond // 1000,
+                    )
+                    if isinstance(created_at_raw, DateTime)
+                    else created_at_raw or datetime.now()
+                )
             )
             updated_at = (
                 datetime.fromisoformat(updated_at_raw)
                 if isinstance(updated_at_raw, str)
-                else updated_at_raw or datetime.utcnow()
+                else (
+                    datetime(
+                        updated_at_raw.year,
+                        updated_at_raw.month,
+                        updated_at_raw.day,
+                        updated_at_raw.hour,
+                        updated_at_raw.minute,
+                        updated_at_raw.second,
+                        updated_at_raw.nanosecond // 1000,
+                    )
+                    if isinstance(updated_at_raw, DateTime)
+                    else updated_at_raw or datetime.now()
+                )
             )
 
             if filter.date_range:
@@ -327,10 +359,10 @@ class QueryService:
         if depth < 1:
             raise ValueError("Depth must be at least 1")
 
-        # 先检查根节点是否存在
+        # 先检查根节点是否存在，支持通过id属性匹配
         async with neo4j_connection.get_session() as session:
             exists_result = await session.run(
-                "MATCH (n {id: $root_id}) RETURN count(n) as cnt",
+                "MATCH (n) WHERE n.id = $root_id RETURN count(n) as cnt",
                 root_id=root_node_id,
             )
             exists_record = await exists_result.single()
@@ -342,29 +374,34 @@ class QueryService:
                     metadata={"node_count": 0, "relationship_count": 0},
                 )
 
-            # 构建基础查询
-            query = (
-                f"MATCH p=(root {{id: $root_id}})-[r*..{depth}]-(n) "
-                "RETURN "
-                "[node IN nodes(p) | node {.* , id: node.id, labels: labels(node)}] AS nodes, "
-                "[rel IN relationships(p) | rel {.* , id: id(rel), type: type(rel), from_id: startNode(rel).id, to_id: endNode(rel).id}] AS rels "
-            )
-            
+            # 构建基础查询，使用id属性匹配
+            query = f"""
+                MATCH (root {{id: $root_id}})
+                MATCH p = (root)-[*0..{depth}]-(related)
+                WITH collect(p) AS paths
+                WITH 
+                reduce(flat_nodes = [], path IN paths | flat_nodes + nodes(path)) AS flat_nodes,
+                reduce(flat_rels = [], path IN paths | flat_rels + relationships(path)) AS flat_rels
+                UNWIND flat_nodes AS node
+                WITH DISTINCT node, flat_rels
+                WITH collect(node {{.*, id: node.id, labels: labels(node)}}) AS nodes, flat_rels
+                UNWIND flat_rels AS rel
+                WITH DISTINCT rel, nodes
+                RETURN 
+                nodes,
+                collect(rel {{.*, id: elementId(rel), type: type(rel), source: startNode(rel).id, target: endNode(rel).id}}) AS rels
+                """
+
             # 条件性添加 LIMIT 子句
             if limit is not None:
                 query += " LIMIT $limit"
-            
+
             # 准备参数
-            params = {
-                "root_id": root_node_id
-            }
+            params = {"root_id": root_node_id}
             if limit is not None:
                 params["limit"] = limit
-            
-            result = await session.run(
-                query,
-                **params
-            )
+
+            result = await session.run(query, **params)
             records = await result.data()
 
         node_map: Dict[str, Node] = {}
@@ -415,7 +452,7 @@ class QueryService:
         )
 
         # LLM 增强：可选，失败时忽略
-        await self._maybe_enhance_with_llm(subgraph)
+        # await self._maybe_enhance_with_llm(subgraph)
 
         logger.info(
             "query_subgraph_completed",
@@ -484,6 +521,8 @@ class QueryService:
         return paths
 
     def _convert_node(self, neo_node: Any) -> Node:
+        from app.services.formatter_service import formatter_service
+
         node_data = dict(neo_node)
         node_id = node_data.pop("id", None)
         created_at_raw = node_data.pop("created_at", None)
@@ -510,21 +549,42 @@ class QueryService:
 
         node_type = NodeType(node_type_value)
 
-        created_at = (
-            datetime.fromisoformat(created_at_raw)
-            if isinstance(created_at_raw, str)
-            else created_at_raw or datetime.utcnow()
-        )
-        updated_at = (
-            datetime.fromisoformat(updated_at_raw)
-            if isinstance(updated_at_raw, str)
-            else updated_at_raw or datetime.utcnow()
-        )
+        # 处理created_at转换，支持neo4j.time.datetime对象
+        if hasattr(created_at_raw, "isoformat"):
+            # 处理neo4j.time.datetime对象
+            created_at = datetime.fromisoformat(created_at_raw.isoformat())
+        elif isinstance(created_at_raw, str):
+            # 处理字符串格式
+            created_at = datetime.fromisoformat(created_at_raw)
+        else:
+            # 使用默认值
+            created_at = datetime.utcnow()
+
+        # 处理updated_at转换，支持neo4j.time.datetime对象
+        if hasattr(updated_at_raw, "isoformat"):
+            # 处理neo4j.time.datetime对象
+            updated_at = datetime.fromisoformat(updated_at_raw.isoformat())
+        elif isinstance(updated_at_raw, str):
+            # 处理字符串格式
+            updated_at = datetime.fromisoformat(updated_at_raw)
+        else:
+            # 使用默认值
+            updated_at = datetime.now()
+
+        # 确保id不为None
+        if not node_id:
+            # 从neo节点获取原生id并转换为字符串
+            node_id = str(
+                getattr(neo_node, "id", None) or getattr(neo_node, "element_id", None)
+            )
+
+        # 格式化节点数据
+        formatted_node_data = formatter_service.format_node(node_type, node_data)
 
         return Node(
             id=node_id,
             type=node_type,
-            properties=node_data,
+            properties=formatted_node_data,
             created_at=created_at,
             updated_at=updated_at,
         )
@@ -646,6 +706,14 @@ class QueryService:
             }) AS connections
         """
 
+        # 如果查询具体相关节点
+        # RETURN
+        #     n {.* , id: n.id, labels: labels(n)} AS node,
+        #     collect({
+        #         relationship: r {.* , id: id(r), type: type(r), from_id: n.id, to_id: related.id},
+        #         related_node: related {.* , id: related.id, labels: labels(related)}
+        #     }) AS connections
+
         async with neo4j_connection.get_session() as session:
             result = await session.run(query, node_id=node_id)
             record = await result.single()
@@ -660,25 +728,27 @@ class QueryService:
         node = self._convert_node(neo_node)
 
         # 转换关联关系和相关节点
-        relationships = []
-        related_nodes = []
+        relationshipTypes = {}
+        # related_nodes = []
 
         for conn in connections:
             # 转换关系
             rel = self._convert_relationship(conn["relationship"])
-            relationships.append(rel)
+            relationshipTypes[rel.type] = relationshipTypes.get(rel.type, 0) + 1
 
             # 转换相关节点
-            related_node = self._convert_node(conn["related_node"])
-            related_nodes.append(related_node)
+            # related_node = self._convert_node(conn["related_node"])
+            # related_nodes.append(related_node)
 
         # 去重相关节点
-        unique_related_nodes = {rn.id: rn for rn in related_nodes}.values()
+        # unique_related_nodes = {
+        #     rn.id: {"type": rn.type, "count": 1} for rn in related_nodes
+        # }.values()
 
         return {
             "node": node,
-            "relationships": relationships,
-            "related_nodes": list(unique_related_nodes),
+            "relationshipTypeCounts": relationshipTypes,
+            # "connectedNodesCounts": list(unique_related_nodes),
         }
 
     async def _maybe_enhance_with_llm(self, subgraph: Subgraph) -> None:
