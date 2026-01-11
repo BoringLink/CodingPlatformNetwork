@@ -226,13 +226,14 @@ export const GraphVisualization = ({
       ...(layout === "cose"
         ? {
             componentSpacing: 150, // 增加组件间间距
-            nodeOverlap: 0, // 消除节点重叠
+            nodeOverlap: 100, // 消除节点重叠
+            avoidOverlap: true, // 避免节点重叠
             refresh: 20,
             idealEdgeLength: isMobile ? 150 : 200, // 增加节点间理想距离
-            nodeRepulsion: (_: NodeSingular) => 100000, // 增强节点间排斥力
-            edgeElasticity: (_: EdgeSingular) => 100,
+            nodeRepulsion: (_: NodeSingular) => 1000000, // 增强节点间排斥力
+            edgeElasticity: (_: EdgeSingular) => 1000,
             nestingFactor: 1.2,
-            gravity: 0.3, // 降低中心引力
+            gravity: 0.05, // 降低中心引力
             numIter: 2000, // 增加迭代次数，确保布局充分收敛
             initialTemp: 1000,
             coolingFactor: 0.99,

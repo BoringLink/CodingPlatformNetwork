@@ -24,7 +24,7 @@ class BasicInfo(BaseModel):
     age: int = Field(..., description="年龄")
     gender: str = Field(..., pattern="^(male|female|other)$", description="性别")
     school: str = Field(..., description="学校")
-    grade: str = Field(..., description="年级")
+    grade: int = Field(..., ge=1, le=9, description="年级")
 
 
 class PriorKnowledge(BaseModel):
@@ -300,7 +300,21 @@ class TeacherNodeProperties(BaseNodeProperties):
 
     teacher_id: str = Field(..., description="教师唯一标识符")
     name: str = Field(..., min_length=1, max_length=100, description="教师姓名")
+
+    # 基本信息维度
+    basic_info: BasicInfo = Field(..., description="基本信息")
+
     subject: str | None = Field(default=None, description="教学科目")
+    grades: list[int] = Field(..., min_items=1, description="教授年级数组")
+
+    @field_validator("grades")
+    @classmethod
+    def validate_grades(cls, v: list[int]) -> list[int]:
+        """验证年级数组"""
+        for grade in v:
+            if not isinstance(grade, int) or grade < 1 or grade > 9:
+                raise ValueError(f"年级必须是1-9的整数，当前值: {grade}")
+        return sorted(list(set(v)))
 
 
 class CourseNodeProperties(BaseNodeProperties):

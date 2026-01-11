@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { debounce } from "@/lib/utils";
 import {
   GraphVisualization,
   GraphVisualizationRef,
@@ -33,54 +34,24 @@ export default function GraphPage() {
   const {
     selectedNodeId,
     highlightedNodeIds,
+    pendingFilter,
+    appliedFilter,
+    setPendingFilter,
+    setAppliedFilter,
+    resetFilters,
     setSelectedNode,
     highlightNodeNeighbors,
     clearHighlighting,
   } = useGraphStore();
 
-  const [selectedNodeTypes, setSelectedNodeTypes] = useState<NodeType[]>([
-    "Student",
-    "Teacher",
-    "Course",
-    "KnowledgePoint",
-    "ErrorType",
-  ]);
-  const [selectedRelationshipTypes, setSelectedRelationshipTypes] = useState<
-    RelationshipType[]
-  >([
-    "CHAT_WITH",
-    "LIKES",
-    "TEACHES",
-    "LEARNS",
-    "CONTAINS",
-    "HAS_ERROR",
-    "RELATES_TO",
-  ]);
-
   // Apply filters to update visualization data
   const handleApplyFilters = () => {
-    // Refresh the visualization data with new filters
-    refetch();
+    setAppliedFilter({ ...pendingFilter });
   };
 
   // Reset filters to default values
   const handleResetFilters = () => {
-    setSelectedNodeTypes([
-      "Student",
-      "Teacher",
-      "Course",
-      "KnowledgePoint",
-      "ErrorType",
-    ]);
-    setSelectedRelationshipTypes([
-      "CHAT_WITH",
-      "LIKES",
-      "TEACHES",
-      "LEARNS",
-      "CONTAINS",
-      "HAS_ERROR",
-      "RELATES_TO",
-    ]);
+    resetFilters();
     refetch();
   };
 
@@ -103,8 +74,13 @@ export default function GraphPage() {
     isLoading,
     refetch,
   } = useVisualization(rootNodeId, depth, {
-    nodeTypes: selectedNodeTypes,
-    relationshipTypes: selectedRelationshipTypes,
+    nodeTypes: appliedFilter.nodeTypes,
+    relationshipTypes: appliedFilter.relationshipTypes,
+    school: appliedFilter.school,
+    grade: appliedFilter.grade,
+    class: appliedFilter.class,
+    startDate: appliedFilter.dateRange?.from,
+    endDate: appliedFilter.dateRange?.to,
   });
 
   // Fetch node details when selectedNodeId changes
@@ -178,11 +154,17 @@ export default function GraphPage() {
         <aside className="w-80 border-r bg-white dark:bg-gray-900 p-4 overflow-y-auto lg:block hidden">
           {/* Filter Panel */}
           <FilterPanel
-            selectedNodeTypes={selectedNodeTypes}
-            onNodeTypeChange={(types) => setSelectedNodeTypes(types)}
-            selectedRelationshipTypes={selectedRelationshipTypes}
+            selectedNodeTypes={pendingFilter.nodeTypes}
+            onNodeTypeChange={(types) =>
+              setPendingFilter({ ...pendingFilter, nodeTypes: types })
+            }
+            selectedRelationshipTypes={pendingFilter.relationshipTypes}
             onRelationshipTypeChange={(types) =>
-              setSelectedRelationshipTypes(types)
+              setPendingFilter({ ...pendingFilter, relationshipTypes: types })
+            }
+            dateRange={pendingFilter.dateRange}
+            onDateRangeChange={(date) =>
+              setPendingFilter({ ...pendingFilter, dateRange: date })
             }
             onApplyFilters={handleApplyFilters}
             onResetFilters={handleResetFilters}
@@ -235,7 +217,7 @@ export default function GraphPage() {
             </div>
           ) : visualizationData &&
             visualizationData.nodes.length > 0 &&
-            selectedNodeTypes.length > 0 ? (
+            appliedFilter.nodeTypes.length > 0 ? (
             <>
               <GraphVisualization
                 ref={cytoscapeRef}
@@ -277,8 +259,8 @@ export default function GraphPage() {
               onSubviewSelect={handleSubviewSelect}
               onSubviewClose={() => setShowSubviewManager(false)}
               currentFilter={{
-                nodeTypes: selectedNodeTypes,
-                relationshipTypes: selectedRelationshipTypes,
+                nodeTypes: appliedFilter.nodeTypes,
+                relationshipTypes: appliedFilter.relationshipTypes,
               }}
               isLoading={isLoading}
             />

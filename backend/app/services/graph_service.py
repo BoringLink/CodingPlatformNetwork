@@ -476,6 +476,9 @@ class GraphManagementService:
         # 添加更新时间戳
         properties["updated_at"] = datetime.utcnow().isoformat()
         
+        # 将嵌套字典扁平化为单层字典，以兼容Neo4j
+        flattened_properties = self._flatten_dict(properties)
+        
         query = """
         MATCH (n)
         WHERE n.id = $node_id
@@ -488,7 +491,7 @@ class GraphManagementService:
                 result = await session.run(
                     query,
                     node_id=node_id,
-                    properties=properties,
+                    properties=flattened_properties,
                 )
                 record = await result.single()
                 

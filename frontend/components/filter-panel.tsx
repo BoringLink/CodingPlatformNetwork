@@ -10,6 +10,7 @@ import {
   CardFooter,
 } from "./ui/card";
 import { Button } from "./ui/button";
+import { DatePicker } from "./date-picker";
 import { NodeType, RelationshipType } from "@/types/api";
 import {
   Filter,
@@ -21,14 +22,15 @@ import {
   Check,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { DateRange } from "react-day-picker";
 
 interface FilterPanelProps {
   selectedNodeTypes: NodeType[];
   onNodeTypeChange: (nodeTypes: NodeType[]) => void;
   selectedRelationshipTypes: RelationshipType[];
   onRelationshipTypeChange: (relationshipTypes: RelationshipType[]) => void;
-  dateRange?: { start: Date; end: Date };
-  onDateRangeChange?: (range: { start: Date; end: Date } | undefined) => void;
+  dateRange?: DateRange;
+  onDateRangeChange: (date: DateRange | undefined) => void;
   onApplyFilters: () => void;
   onResetFilters: () => void;
   onCreateSubview: () => void;
@@ -108,6 +110,8 @@ export function FilterPanel({
   onNodeTypeChange,
   selectedRelationshipTypes,
   onRelationshipTypeChange,
+  dateRange,
+  onDateRangeChange,
   onApplyFilters,
   onResetFilters,
   onCreateSubview,
@@ -283,19 +287,13 @@ export function FilterPanel({
           </div>
         </div>
 
-        {/* Date Range Section (Placeholder styled) */}
-        <div className="rounded-lg border border-dashed p-3 bg-muted/30 flex items-center gap-3">
-          <div className="p-2 bg-background rounded-full border shadow-sm">
-            <CalendarClock className="h-4 w-4 text-muted-foreground" />
-          </div>
-          <div className="flex-1">
-            <p className="text-xs font-medium text-muted-foreground">
-              时间维度筛选
-            </p>
-            <p className="text-[10px] text-muted-foreground/70">
-              该功能正在开发中
-            </p>
-          </div>
+        {/* Date Range Section */}
+        <div className="flex items-center w-full">
+          <DatePicker
+            title="时间筛选"
+            dateRange={dateRange}
+            onDateRangeChange={onDateRangeChange}
+          />
         </div>
       </CardContent>
 
