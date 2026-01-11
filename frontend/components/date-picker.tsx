@@ -44,7 +44,7 @@ export function DatePicker({
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className="w-auto overflow-hidden p-0 bg-[background]"
+          className="w-auto overflow-hidden p-0 bg-white dark:bg-black"
           align="start"
         >
           <Calendar
