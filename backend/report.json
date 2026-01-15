@@ -4,9 +4,7 @@
     "node_type_distribution": {
       "Student": 5,
       "Teacher": 3,
-      "Course": 5,
       "KnowledgePoint": 15,
-      "ErrorType": 8,
       "Subview": 2
     },
     "total_relationships": 125,
@@ -14,7 +12,6 @@
       "LEARNS": 32,
       "TEACHES": 7,
       "CONTAINS": 28,
-      "HAS_ERROR": 12,
       "RELATES_TO": 35,
       "CHAT_WITH": 8,
       "LIKES": 3
@@ -192,40 +189,25 @@
         "student_id": "S002",
         "student_name": "学生2",
         "connection_count": 3,
-        "connected_students": [
-          "S001",
-          "S003",
-          "S004"
-        ]
+        "connected_students": ["S001", "S003", "S004"]
       },
       {
         "student_id": "S003",
         "student_name": "学生3",
         "connection_count": 3,
-        "connected_students": [
-          "S001",
-          "S002",
-          "S004"
-        ]
+        "connected_students": ["S001", "S002", "S004"]
       },
       {
         "student_id": "S001",
         "student_name": "学生1",
         "connection_count": 3,
-        "connected_students": [
-          "S002",
-          "S003",
-          "S005"
-        ]
+        "connected_students": ["S002", "S003", "S005"]
       },
       {
         "student_id": "S004",
         "student_name": "学生4",
         "connection_count": 2,
-        "connected_students": [
-          "S002",
-          "S003"
-        ]
+        "connected_students": ["S002", "S003"]
       }
     ],
     "isolated_students": [],
