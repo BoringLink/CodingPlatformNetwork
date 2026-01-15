@@ -85,12 +85,10 @@ FastAPI 应用入口，包含：
 
 #### 节点模型 (nodes.py)
 
-- `NodeType`: 节点类型枚举（Student, Teacher, Course, KnowledgePoint, ErrorType）
+- `NodeType`: 节点类型枚举（Student, Teacher, KnowledgePoint）
 - `StudentNodeProperties`: 学生节点属性
 - `TeacherNodeProperties`: 教师节点属性
-- `CourseNodeProperties`: 课程节点属性
 - `KnowledgePointNodeProperties`: 知识点节点属性
-- `ErrorTypeNodeProperties`: 错误类型节点属性
 - `Node`: 通用节点模型
 
 #### 关系模型 (relationships.py)
@@ -101,7 +99,6 @@ FastAPI 应用入口，包含：
 - `TeachesProperties`: 教学互动关系
 - `LearnsProperties`: 学习关系
 - `ContainsProperties`: 包含关系
-- `HasErrorProperties`: 错误关系
 - `RelatesToProperties`: 关联关系
 - `Relationship`: 通用关系模型
 
