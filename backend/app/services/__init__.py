@@ -1,6 +1,6 @@
 """业务逻辑服务包"""
 
-from app.services.graph_service import GraphManagementService, graph_service
+from app.services.graph_service import GraphService, graph_service
 from app.services.llm_service import (
     LLMAnalysisService,
     llm_service,
@@ -8,7 +8,6 @@ from app.services.llm_service import (
     InteractionAnalysis,
     ErrorAnalysis,
     KnowledgePoint,
-    CourseContext,
     SentimentType,
     DifficultyLevel,
 )
@@ -40,7 +39,6 @@ from app.services.report_service import (
     ReportFormat,
     GraphStatistics,
     StudentPerformanceAnalysis,
-    CourseEffectivenessAnalysis,
     InteractionPatternAnalysis,
     AnalysisReport,
 )
@@ -64,7 +62,6 @@ __all__ = [
     "InteractionAnalysis",
     "ErrorAnalysis",
     "KnowledgePoint",
-    "CourseContext",
     "SentimentType",
     "DifficultyLevel",
     "CacheService",
@@ -92,7 +89,6 @@ __all__ = [
     "ReportFormat",
     "GraphStatistics",
     "StudentPerformanceAnalysis",
-    "CourseEffectivenessAnalysis",
     "InteractionPatternAnalysis",
     "AnalysisReport",
     "QueryService",

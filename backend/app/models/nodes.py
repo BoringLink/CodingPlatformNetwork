@@ -2,7 +2,8 @@
 
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any
+
 from pydantic import BaseModel, Field, field_validator
 
 from app.models.base import BaseNodeProperties, TimestampMixin
@@ -13,18 +14,15 @@ class NodeType(str, Enum):
 
     STUDENT = "Student"
     TEACHER = "Teacher"
-    COURSE = "Course"
     KNOWLEDGE_POINT = "KnowledgePoint"
-    ERROR_TYPE = "ErrorType"
 
 
 class BasicInfo(BaseModel):
     """基本信息维度"""
 
-    age: int = Field(..., description="年龄")
-    gender: str = Field(..., pattern="^(male|female|other)$", description="性别")
     school: str = Field(..., description="学校")
     grade: int = Field(..., ge=1, le=9, description="年级")
+    class_name: str = Field(..., description="班级")
 
 
 class PriorKnowledge(BaseModel):
@@ -82,9 +80,7 @@ class LearningStyle(BaseModel):
     cooperative_competitive: int = Field(..., ge=-5, le=5, description="合作-竞争偏好")
     structured_flexible: int = Field(..., ge=-5, le=5, description="结构化-灵活偏好")
     concrete_abstract: int = Field(..., ge=-5, le=5, description="具体-抽象偏好")
-    field_dependent_independent: int = Field(
-        ..., ge=-5, le=5, description="场依存-场独立"
-    )
+    field_dependent_independent: int = Field(..., ge=-5, le=5, description="场依存-场独立")
     impulsive_reflective: int = Field(..., ge=-5, le=5, description="冲动-反思偏好")
 
 
@@ -245,11 +241,13 @@ class LearningBehaviorData(BaseModel):
 class StudentNodeProperties(BaseNodeProperties):
     """学生节点属性"""
 
-    student_id: str = Field(..., description="学生唯一标识符")
+    id: str = Field(..., description="学生唯一标识符")
     name: str = Field(..., min_length=1, max_length=100, description="学生姓名")
 
-    # 基本信息维度
-    basic_info: BasicInfo = Field(..., description="基本信息")
+    # 基本信息维度 - 扁平化属性
+    basic_info_school: str = Field(..., description="学校")
+    basic_info_grade: int = Field(..., ge=1, le=9, description="年级")
+    basic_info_class: str = Field(..., description="班级")
 
     # 先前知识储备维度
     prior_knowledge: PriorKnowledge = Field(..., description="先前知识储备")
@@ -273,38 +271,33 @@ class StudentNodeProperties(BaseNodeProperties):
     human_ai_trust: HumanAITrust = Field(..., description="人机信任度")
 
     # 学习方法倾向维度
-    learning_method_preference: LearningMethodPreference = Field(
-        ..., description="学习方法倾向"
-    )
+    learning_method_preference: LearningMethodPreference = Field(..., description="学习方法倾向")
 
     # 学习态度维度
     learning_attitude: LearningAttitude = Field(..., description="学习态度")
 
     # 学习行为数据维度
-    learning_behavior_data: LearningBehaviorData = Field(
-        ..., description="学习行为数据"
-    )
+    learning_behavior_data: LearningBehaviorData = Field(..., description="学习行为数据")
 
     # 元数据和系统字段
     enrollment_date: datetime | None = Field(default=None, description="入学日期")
-    last_updated: datetime = Field(
-        default_factory=datetime.now, description="最后更新时间"
-    )
+    last_updated: datetime = Field(default_factory=datetime.now, description="最后更新时间")
     profile_completeness: float = Field(..., ge=0, le=1, description="画像完整度")
     data_version: str = Field(..., description="数据版本")
-    metadata: Optional[Dict[str, Any]] = Field(default=None, description="元数据")
+    metadata: dict[str, Any] | None = Field(default=None, description="元数据")
 
 
 class TeacherNodeProperties(BaseNodeProperties):
     """教师节点属性"""
 
-    teacher_id: str = Field(..., description="教师唯一标识符")
+    id: str = Field(..., description="教师唯一标识符")
     name: str = Field(..., min_length=1, max_length=100, description="教师姓名")
 
-    # 基本信息维度
-    basic_info: BasicInfo = Field(..., description="基本信息")
+    # 基本信息维度 - 扁平化属性
+    basic_info_school: str = Field(..., description="学校")
+    basic_info_grade: int = Field(..., ge=1, le=9, description="年级")
+    basic_info_class: str = Field(..., description="班级")
 
-    subject: str | None = Field(default=None, description="教学科目")
     grades: list[int] = Field(..., min_items=1, description="教授年级数组")
 
     @field_validator("grades")
@@ -317,51 +310,13 @@ class TeacherNodeProperties(BaseNodeProperties):
         return sorted(list(set(v)))
 
 
-class CourseNodeProperties(BaseNodeProperties):
-    """课程节点属性"""
-
-    course_id: str = Field(..., description="课程唯一标识符")
-    name: str = Field(..., min_length=1, max_length=200, description="课程名称")
-    description: str | None = Field(default=None, description="课程描述")
-    difficulty: str | None = Field(default=None, description="难度级别")
-
-    @field_validator("difficulty")
-    @classmethod
-    def validate_difficulty(cls, v: Optional[str]) -> Optional[str]:
-        """验证难度级别"""
-        if v is not None:
-            valid_levels = ["beginner", "intermediate", "advanced"]
-            if v not in valid_levels:
-                raise ValueError(f"difficulty must be one of {valid_levels}")
-        return v
-
-
 class KnowledgePointNodeProperties(BaseNodeProperties):
     """知识点节点属性"""
 
-    knowledge_point_id: str = Field(..., description="知识点唯一标识符")
+    id: str = Field(..., description="知识点唯一标识符")
     name: str = Field(..., min_length=1, max_length=200, description="知识点名称")
     description: str = Field(..., description="知识点描述")
     category: str | None = Field(default=None, description="知识点分类")
-
-
-class ErrorTypeNodeProperties(BaseNodeProperties):
-    """错误类型节点属性"""
-
-    error_type_id: str = Field(..., description="错误类型唯一标识符")
-    name: str = Field(..., min_length=1, max_length=200, description="错误类型名称")
-    description: str = Field(..., description="错误类型描述")
-    severity: str | None = Field(default=None, description="严重程度")
-
-    @field_validator("severity")
-    @classmethod
-    def validate_severity(cls, v: Optional[str]) -> Optional[str]:
-        """验证严重程度"""
-        if v is not None:
-            valid_severities = ["low", "medium", "high"]
-            if v not in valid_severities:
-                raise ValueError(f"severity must be one of {valid_severities}")
-        return v
 
 
 class Node(TimestampMixin):
@@ -369,8 +324,8 @@ class Node(TimestampMixin):
 
     id: str = Field(..., description="节点 ID")
     type: NodeType = Field(..., description="节点类型")
-    properties: Dict[str, Any] = Field(..., description="节点属性")
+    properties: dict[str, Any] = Field(..., description="节点属性")
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """将节点模型转换为字典"""
         return self.model_dump()

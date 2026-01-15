@@ -5,10 +5,11 @@
 
 from __future__ import annotations
 
-from datetime import datetime
-from neo4j.time import DateTime
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime
+from typing import Any
+
 import structlog
+from neo4j.time import DateTime
 
 from app.database import neo4j_connection
 from app.models.nodes import Node, NodeType
@@ -22,15 +23,21 @@ class NodeFilter:
 
     def __init__(
         self,
-        types: Optional[List[NodeType]] = None,
-        properties: Optional[Dict[str, Any]] = None,
-        date_range: Optional[Dict[str, Any]] = None,
-        limit: Optional[int] = None,
-        offset: Optional[int] = None,
+        types: list[NodeType] | None = None,
+        properties: dict[str, Any] | None = None,
+        date_range: dict[str, Any] | None = None,
+        school: str | None = None,
+        grade: int | None = None,
+        class_: str | None = None,
+        limit: int | None = None,
+        offset: int | None = None,
     ):
         self.types = types
         self.properties = properties or {}
         self.date_range = date_range
+        self.school = school
+        self.grade = grade
+        self.class_ = class_
         self.limit = limit
         self.offset = offset or 0
 
@@ -40,14 +47,14 @@ class RelationshipFilter:
 
     def __init__(
         self,
-        types: Optional[List[RelationshipType]] = None,
-        from_node_id: Optional[str] = None,
-        to_node_id: Optional[str] = None,
-        properties: Optional[Dict[str, Any]] = None,
-        min_weight: Optional[float] = None,
-        max_weight: Optional[float] = None,
-        limit: Optional[int] = None,
-        offset: Optional[int] = None,
+        types: list[RelationshipType] | None = None,
+        from_node_id: str | None = None,
+        to_node_id: str | None = None,
+        properties: dict[str, Any] | None = None,
+        min_weight: float | None = None,
+        max_weight: float | None = None,
+        limit: int | None = None,
+        offset: int | None = None,
     ):
         self.types = types
         self.from_node_id = from_node_id
@@ -64,13 +71,19 @@ class GraphFilter:
 
     def __init__(
         self,
-        node_types: Optional[List[NodeType]] = None,
-        relationship_types: Optional[List[RelationshipType]] = None,
-        date_range: Optional[Dict[str, Any]] = None,
+        node_types: list[NodeType] | None = None,
+        relationship_types: list[RelationshipType] | None = None,
+        date_range: dict[str, Any] | None = None,
+        school: str | None = None,
+        grade: int | None = None,
+        class_: str | None = None,
     ):
         self.node_types = node_types
         self.relationship_types = relationship_types
         self.date_range = date_range
+        self.school = school
+        self.grade = grade
+        self.class_ = class_
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, GraphFilter):
@@ -79,6 +92,9 @@ class GraphFilter:
             self.node_types == other.node_types
             and self.relationship_types == other.relationship_types
             and self.date_range == other.date_range
+            and self.school == other.school
+            and self.grade == other.grade
+            and self.class_ == other.class_
         )
 
 
@@ -87,9 +103,9 @@ class Subgraph:
 
     def __init__(
         self,
-        nodes: List[Node],
-        relationships: List[Relationship],
-        metadata: Optional[Dict[str, Any]] = None,
+        nodes: list[Node],
+        relationships: list[Relationship],
+        metadata: dict[str, Any] | None = None,
     ):
         self.nodes = nodes
         self.relationships = relationships
@@ -107,7 +123,7 @@ class Subgraph:
             and self.metadata == other.metadata
         )
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """将子图转换为字典格式"""
         return {
             "nodes": [node.to_dict() for node in self.nodes],
@@ -121,8 +137,8 @@ class Path:
 
     def __init__(
         self,
-        nodes: List[Node],
-        relationships: List[Relationship],
+        nodes: list[Node],
+        relationships: list[Relationship],
         length: int,
     ):
         self.nodes = nodes
@@ -133,12 +149,12 @@ class Path:
 class QueryService:
     """查询服务"""
 
-    async def query_nodes(self, filter: NodeFilter) -> List[Node]:
+    async def query_nodes(self, filter: NodeFilter) -> list[Node]:
         """按过滤条件查询节点"""
 
         query = "MATCH (n)"
-        where_clauses: List[str] = []
-        params: Dict[str, Any] = {}
+        where_clauses: list[str] = []
+        params: dict[str, Any] = {}
 
         if filter.types:
             params["types"] = [t.value for t in filter.types]
@@ -149,21 +165,44 @@ class QueryService:
             where_clauses.append(f"n.{key} = ${param_name}")
             params[param_name] = value
 
+        if filter.date_range:
+            params["start_date"] = filter.date_range.get("start")
+            params["end_date"] = filter.date_range.get("end")
+            where_clauses.append("n.created_at >= $start_date AND n.created_at <= $end_date")
+
+        # 学校筛选 (单值)
+        if filter.school:
+            params["school"] = filter.school
+            where_clauses.append("n.basic_info_school = $school")
+
+        # 年级筛选 (单值，但节点属性是数组，使用 IN 匹配)
+        if filter.grade is not None:
+            params["grade"] = filter.grade
+            where_clauses.append("$grade IN n.basic_info_grade")
+
+        # 班级筛选 (单值)
+        if filter.class_:
+            params["class_"] = filter.class_
+            where_clauses.append("n.basic_info_class = $class_")
+
         if where_clauses:
             query += " WHERE " + " AND ".join(where_clauses)
 
         query += " RETURN n, labels(n) AS labels"
 
+        # 分页支持
         if filter.limit is not None:
             query += " SKIP $offset LIMIT $limit"
             params["offset"] = filter.offset
             params["limit"] = filter.limit
+        else:
+            query += " LIMIT 100"  # 默认限制
 
         async with neo4j_connection.get_session() as session:
             result = await session.run(query, **params)
             records = await result.data()
 
-        nodes: List[Node] = []
+        nodes: list[Node] = []
         for record in records:
             neo4j_node = record["n"]
             node_data = dict(neo4j_node)
@@ -187,24 +226,40 @@ class QueryService:
             node_id = node_data.pop("id", None)
             if not node_id:
                 node_id = str(
-                    getattr(neo4j_node, "id", None)
-                    or getattr(neo4j_node, "element_id", None)
+                    getattr(neo4j_node, "id", None) or getattr(neo4j_node, "element_id", None)
                 )
 
-            # 如果找不到有效的 NodeType，跳过该节点
-            if (
-                not node_type_value
-                or node_type_value not in NodeType._value2member_map_
-            ):
-                logger.warning(
-                    "skipping_node_with_invalid_type",
-                    node_id=node_id,
-                    labels=labels,
-                    type=node_type_value,
-                )
-                continue
+            # 不再需要处理basic_info字段，已改为扁平化属性
 
-            node_type = NodeType(node_type_value)
+            # 安全地转换为NodeType枚举，避免抛出ValueError
+            try:
+                node_type = NodeType(node_type_value)
+            except ValueError:
+                # 如果node_type_value不是有效的NodeType，尝试从字符串中提取有效的类型
+                node_type_str = str(node_type_value).lower()
+
+                # 映射常见的类型名称变体到有效的NodeType
+                type_mapping = {
+                    "teacher": NodeType.TEACHER,
+                    "student": NodeType.STUDENT,
+                    "knowledge": NodeType.KNOWLEDGE_POINT,
+                    "knowledgepoint": NodeType.KNOWLEDGE_POINT,
+                }
+
+                # 查找匹配的类型
+                for key, value in type_mapping.items():
+                    if key in node_type_str:
+                        node_type = value
+                        break
+                else:
+                    # 如果没有找到匹配的类型，使用默认类型
+                    logger.warning(
+                        "invalid_node_type_fallback",
+                        node_id=node_id,
+                        node_type_value=node_type_value,
+                        default_type=NodeType.STUDENT.value,
+                    )
+                    node_type = NodeType.STUDENT
 
             created_at = (
                 datetime.fromisoformat(created_at_raw)
@@ -243,15 +298,9 @@ class QueryService:
 
             if filter.date_range:
                 start = (
-                    filter.date_range.get("start")
-                    if isinstance(filter.date_range, dict)
-                    else None
+                    filter.date_range.get("start") if isinstance(filter.date_range, dict) else None
                 )
-                end = (
-                    filter.date_range.get("end")
-                    if isinstance(filter.date_range, dict)
-                    else None
-                )
+                end = filter.date_range.get("end") if isinstance(filter.date_range, dict) else None
                 if start and created_at < start:
                     continue
                 if end and created_at > end:
@@ -270,14 +319,12 @@ class QueryService:
         logger.info("query_nodes_completed", count=len(nodes))
         return nodes
 
-    async def query_relationships(
-        self, filter: RelationshipFilter
-    ) -> List[Relationship]:
+    async def query_relationships(self, filter: RelationshipFilter) -> list[Relationship]:
         """按过滤条件查询关系"""
 
         query = "MATCH (from)-[r]->(to)"
-        where_clauses: List[str] = []
-        params: Dict[str, Any] = {}
+        where_clauses: list[str] = []
+        params: dict[str, Any] = {}
 
         if filter.types:
             params["types"] = [t.value for t in filter.types]
@@ -296,6 +343,11 @@ class QueryService:
             where_clauses.append(f"r.{key} = ${param_name}")
             params[param_name] = value
 
+        if filter.date_range:
+            params["start_date"] = filter.date_range.get("start")
+            params["end_date"] = filter.date_range.get("end")
+            where_clauses.append("r.created_at >= $start_date AND r.created_at <= $end_date")
+
         if where_clauses:
             query += " WHERE " + " AND ".join(where_clauses)
 
@@ -310,7 +362,7 @@ class QueryService:
             result = await session.run(query, **params)
             records = await result.data()
 
-        relationships: List[Relationship] = []
+        relationships: list[Relationship] = []
         for record in records:
             rel_data = dict(record["rel"])
             rel_id_raw = rel_data.pop("id", None)
@@ -322,15 +374,9 @@ class QueryService:
 
             weight = rel_data.get("weight")
 
-            if filter.min_weight is not None and (
-                weight is None or weight < filter.min_weight
-            ):
+            if filter.min_weight is not None and (weight is None or weight < filter.min_weight):
                 continue
-            if (
-                filter.max_weight is not None
-                and weight is not None
-                and weight > filter.max_weight
-            ):
+            if filter.max_weight is not None and weight is not None and weight > filter.max_weight:
                 continue
 
             relationships.append(
@@ -351,96 +397,122 @@ class QueryService:
         self,
         root_node_id: str,
         depth: int,
-        filter: Optional[GraphFilter] = None,
-        limit: Optional[int] = None,
+        filter: GraphFilter | None = None,
+        max_nodes: int = 1000,
+        max_relationships: int = 5000,
     ) -> Subgraph:
-        """查询指定深度的子图"""
+        """查询指定深度的子图
+
+        Args:
+            root_node_id: 根节点ID
+            depth: 查询深度
+            filter: 筛选条件
+            max_nodes: 最大节点数量限制
+            max_relationships: 最大关系数量限制
+        """
 
         if depth < 1:
-            raise ValueError("Depth must be at least 1")
+            raise ValueError("图深度应该至少为 1")
+        if max_nodes <= 0:
+            raise ValueError("最大节点数量必须大于0")
+        if max_relationships <= 0:
+            raise ValueError("最大关系数量必须大于0")
 
-        # 先检查根节点是否存在，支持通过id属性匹配
+        # 先检查根节点是否存在，通过id属性匹配
         async with neo4j_connection.get_session() as session:
+            exists_query = """
+                MATCH (n)
+                WHERE n.id = $root_id
+                RETURN count(n) as cnt
+            """
             exists_result = await session.run(
-                "MATCH (n) WHERE n.id = $root_id RETURN count(n) as cnt",
+                exists_query,
                 root_id=root_node_id,
             )
             exists_record = await exists_result.single()
+
+            # 如果匹配失败，返回空的子图
             if not exists_record or exists_record["cnt"] == 0:
-                # 如果根节点不存在，返回空的子图
+                logger.warning(
+                    "root_node_not_found",
+                    root_node_id=root_node_id,
+                    query=exists_query,
+                )
                 return Subgraph(
                     nodes=[],
                     relationships=[],
                     metadata={"node_count": 0, "relationship_count": 0},
                 )
 
-            # 构建基础查询，使用id属性匹配
+            params = {
+                "root_id": root_node_id,
+                "max_nodes": max_nodes,
+                "max_relationships": max_relationships,
+            }
+
+            # 构建基础查询，通过id属性匹配根节点
             query = f"""
                 MATCH (root {{id: $root_id}})
-                MATCH p = (root)-[*0..{depth}]-(related)
-                WITH collect(p) AS paths
-                WITH 
-                reduce(flat_nodes = [], path IN paths | flat_nodes + nodes(path)) AS flat_nodes,
-                reduce(flat_rels = [], path IN paths | flat_rels + relationships(path)) AS flat_rels
-                UNWIND flat_nodes AS node
-                WITH DISTINCT node, flat_rels
-                WITH collect(node {{.*, id: node.id, labels: labels(node)}}) AS nodes, flat_rels
-                UNWIND flat_rels AS rel
-                WITH DISTINCT rel, nodes
+                CALL {{
+                  WITH root
+                  MATCH p = (root)-[*0..{depth}]-(node)
+                  RETURN p LIMIT $max_relationships
+                }}
+                UNWIND nodes(p) AS n
+                WITH DISTINCT n LIMIT $max_nodes
+                WITH collect(n) AS all_nodes
+                WITH all_nodes, [n IN all_nodes | n {{.*, id: n.id, labels: labels(n)}}] AS nodes
+                
+                MATCH (a)-[r]-(b)
+                WHERE a IN all_nodes AND b IN all_nodes
+                WITH r, a, b, nodes
+                LIMIT $max_relationships
+                
                 RETURN 
-                nodes,
-                collect(rel {{.*, id: elementId(rel), type: type(rel), source: startNode(rel).id, target: endNode(rel).id}}) AS rels
-                """
-
-            # 条件性添加 LIMIT 子句
-            if limit is not None:
-                query += " LIMIT $limit"
-
-            # 准备参数
-            params = {"root_id": root_node_id}
-            if limit is not None:
-                params["limit"] = limit
+                  nodes,
+                  collect(r {{.*, 
+                    id: elementId(r), 
+                    type: type(r), 
+                    source: a.id, 
+                    target: b.id}}) AS rels
+            """
 
             result = await session.run(query, **params)
             records = await result.data()
 
-        node_map: Dict[str, Node] = {}
-        rel_map: Dict[str, Relationship] = {}
+        node_map: dict[str, Node] = {}
+        rel_map: dict[str, Relationship] = {}
 
-        # 1. 处理子图查询结果
+        # 1. 处理子图查询结果，限制节点和关系数量
         for record in records:
+            # 处理节点
             for neo_node in record.get("nodes", []):
+                if len(node_map) >= max_nodes:
+                    break
+
                 node = self._convert_node(neo_node)
-                if self._node_passes_filter(node, filter):
+
+                # 确保根节点不会被过滤掉，无论它是否满足过滤条件
+                # 这是因为根节点是查询的起点，用户明确指定了要查看该节点
+                if node.id == root_node_id or self._node_passes_filter(node, filter):
                     node_map[node.id] = node
 
+            # 处理关系
             for neo_rel in record.get("rels", []):
+                if len(rel_map) >= max_relationships:
+                    break
+
                 rel = self._convert_relationship(neo_rel)
                 if self._relationship_passes_filter(rel, filter):
-                    rel_map[rel.id] = rel
+                    # 确保关系两端都在节点集合中
+                    if rel.from_node_id in node_map and rel.to_node_id in node_map:
+                        rel_map[rel.id] = rel
 
-        # 2. 添加所有符合筛选条件的节点（包括孤立节点）
-        all_nodes_filter = NodeFilter(
-            types=filter.node_types if filter else None,
-            limit=None,  # 不限制数量，确保获取所有符合条件的节点
-        )
-        all_matching_nodes = await self.query_nodes(all_nodes_filter)
+            if len(node_map) >= max_nodes and len(rel_map) >= max_relationships:
+                break
 
-        # 合并所有符合条件的节点
-        for node in all_matching_nodes:
-            if self._node_passes_filter(node, filter):
-                node_map[node.id] = node
-
-        # 3. 如果有节点过滤，确保关系两端都在节点集合中
-        if filter and filter.node_types:
-            rel_map = {
-                rel_id: rel
-                for rel_id, rel in rel_map.items()
-                if rel.from_node_id in node_map and rel.to_node_id in node_map
-            }
-
-        nodes = list(node_map.values())
-        relationships = list(rel_map.values())
+        nodes = list(node_map.values())[:max_nodes]
+        relationships = list(rel_map.values())[:max_relationships]
 
         subgraph = Subgraph(
             nodes=nodes,
@@ -448,17 +520,18 @@ class QueryService:
             metadata={
                 "node_count": len(nodes),
                 "relationship_count": len(relationships),
+                "max_nodes": max_nodes,
+                "max_relationships": max_relationships,
+                "depth": depth,
             },
         )
-
-        # LLM 增强：可选，失败时忽略
-        # await self._maybe_enhance_with_llm(subgraph)
 
         logger.info(
             "query_subgraph_completed",
             node_count=len(nodes),
             relationship_count=len(relationships),
-            include_isolated_nodes=True,
+            max_nodes=max_nodes,
+            max_relationships=max_relationships,
         )
         return subgraph
 
@@ -468,15 +541,15 @@ class QueryService:
         to_node_id: str,
         max_depth: int,
         limit: int = 5,
-        relationship_types: Optional[List[RelationshipType]] = None,
-    ) -> List[Path]:
+        relationship_types: list[RelationshipType] | None = None,
+    ) -> list[Path]:
         """查找两节点之间的路径"""
 
         if max_depth < 1:
             raise ValueError("Max depth must be at least 1")
 
         where_rel = ""
-        params: Dict[str, Any] = {
+        params: dict[str, Any] = {
             "from_id": from_node_id,
             "to_id": to_node_id,
             "limit": limit,
@@ -484,9 +557,7 @@ class QueryService:
 
         if relationship_types:
             params["rel_types"] = [rt.value for rt in relationship_types]
-            where_rel = (
-                " WHERE ALL(rt IN relationships(p) WHERE type(rt) IN $rel_types)"
-            )
+            where_rel = " WHERE ALL(rt IN relationships(p) WHERE type(rt) IN $rel_types)"
 
         query = (
             f"MATCH p=(from {{id: $from_id}})-[*..{max_depth}]-(to {{id: $to_id}})"
@@ -503,12 +574,10 @@ class QueryService:
             result = await session.run(query, **params)
             records = await result.data()
 
-        paths: List[Path] = []
+        paths: list[Path] = []
         for record in records:
             nodes = [self._convert_node(n) for n in record.get("nodes", [])]
-            relationships = [
-                self._convert_relationship(r) for r in record.get("rels", [])
-            ]
+            relationships = [self._convert_relationship(r) for r in record.get("rels", [])]
             paths.append(
                 Path(
                     nodes=nodes,
@@ -521,22 +590,44 @@ class QueryService:
         return paths
 
     def _convert_node(self, neo_node: Any) -> Node:
-        from app.services.formatter_service import formatter_service
-
         node_data = dict(neo_node)
         node_id = node_data.pop("id", None)
         created_at_raw = node_data.pop("created_at", None)
         updated_at_raw = node_data.pop("updated_at", None)
-        labels = list(getattr(neo_node, "labels", []))
+        labels = node_data.pop("labels", [])
         node_type_value = None
 
+        # 从labels中提取有效的NodeType
         if labels:
-            node_type_value = next(
-                (lbl for lbl in labels if lbl in NodeType._value2member_map_),
-                labels[0],
-            )
+            # 遍历所有labels，找到第一个有效的NodeType
+            for label in labels:
+                if label in NodeType._value2member_map_:
+                    node_type_value = label
+                    break
+
+        # 如果labels中没有找到，尝试从节点属性中获取
         if not node_type_value:
             node_type_value = node_data.get("type")
+
+        # 如果仍然没有找到，尝试从node_data中获取类型信息
+        if not node_type_value:
+            # 检查是否有特定的类型标识属性
+            for key in [
+                "teacher_id",
+                "student_id",
+                "course_id",
+                "knowledge_point_id",
+                "error_type_id",
+            ]:
+                if key in node_data:
+                    # 根据属性名推断节点类型
+                    if "teacher" in key:
+                        node_type_value = "Teacher"
+                    elif "student" in key:
+                        node_type_value = "Student"
+                    elif "knowledge" in key:
+                        node_type_value = "KnowledgePoint"
+                    break
 
         if not node_type_value:
             logger.warning(
@@ -545,7 +636,20 @@ class QueryService:
                 labels=labels,
                 properties=list(node_data.keys()),
             )
-            node_type_value = NodeType.STUDENT.value
+            # 保留原labels作为类型，以便调试
+            node_type_value = labels[0] if labels else NodeType.STUDENT.value
+
+        # 确保node_type_value是有效的NodeType
+        if node_type_value not in NodeType._value2member_map_:
+            logger.warning(
+                "invalid_node_type",
+                node_id=node_id,
+                node_type_value=node_type_value,
+                labels=labels,
+            )
+            # 尝试从labels中获取第一个有效类型，如果没有则使用Student作为默认值
+            valid_types = [lbl for lbl in labels if lbl in NodeType._value2member_map_]
+            node_type_value = valid_types[0] if valid_types else NodeType.STUDENT.value
 
         node_type = NodeType(node_type_value)
 
@@ -574,17 +678,12 @@ class QueryService:
         # 确保id不为None
         if not node_id:
             # 从neo节点获取原生id并转换为字符串
-            node_id = str(
-                getattr(neo_node, "id", None) or getattr(neo_node, "element_id", None)
-            )
-
-        # 格式化节点数据
-        formatted_node_data = formatter_service.format_node(node_type, node_data)
+            node_id = str(getattr(neo_node, "id", None))
 
         return Node(
             id=node_id,
             type=node_type,
-            properties=formatted_node_data,
+            properties=node_data,
             created_at=created_at,
             updated_at=updated_at,
         )
@@ -592,40 +691,40 @@ class QueryService:
     def _convert_relationship(self, rel: Any) -> Relationship:
         # Prefer dictionary payloads produced by Cypher projections
         if isinstance(rel, dict):
-            rel_type_raw = rel.get("type") or rel.get("label")
-            if rel_type_raw is None:
-                raise ValueError("Relationship missing type/label")
+            # 处理关系类型，确保它始终有值
+            rel_type_raw = rel.get("type")
+            if not rel_type_raw:
+                # 如果关系没有类型，使用默认类型
+                rel_type_raw = RelationshipType.RELATES_TO.value
 
-            from_id = rel.get("from_id") or rel.get("start") or rel.get("source")
-            to_id = rel.get("to_id") or rel.get("end") or rel.get("target")
-            if from_id is None or to_id is None:
-                raise ValueError("Relationship missing endpoints")
+            # 处理关系端点，确保它们始终有值
+            from_id = rel.get("source") or rel.get("from_id") or rel.get("start") or "unknown"
+            to_id = rel.get("target") or rel.get("to_id") or rel.get("end") or "unknown"
 
-            rel_id_raw = rel.get("id") or rel.get("element_id")
+            rel_id_raw = rel.get("id")
+
+            # 过滤掉不需要的属性
             props = {
                 k: v
                 for k, v in rel.items()
-                if k
-                not in {
-                    "id",
-                    "element_id",
-                    "type",
-                    "label",
-                    "from_id",
-                    "to_id",
-                    "start",
-                    "end",
-                    "source",
-                    "target",
-                }
+                if k not in {"id", "type", "source", "target", "from_id", "to_id", "start", "end"}
             }
 
-            rel_type = (
-                rel_type_raw
-                if isinstance(rel_type_raw, RelationshipType)
-                else RelationshipType(rel_type_raw)
-            )
+            # 安全地转换为RelationshipType枚举，避免抛出ValueError
+            try:
+                rel_type = RelationshipType(rel_type_raw)
+            except ValueError:
+                # 如果rel_type_raw不是有效的RelationshipType，使用RELATES_TO作为默认类型
+                # 因为RELATES_TO是最通用的关系类型，适合表示任何未定义的关系
+                logger.warning(
+                    "invalid_relationship_type",
+                    rel_id=rel_id_raw,
+                    rel_type=rel_type_raw,
+                )
+                rel_type = RelationshipType.RELATES_TO
+
             rel_id = str(rel_id_raw) if rel_id_raw is not None else None
+
             return Relationship(
                 id=rel_id,
                 type=rel_type,
@@ -635,55 +734,88 @@ class QueryService:
                 weight=props.get("weight") if props else None,
             )
 
-        # Fallback for raw Neo4j relationship objects (when no projection applied)
-        if neo4j.Relationship is not None and isinstance(rel, neo4j.Relationship):  # type: ignore[attr-defined]
-            rel_data = dict(rel)
-            rel_id_raw = getattr(rel, "id", None)
-            rel_type = RelationshipType(getattr(rel, "type"))
-            from_id = rel.start_node.get("id")  # type: ignore[attr-defined]
-            to_id = rel.end_node.get("id")  # type: ignore[attr-defined]
-            if from_id is None or to_id is None:
-                raise ValueError("Relationship missing endpoints")
-
-            rel_id = str(rel_id_raw) if rel_id_raw is not None else None
-            return Relationship(
-                id=rel_id,
-                type=rel_type,
-                from_node_id=from_id,
-                to_node_id=to_id,
-                properties=rel_data or None,
-                weight=rel_data.get("weight"),
-            )
-
         raise ValueError(f"Unsupported relationship type: {type(rel)}")
 
-    def _node_passes_filter(self, node: Node, filter: Optional[GraphFilter]) -> bool:
+    def _node_passes_filter(self, node: Node, filter: GraphFilter | None) -> bool:
         if filter is None:
             return True
         # 如果node_types是列表（包括空列表），则仅返回列表中包含的节点
         if filter.node_types is not None:
             if node.type not in filter.node_types:
                 return False
+
+        # 学校/年级/班级过滤（仅对Student类型节点生效）
+        if node.type == NodeType.STUDENT:
+            props = node.properties or {}
+
+            # 学校过滤
+            if filter.school is not None:
+                node_school = props.get("basic_info_school")
+                if node_school != filter.school:
+                    return False
+
+            # 年级过滤（grade是整数，但节点中存储为数组）
+            if filter.grade is not None:
+                node_grades = props.get("basic_info_grade", [])
+                # 确保node_grades是列表
+                if not isinstance(node_grades, list):
+                    node_grades = [node_grades] if node_grades else []
+                if filter.grade not in node_grades:
+                    return False
+
+            # 班级过滤
+            if filter.class_ is not None:
+                node_class = props.get("basic_info_class")
+                if node_class != filter.class_:
+                    return False
+
         if filter.date_range:
-            start = (
-                filter.date_range.get("start")
-                if isinstance(filter.date_range, dict)
-                else None
-            )
-            end = (
-                filter.date_range.get("end")
-                if isinstance(filter.date_range, dict)
-                else None
-            )
-            if start and node.created_at < start:
+            from datetime import datetime
+
+            from dateutil import parser
+
+            def parse_date(date_str):
+                """解析各种格式的日期字符串"""
+                if not date_str:
+                    return None
+                if isinstance(date_str, datetime):
+                    return date_str
+                try:
+                    # 尝试解析ISO格式
+                    return datetime.fromisoformat(date_str.replace("Z", "+00:00"))
+                except ValueError:
+                    # 尝试解析其他格式
+                    return parser.parse(date_str)
+
+            start = filter.date_range.get("start") if isinstance(filter.date_range, dict) else None
+            end = filter.date_range.get("end") if isinstance(filter.date_range, dict) else None
+
+            # 处理字符串日期转换
+            if isinstance(start, str):
+                start = parse_date(start)
+            if isinstance(end, str):
+                end = parse_date(end)
+
+            # 确保node.created_at是带时区的datetime对象
+            if node.created_at.tzinfo is None:
+                # 添加UTC时区信息
+                node_created_at_aware = node.created_at.replace(tzinfo=UTC)
+            else:
+                node_created_at_aware = node.created_at
+
+            # 确保比较的日期也是带时区的
+            if start and start.tzinfo is None:
+                start = start.replace(tzinfo=UTC)
+            if end and end.tzinfo is None:
+                end = end.replace(tzinfo=UTC)
+
+            if start and node_created_at_aware < start:
                 return False
-            if end and node.created_at > end:
+            if end and node_created_at_aware > end:
                 return False
         return True
 
-    def _relationship_passes_filter(
-        self, rel: Relationship, filter: Optional[GraphFilter]
-    ) -> bool:
+    def _relationship_passes_filter(self, rel: Relationship, filter: GraphFilter | None) -> bool:
         if filter is None:
             return True
         # 如果relationship_types是列表（包括空列表），则仅返回列表中包含的关系
@@ -692,7 +824,15 @@ class QueryService:
                 return False
         return True
 
-    async def query_node_details(self, node_id: str) -> Optional[Dict[str, Any]]:
+    async def run_cypher_query(
+        self, query: str, params: dict[str, Any] | None = None
+    ) -> list[dict[str, Any]]:
+        """执行Cypher查询并返回结果"""
+        async with neo4j_connection.get_session() as session:
+            result = await session.run(query, **(params or {}))
+            return await result.data()
+
+    async def query_node_details(self, node_id: str) -> dict[str, Any] | None:
         """查询节点详情，包括关联关系"""
 
         # 构建查询，获取节点及其直接关联关系
@@ -714,13 +854,11 @@ class QueryService:
         #         related_node: related {.* , id: related.id, labels: labels(related)}
         #     }) AS connections
 
-        async with neo4j_connection.get_session() as session:
-            result = await session.run(query, node_id=node_id)
-            record = await result.single()
-
-        if not record:
+        result = await self.run_cypher_query(query, {"node_id": node_id})
+        if not result:
             return None
 
+        record = result[0]
         neo_node = record["node"]
         connections = record["connections"]
 

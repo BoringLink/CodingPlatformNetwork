@@ -1,21 +1,20 @@
 """可视化 API 路由"""
 
-from typing import Optional, List
-from fastapi import APIRouter, HTTPException, Query, Depends
-from pydantic import BaseModel, Field
 import structlog
+from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel, Field
 
+from app.dependencies import (
+    get_llm_service,
+    get_query_service,
+    get_visualization_service,
+)
 from app.models.nodes import NodeType
 from app.models.relationships import RelationshipType
-from app.dependencies import (
-    get_visualization_service,
-    get_query_service,
-    get_llm_service,
-)
+from app.services.query_service import GraphFilter, NodeFilter, RelationshipFilter
 from app.services.visualization_service import (
     VisualizationOptions,
 )
-from app.services.query_service import GraphFilter, NodeFilter, RelationshipFilter
 
 logger = structlog.get_logger()
 
@@ -28,11 +27,16 @@ class VisualizationRequest(BaseModel):
     root_node_id: str = Field(..., description="根节点 ID")
     depth: int = Field(default=2, ge=1, le=5, description="查询深度（1-5）")
     layout: str = Field(default="force-directed", description="布局算法")
-    node_types: Optional[list[str]] = Field(default=None, description="节点类型过滤")
-    relationship_types: Optional[list[str]] = Field(
-        default=None, description="关系类型过滤"
-    )
+    node_types: list[str] | None = Field(default=None, description="节点类型过滤")
+    relationship_types: list[str] | None = Field(default=None, description="关系类型过滤")
     show_labels: bool = Field(default=True, description="是否显示标签")
+    start_date: str | None = Field(default=None, description="开始日期")
+    end_date: str | None = Field(default=None, description="结束日期")
+    school: str | None = Field(default=None, description="学校筛选")
+    grade: int | None = Field(default=None, description="年级筛选")
+    class_: str | None = Field(default=None, alias="class", description="班级筛选")
+    limit: int = Field(default=1000, ge=100, le=5000, description="返回节点数量限制")
+    offset: int = Field(default=0, ge=0, description="返回节点偏移量")
 
 
 class SubviewCreateRequest(BaseModel):
@@ -41,10 +45,8 @@ class SubviewCreateRequest(BaseModel):
     name: str = Field(..., description="子视图名称")
     root_node_id: str = Field(..., description="根节点 ID")
     depth: int = Field(default=2, ge=1, le=5, description="查询深度")
-    node_types: Optional[list[str]] = Field(default=None, description="节点类型过滤")
-    relationship_types: Optional[list[str]] = Field(
-        default=None, description="关系类型过滤"
-    )
+    node_types: list[str] | None = Field(default=None, description="节点类型过滤")
+    relationship_types: list[str] | None = Field(default=None, description="关系类型过滤")
 
 
 class SubviewUpdateRequest(BaseModel):
@@ -52,10 +54,8 @@ class SubviewUpdateRequest(BaseModel):
 
     root_node_id: str = Field(..., description="根节点 ID")
     depth: int = Field(default=2, ge=1, le=5, description="查询深度")
-    node_types: Optional[list[str]] = Field(default=None, description="节点类型过滤")
-    relationship_types: Optional[list[str]] = Field(
-        default=None, description="关系类型过滤"
-    )
+    node_types: list[str] | None = Field(default=None, description="节点类型过滤")
+    relationship_types: list[str] | None = Field(default=None, description="关系类型过滤")
 
 
 @router.get(
@@ -72,10 +72,15 @@ class SubviewUpdateRequest(BaseModel):
 async def generate_visualization_get(
     rootNodeId: str,
     depth: int = 2,
-    nodeTypes: Optional[List[str]] = Query(None),
-    relationshipTypes: Optional[List[str]] = Query(None),
+    nodeTypes: list[str] | None = Query(None),
+    relationshipTypes: list[str] | None = Query(None),
+    startDate: str | None = Query(None),
+    endDate: str | None = Query(None),
     layout: str = Query("force-directed"),
     showLabels: bool = Query(True),
+    school: str | None = Query(None),
+    grade: int | None = Query(None),
+    class_: str | None = Query(None, alias="class"),
     viz_service=Depends(get_visualization_service),
     q_service=Depends(get_query_service),
     llm_service=Depends(get_llm_service),
@@ -89,6 +94,8 @@ async def generate_visualization_get(
         depth: 查询深度
         nodeTypes: 节点类型过滤
         relationshipTypes: 关系类型过滤
+        startDate: 开始日期
+        endDate: 结束日期
         layout: 布局算法
         showLabels: 是否显示标签
 
@@ -98,9 +105,6 @@ async def generate_visualization_get(
     Raises:
         HTTPException: 请求参数无效或根节点不存在
     """
-    print(
-        f"生成可视化数据请求: rootNodeId={rootNodeId}, depth={depth}, nodeTypes={nodeTypes}, relationshipTypes={relationshipTypes}, layout={layout}, showLabels={showLabels}"
-    )
     # 处理逗号分隔的字符串参数
     processed_node_types = []
     if nodeTypes:
@@ -112,7 +116,6 @@ async def generate_visualization_get(
                 )
             else:
                 processed_node_types.append(node_type)
-    print(f"处理后的节点类型: {processed_node_types}")
 
     processed_relationship_types = []
     if relationshipTypes:
@@ -125,8 +128,6 @@ async def generate_visualization_get(
             else:
                 processed_relationship_types.append(rel_type)
 
-    print(f"处理后的关系类型: {processed_relationship_types}")
-
     # 构造请求对象
     request = VisualizationRequest(
         root_node_id=rootNodeId,
@@ -135,6 +136,11 @@ async def generate_visualization_get(
         relationship_types=processed_relationship_types,  # 始终传递列表，即使为空
         layout=layout,
         show_labels=showLabels,
+        start_date=startDate,
+        end_date=endDate,
+        school=school,
+        grade=grade,
+        class_=class_,
     )
     return await generate_visualization(request, viz_service, q_service, llm_service)
 
@@ -171,8 +177,9 @@ async def generate_visualization(
     """
     try:
         # 解析节点类型过滤
+        # 注意：空列表表示不过滤（显示所有类型），None也表示不过滤
         node_types = None
-        if request.node_types is not None:
+        if request.node_types is not None and len(request.node_types) > 0:
             try:
                 node_types = [NodeType(nt) for nt in request.node_types]
             except ValueError as e:
@@ -180,54 +187,106 @@ async def generate_visualization(
                     status_code=400,
                     detail=f"无效的节点类型: {e}",
                 )
-        print(f"解析后的节点类型: {node_types}")
+
+        # 检查节点类型过滤是否包含根节点类型
+        # 注意：我们不能在此时检查，因为我们不知道根节点的类型
+        # 这个检查将在query_subgraph方法中处理
 
         # 解析关系类型过滤
+        # 注意：空列表表示不过滤（显示所有类型），None也表示不过滤
         relationship_types = None
-        if request.relationship_types is not None:  # 处理空列表情况
+        if request.relationship_types is not None and len(request.relationship_types) > 0:
             try:
-                relationship_types = [
-                    RelationshipType(rt) for rt in request.relationship_types
-                ]
+                relationship_types = [RelationshipType(rt) for rt in request.relationship_types]
             except ValueError as e:
                 raise HTTPException(
                     status_code=400,
                     detail=f"无效的关系类型: {e}",
                 )
-        print(f"解析后的关系类型: {relationship_types}")
 
-        # 创建图过滤器
+        # 创建图过滤器（包含学校/年级/班级筛选）
         graph_filter = GraphFilter(
             node_types=node_types,
             relationship_types=relationship_types,
+            date_range=(
+                {
+                    "start": request.start_date,
+                    "end": request.end_date,
+                }
+                if request.start_date or request.end_date
+                else None
+            ),
+            school=request.school,
+            grade=request.grade,
+            class_=request.class_,
+        )
+
+        # 创建节点过滤器（用于查询子图中的节点筛选）
+        node_filter = NodeFilter(
+            types=node_types,
+            school=request.school,
+            grade=request.grade,
+            class_=request.class_,
         )
 
         try:
-            # 查询子图
+            # 使用请求参数作为最大节点数和关系数限制
+            max_nodes = request.limit  # 设置最大节点数限制
+            max_relationships = request.limit * 5  # 设置最大关系数限制（节点数的5倍）
+
+            # 查询子图，添加节点和关系数量限制
             subgraph = await q_service.query_subgraph(
                 root_node_id=request.root_node_id,
                 depth=request.depth,
                 filter=graph_filter,
+                max_nodes=max_nodes,
+                max_relationships=max_relationships,
             )
         except ValueError as e:
-            # 根节点不存在，返回404
+            # 记录完整的异常信息，包括堆栈跟踪
+            import traceback
+
             logger.warning(
                 "visualization_generation_failed",
                 error=str(e),
+                error_type=type(e).__name__,
                 root_node_id=request.root_node_id,
+                stack_trace=traceback.format_exc(),
             )
-            raise HTTPException(
-                status_code=404,
-                detail=f"根节点不存在: {request.root_node_id}",
-            )
+
+            # 检查异常是否真的是根节点不存在
+            # 只有当异常消息明确表示根节点不存在时，才返回404
+            if "根节点不存在" in str(e) or "root node" in str(e).lower():
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"根节点不存在: {request.root_node_id}",
+                )
+            else:
+                # 其他ValueError异常应该返回500
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"生成可视化数据失败: {str(e)}",
+                )
         except RuntimeError as e:
             # 数据库查询错误
-            logger.error(
-                "subgraph_query_failed", error=str(e), root_node_id=request.root_node_id
-            )
+            logger.error("subgraph_query_failed", error=str(e), root_node_id=request.root_node_id)
             raise HTTPException(
                 status_code=500,
                 detail=f"查询子图失败: {e}",
+            )
+        except Exception as e:
+            # 捕获其他异常，包括内存不足错误
+            logger.error(
+                "subgraph_query_generic_error", error=str(e), root_node_id=request.root_node_id
+            )
+            if "OutOfMemory" in str(e):
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"查询数据量过大，请尝试减小查询深度或缩小筛选范围: {e}",
+                )
+            raise HTTPException(
+                status_code=500,
+                detail=f"生成可视化数据失败: {e}",
             )
 
         # 创建可视化选项
@@ -286,9 +345,7 @@ async def generate_visualization(
 
             logger.info("llm_analysis_completed", result_keys=list(llm_results.keys()))
         except Exception as e:
-            logger.warning(
-                "llm_analysis_failed", error=str(e), root_node_id=request.root_node_id
-            )
+            logger.warning("llm_analysis_failed", error=str(e), root_node_id=request.root_node_id)
             # 继续执行，即使LLM分析失败也返回可视化数据
 
         # 生成可视化数据，传入LLM分析结果
@@ -369,9 +426,7 @@ async def create_subview(
         relationship_types = None
         if request.relationship_types:
             try:
-                relationship_types = [
-                    RelationshipType(rt) for rt in request.relationship_types
-                ]
+                relationship_types = [RelationshipType(rt) for rt in request.relationship_types]
             except ValueError as e:
                 raise HTTPException(
                     status_code=400,
@@ -509,9 +564,10 @@ async def get_subview(subview_id: str, viz_service=Depends(get_visualization_ser
     },
 )
 async def get_nodes(
-    nodeTypes: Optional[List[str]] = Query(
-        None, description="节点类型过滤，支持多个值，逗号分隔"
-    ),
+    nodeTypes: list[str] | None = Query(None, description="节点类型过滤，支持多个值，逗号分隔"),
+    school: str | None = Query(None, description="学校筛选"),
+    grade: int | None = Query(None, description="年级筛选"),
+    class_: str | None = Query(None, alias="class", description="班级筛选"),
     limit: int = Query(100, description="返回节点数量限制，默认100"),
     offset: int = Query(0, description="偏移量，用于分页"),
     q_service=Depends(get_query_service),
@@ -558,6 +614,9 @@ async def get_nodes(
         # 构造节点过滤器
         node_filter = NodeFilter(
             types=node_types,
+            school=school,
+            grade=grade,
+            class_=class_,
             limit=limit,
             offset=offset,
         )
@@ -650,7 +709,7 @@ async def get_node_details(
     },
 )
 async def get_relationships(
-    relationshipTypes: Optional[List[str]] = Query(
+    relationshipTypes: list[str] | None = Query(
         None, description="关系类型过滤，支持多个值，逗号分隔"
     ),
     limit: int = Query(100, description="返回关系数量限制，默认100"),
@@ -689,9 +748,7 @@ async def get_relationships(
         relationship_types = None
         if processed_relationship_types:
             try:
-                relationship_types = [
-                    RelationshipType(rt) for rt in processed_relationship_types
-                ]
+                relationship_types = [RelationshipType(rt) for rt in processed_relationship_types]
             except ValueError as e:
                 raise HTTPException(
                     status_code=400,
@@ -738,8 +795,8 @@ async def get_relationships(
 async def get_subgraph(
     rootNodeId: str,
     depth: int = Query(2, ge=1, le=5, description="查询深度（1-5）"),
-    nodeTypes: Optional[List[str]] = Query(None, description="节点类型过滤"),
-    relationshipTypes: Optional[List[str]] = Query(None, description="关系类型过滤"),
+    nodeTypes: list[str] | None = Query(None, description="节点类型过滤"),
+    relationshipTypes: list[str] | None = Query(None, description="关系类型过滤"),
     q_service=Depends(get_query_service),
 ):
     """查询子图
@@ -798,9 +855,7 @@ async def get_subgraph(
         relationship_types = None
         if processed_relationship_types:
             try:
-                relationship_types = [
-                    RelationshipType(rt) for rt in processed_relationship_types
-                ]
+                relationship_types = [RelationshipType(rt) for rt in processed_relationship_types]
             except ValueError as e:
                 raise HTTPException(
                     status_code=400,
@@ -884,9 +939,7 @@ async def update_subview(
         relationship_types = None
         if request.relationship_types:
             try:
-                relationship_types = [
-                    RelationshipType(rt) for rt in request.relationship_types
-                ]
+                relationship_types = [RelationshipType(rt) for rt in request.relationship_types]
             except ValueError as e:
                 raise HTTPException(
                     status_code=400,
@@ -949,9 +1002,7 @@ async def update_subview(
         500: {"description": "服务器内部错误"},
     },
 )
-async def delete_subview(
-    subview_id: str, viz_service=Depends(get_visualization_service)
-):
+async def delete_subview(subview_id: str, viz_service=Depends(get_visualization_service)):
     """删除子视图
 
     从数据库中删除指定的子视图
@@ -1113,6 +1164,99 @@ async def get_available_layouts():
 
 
 @router.get(
+    "/filter-options",
+    summary="获取筛选选项",
+    description="获取用于筛选的可用选项，包括学校、年级和班级列表，支持层级链式选择。",
+    responses={200: {"description": "筛选选项获取成功"}},
+)
+async def get_filter_options(
+    school: str | None = Query(None, description="已选学校，用于获取对应的年级和班级选项"),
+    grade: int | None = Query(None, description="已选年级，用于获取对应的班级选项"),
+    viz_service=Depends(get_visualization_service),
+    q_service=Depends(get_query_service),
+):
+    """获取筛选选项
+
+    获取系统中可用的学校、年级和班级选项，支持根据已选学校和年级返回对应的选项，用于前端筛选器
+
+    Args:
+        school: 已选学校，用于获取对应的年级和班级选项
+        grade: 已选年级，用于获取对应的班级选项
+
+    Returns:
+        包含筛选选项的响应
+    """
+    try:
+        # 从School、Grade、Class节点获取信息
+        all_schools = set()
+        available_grades = set()
+        available_classes = set()
+
+        # 1. 获取学校列表 - 始终返回所有可用学校
+        school_query = "MATCH (s:School) RETURN s.name AS name"
+        school_results = await q_service.run_cypher_query(school_query)
+        all_schools = {result["name"] for result in school_results if result["name"]}
+
+        # 2. 获取年级列表
+        if school:
+            # 如果指定了学校，返回该学校关联的所有Grade节点
+            grade_query = """MATCH (s:School)-[:HAS_GRADE]->(g:Grade) 
+                           WHERE s.name = $school 
+                           RETURN g.level AS level"""
+            grade_results = await q_service.run_cypher_query(grade_query, {"school": school})
+            available_grades = {
+                result["level"] for result in grade_results if result["level"] is not None
+            }
+        else:
+            # 如果没有指定学校，返回所有年级
+            grade_query = "MATCH (g:Grade) RETURN DISTINCT g.level AS level"
+            grade_results = await q_service.run_cypher_query(grade_query)
+            available_grades = {
+                result["level"] for result in grade_results if result["level"] is not None
+            }
+
+        # 3. 获取班级列表
+        if school:
+            if grade is not None:
+                # 如果同时指定了学校和年级，返回该学校和年级关联的所有Class节点
+                class_query = """MATCH (s:School)-[:HAS_GRADE]->(g:Grade)-[:HAS_CLASS]->(c:Class) 
+                               WHERE s.name = $school AND g.level = $grade 
+                               RETURN c.name AS name"""
+                class_results = await q_service.run_cypher_query(
+                    class_query, {"school": school, "grade": grade}
+                )
+                available_classes = {result["name"] for result in class_results if result["name"]}
+            else:
+                # 如果只指定了学校，返回该学校关联的所有Class节点
+                class_query = """MATCH (s:School)-[:HAS_GRADE]->(g:Grade)-[:HAS_CLASS]->(c:Class) 
+                               WHERE s.name = $school 
+                               RETURN c.name AS name"""
+                class_results = await q_service.run_cypher_query(class_query, {"school": school})
+                available_classes = {result["name"] for result in class_results if result["name"]}
+        elif grade is not None:
+            # 如果只指定了年级，返回所有学校中该年级的班级
+            class_query = """MATCH (s:School)-[:HAS_GRADE]->(g:Grade)-[:HAS_CLASS]->(c:Class) 
+                           WHERE g.level = $grade 
+                           RETURN c.name AS name"""
+            class_results = await q_service.run_cypher_query(class_query, {"grade": grade})
+            available_classes = {result["name"] for result in class_results if result["name"]}
+        # 否则不返回班级
+
+        return {
+            "success": True,
+            "data": {
+                "schools": sorted(list(all_schools)),
+                "grades": sorted(list(available_grades)),
+                "classes": sorted(list(available_classes)),
+            },
+        }
+
+    except Exception as e:
+        logger.error("filter_options_retrieval_error", error=str(e))
+        raise HTTPException(status_code=500, detail=f"获取筛选选项失败: {e}")
+
+
+@router.get(
     "/node-types",
     summary="获取节点类型信息",
     description="获取知识图谱中所有节点类型的信息，包括类型名称、显示名称、颜色和形状等视觉属性。",
@@ -1141,22 +1285,10 @@ async def get_node_types(viz_service=Depends(get_visualization_service)):
                     "shape": viz_service.NODE_SHAPES[NodeType.TEACHER],
                 },
                 {
-                    "type": NodeType.COURSE.value,
-                    "display_name": "课程",
-                    "color": viz_service.NODE_COLORS[NodeType.COURSE],
-                    "shape": viz_service.NODE_SHAPES[NodeType.COURSE],
-                },
-                {
                     "type": NodeType.KNOWLEDGE_POINT.value,
                     "display_name": "知识点",
                     "color": viz_service.NODE_COLORS[NodeType.KNOWLEDGE_POINT],
                     "shape": viz_service.NODE_SHAPES[NodeType.KNOWLEDGE_POINT],
-                },
-                {
-                    "type": NodeType.ERROR_TYPE.value,
-                    "display_name": "错误类型",
-                    "color": viz_service.NODE_COLORS[NodeType.ERROR_TYPE],
-                    "shape": viz_service.NODE_SHAPES[NodeType.ERROR_TYPE],
                 },
             ],
         },
@@ -1180,40 +1312,13 @@ async def get_relationship_types(viz_service=Depends(get_visualization_service))
         "data": {
             "relationship_types": [
                 {
-                    "type": RelationshipType.CHAT_WITH.value,
-                    "display_name": "聊天互动",
-                    "color": viz_service.EDGE_COLORS[RelationshipType.CHAT_WITH],
-                },
-                {
-                    "type": RelationshipType.LIKES.value,
-                    "display_name": "点赞互动",
-                    "color": viz_service.EDGE_COLORS[RelationshipType.LIKES],
-                },
-                {
-                    "type": RelationshipType.TEACHES.value,
-                    "display_name": "教学互动",
-                    "color": viz_service.EDGE_COLORS[RelationshipType.TEACHES],
-                },
-                {
-                    "type": RelationshipType.LEARNS.value,
-                    "display_name": "学习关系",
-                    "color": viz_service.EDGE_COLORS[RelationshipType.LEARNS],
-                },
-                {
-                    "type": RelationshipType.CONTAINS.value,
-                    "display_name": "包含关系",
-                    "color": viz_service.EDGE_COLORS[RelationshipType.CONTAINS],
-                },
-                {
-                    "type": RelationshipType.HAS_ERROR.value,
-                    "display_name": "错误关系",
-                    "color": viz_service.EDGE_COLORS[RelationshipType.HAS_ERROR],
-                },
-                {
-                    "type": RelationshipType.RELATES_TO.value,
-                    "display_name": "关联关系",
-                    "color": viz_service.EDGE_COLORS[RelationshipType.RELATES_TO],
-                },
+                    "type": rel_type.value,
+                    "display_name": viz_service.RELATIONSHIP_DISPLAY_NAMES.get(
+                        rel_type, rel_type.value
+                    ),
+                    "color": viz_service.EDGE_COLORS.get(rel_type, "#999999"),
+                }
+                for rel_type in RelationshipType
             ],
         },
     }

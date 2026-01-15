@@ -25,9 +25,9 @@ export interface GraphFilter {
   nodeTypes: NodeType[];
   relationshipTypes: RelationshipType[];
   dateRange?: DateRange;
-  school?: string[];
-  grade?: string[];
-  class?: string[];
+  school?: string;
+  grade?: number;
+  class?: string;
 }
 
 interface GraphState {
@@ -68,18 +68,30 @@ interface GraphState {
   clearGraph: () => void;
 }
 
-const defaultFilter: GraphFilter = {
-  nodeTypes: ["Student", "Teacher", "Course", "KnowledgePoint", "ErrorType"],
+const defaultPendingFilter: GraphFilter = {
+  nodeTypes: ["Student", "Teacher", "KnowledgePoint"],
   relationshipTypes: [
     "CHAT_WITH",
     "LIKES",
     "TEACHES",
     "LEARNS",
     "CONTAINS",
-    "HAS_ERROR",
     "RELATES_TO",
   ],
-  dateRange: { from: new Date(), to: new Date() },
+  // dateRange: { from: new Date(), to: new Date() },
+  school: undefined, // 保持为空，用户需要主动选择
+  grade: undefined, // 保持为空，用户需要主动选择
+  class: undefined, // 保持为空，用户需要主动选择
+};
+
+// 初始应用筛选器为空，强制用户主动选择筛选条件
+const initialAppliedFilter: GraphFilter = {
+  nodeTypes: [], // 空数组，阻止初始加载
+  relationshipTypes: [],
+  // dateRange: undefined,
+  school: undefined,
+  grade: undefined, // undefined，阻止初始加载
+  class: undefined,
 };
 
 export const useGraphStore = create<GraphState>()(
@@ -94,8 +106,8 @@ export const useGraphStore = create<GraphState>()(
         hoveredNodeId: null,
         isInteracting: false,
         interactionMode: "select",
-        pendingFilter: { ...defaultFilter },
-        appliedFilter: { ...defaultFilter },
+        pendingFilter: { ...defaultPendingFilter },
+        appliedFilter: { ...initialAppliedFilter },
         currentSubviewId: null,
 
         // Actions
@@ -108,8 +120,8 @@ export const useGraphStore = create<GraphState>()(
         setAppliedFilter: (filter) => set({ appliedFilter: filter }),
         resetFilters: () =>
           set({
-            pendingFilter: { ...defaultFilter },
-            appliedFilter: { ...defaultFilter },
+            pendingFilter: { ...defaultPendingFilter },
+            appliedFilter: { ...initialAppliedFilter },
           }),
         setCurrentSubview: (subviewId) => set({ currentSubviewId: subviewId }),
         setInteractionMode: (mode) => set({ interactionMode: mode }),
@@ -153,11 +165,73 @@ export const useGraphStore = create<GraphState>()(
       }),
       {
         name: "graph-storage",
+        version: 2, // 版本号用于触发迁移
         partialize: (state) => ({
           pendingFilter: state.pendingFilter,
           appliedFilter: state.appliedFilter,
           currentSubviewId: state.currentSubviewId,
         }),
+        // 深度合并恢复的状态与默认状态
+        merge: (persistedState, currentState) => {
+          const persisted = persistedState as Partial<GraphState>;
+          return {
+            ...currentState,
+            ...persisted,
+            // 深度合并 pendingFilter
+            pendingFilter: {
+              ...currentState.pendingFilter,
+              ...(persisted.pendingFilter || {}),
+            },
+            // 深度合并 appliedFilter
+            appliedFilter: {
+              ...currentState.appliedFilter,
+              ...(persisted.appliedFilter || {}),
+            },
+          };
+        },
+        // 迁移函数：从数组格式迁移到单值格式
+        migrate: (persistedState: unknown, version: number) => {
+          const state = persistedState as Record<string, unknown>;
+          
+          if (version < 2) {
+            // 迁移 pendingFilter
+            const pendingFilter = state.pendingFilter as Record<string, unknown> | undefined;
+            if (pendingFilter) {
+              // 从数组取第一个值，或设为 undefined
+              if (Array.isArray(pendingFilter.schools)) {
+                pendingFilter.school = pendingFilter.schools[0];
+                delete pendingFilter.schools;
+              }
+              if (Array.isArray(pendingFilter.grades)) {
+                pendingFilter.grade = pendingFilter.grades[0];
+                delete pendingFilter.grades;
+              }
+              if (Array.isArray(pendingFilter.classes)) {
+                pendingFilter.class = pendingFilter.classes[0];
+                delete pendingFilter.classes;
+              }
+            }
+            
+            // 迁移 appliedFilter
+            const appliedFilter = state.appliedFilter as Record<string, unknown> | undefined;
+            if (appliedFilter) {
+              if (Array.isArray(appliedFilter.schools)) {
+                appliedFilter.school = appliedFilter.schools[0];
+                delete appliedFilter.schools;
+              }
+              if (Array.isArray(appliedFilter.grades)) {
+                appliedFilter.grade = appliedFilter.grades[0];
+                delete appliedFilter.grades;
+              }
+              if (Array.isArray(appliedFilter.classes)) {
+                appliedFilter.class = appliedFilter.classes[0];
+                delete appliedFilter.classes;
+              }
+            }
+          }
+          
+          return state;
+        },
       }
     ),
     { name: "GraphStore" }

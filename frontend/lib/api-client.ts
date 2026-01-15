@@ -117,7 +117,14 @@ export const apiClient = {
     /**
      * Get nodes with optional filters
      */
-    async list(params?: Record<string, unknown>) {
+    async list(params?: {
+      nodeTypes?: string[];
+      school?: string;
+      grade?: number;
+      class?: string;
+      limit?: number;
+      offset?: number;
+    }) {
       return apiClient.get<{ nodes: import("../types/api").Node[] }>(
         "/api/nodes",
         params
@@ -286,6 +293,19 @@ export const apiClient = {
         },
         generatedAt: rawReport.generated_at,
       } as import("../types/api").Report;
+    },
+  },
+
+  filterOptions: {
+    /**
+     * Get filter options (schools, grades, classes)
+     */
+    async get(params?: { school?: string; grade?: number }) {
+      return apiClient.get<{
+        schools: string[];
+        grades: number[];
+        classes: string[];
+      }>("/api/filter-options", params);
     },
   },
 };

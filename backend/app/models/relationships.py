@@ -2,7 +2,8 @@
 
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict
+from typing import Any
+
 from pydantic import Field, field_validator
 
 from app.models.base import BaseRelationshipProperties
@@ -16,8 +17,8 @@ class RelationshipType(str, Enum):
     TEACHES = "TEACHES"
     LEARNS = "LEARNS"
     CONTAINS = "CONTAINS"
-    HAS_ERROR = "HAS_ERROR"
     RELATES_TO = "RELATES_TO"
+
 
 
 class ChatWithProperties(BaseRelationshipProperties):
@@ -47,9 +48,7 @@ class LearnsProperties(BaseRelationshipProperties):
     """学习关系属性"""
 
     enrollment_date: datetime = Field(..., description="注册日期")
-    progress: float = Field(
-        default=0.0, ge=0.0, le=100.0, description="学习进度（0-100）"
-    )
+    progress: float = Field(default=0.0, ge=0.0, le=100.0, description="学习进度（0-100）")
     completion_date: datetime | None = Field(default=None, description="完成日期")
     time_spent: int | None = Field(default=None, ge=0, description="学习时长（分钟）")
 
@@ -71,23 +70,6 @@ class ContainsProperties(BaseRelationshipProperties):
         return v
 
 
-class HasErrorProperties(BaseRelationshipProperties):
-    """错误关系属性"""
-
-    occurrence_count: int = Field(default=1, ge=1, description="发生次数")
-    first_occurrence: datetime = Field(..., description="首次发生时间")
-    last_occurrence: datetime = Field(..., description="最后发生时间")
-    course_id: str = Field(..., description="课程 ID")
-    resolved: bool = Field(default=False, description="是否已解决")
-
-
-class RelatesToProperties(BaseRelationshipProperties):
-    """关联关系属性"""
-
-    strength: float = Field(..., ge=0.0, le=1.0, description="关联强度（0-1）")
-    confidence: float = Field(..., ge=0.0, le=1.0, description="置信度（0-1）")
-
-
 class Relationship(BaseRelationshipProperties):
     """关系模型"""
 
@@ -95,9 +77,9 @@ class Relationship(BaseRelationshipProperties):
     type: RelationshipType = Field(..., description="关系类型")
     from_node_id: str = Field(..., description="起始节点 ID")
     to_node_id: str = Field(..., description="目标节点 ID")
-    properties: Dict[str, Any] | None = Field(default=None, description="关系属性")
+    properties: dict[str, Any] | None = Field(default=None, description="关系属性")
     weight: float | None = Field(default=None, ge=0.0, description="关系权重")
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """转换为字典"""
         return self.model_dump()

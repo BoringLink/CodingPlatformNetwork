@@ -195,22 +195,24 @@ async def create_constraints_and_indexes() -> None:
     根据设计文档创建唯一性约束和索引
     """
     constraints_and_indexes = [
-        # 唯一性约束
+        # 唯一性约束 - 业务ID
         "CREATE CONSTRAINT student_id_unique IF NOT EXISTS FOR (s:Student) REQUIRE s.student_id IS UNIQUE",
         "CREATE CONSTRAINT teacher_id_unique IF NOT EXISTS FOR (t:Teacher) REQUIRE t.teacher_id IS UNIQUE",
-        "CREATE CONSTRAINT course_id_unique IF NOT EXISTS FOR (c:Course) REQUIRE c.course_id IS UNIQUE",
         "CREATE CONSTRAINT knowledge_point_id_unique IF NOT EXISTS FOR (k:KnowledgePoint) REQUIRE k.knowledge_point_id IS UNIQUE",
-        "CREATE CONSTRAINT error_type_id_unique IF NOT EXISTS FOR (e:ErrorType) REQUIRE e.error_type_id IS UNIQUE",
+        
+        # 唯一性约束 - 通用id属性（用于图谱查询）
+        "CREATE CONSTRAINT student_generic_id_unique IF NOT EXISTS FOR (s:Student) REQUIRE s.id IS UNIQUE",
+        "CREATE CONSTRAINT teacher_generic_id_unique IF NOT EXISTS FOR (t:Teacher) REQUIRE t.id IS UNIQUE",
+        "CREATE CONSTRAINT knowledge_point_generic_id_unique IF NOT EXISTS FOR (k:KnowledgePoint) REQUIRE k.id IS UNIQUE",
         
         # 节点属性索引 - 用于优化频繁的属性查询
         "CREATE INDEX student_name_index IF NOT EXISTS FOR (s:Student) ON (s.name)",
         "CREATE INDEX student_student_id_index IF NOT EXISTS FOR (s:Student) ON (s.student_id)",
-        "CREATE INDEX course_name_index IF NOT EXISTS FOR (c:Course) ON (c.name)",
-        "CREATE INDEX course_course_id_index IF NOT EXISTS FOR (c:Course) ON (c.course_id)",
+        "CREATE INDEX student_id_index IF NOT EXISTS FOR (s:Student) ON (s.id)",
+        "CREATE INDEX teacher_id_index IF NOT EXISTS FOR (t:Teacher) ON (t.id)",
+        "CREATE INDEX knowledge_point_id_index IF NOT EXISTS FOR (k:KnowledgePoint) ON (k.id)",
         "CREATE INDEX knowledge_point_name_index IF NOT EXISTS FOR (k:KnowledgePoint) ON (k.name)",
         "CREATE INDEX knowledge_point_knowledge_point_id_index IF NOT EXISTS FOR (k:KnowledgePoint) ON (k.knowledge_point_id)",
-        "CREATE INDEX error_type_name_index IF NOT EXISTS FOR (et:ErrorType) ON (et.name)",
-        "CREATE INDEX error_type_error_type_id_index IF NOT EXISTS FOR (et:ErrorType) ON (et.error_type_id)",
     ]
     
     async with neo4j_connection.get_session() as session:

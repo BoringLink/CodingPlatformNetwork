@@ -19,9 +19,7 @@ test.describe("Reports Page", () => {
               nodesByType: {
                 Student: 50,
                 Teacher: 10,
-                Course: 20,
                 KnowledgePoint: 15,
-                ErrorType: 5,
               },
               totalRelationships: 200,
               relationshipsByType: {

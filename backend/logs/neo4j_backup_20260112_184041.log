@@ -1,0 +1,4 @@
+2026-01-12 18:40:41,801 - neo4j_backup - INFO - 开始执行Neo4j数据库备份
+2026-01-12 18:40:41,802 - neo4j_backup - INFO - 执行备份命令: neo4j-admin database backup --from neo4j://localhost:7687 --backup-dir /Users/tk/Documents/CodingPlatformNetwork/backend/backups --database neo4j --name neo4j_backup_20260112_184041 --username neo4j --password password
+2026-01-12 18:40:41,809 - neo4j_backup - ERROR - 备份过程中发生未知错误: [Errno 2] No such file or directory: 'neo4j-admin'
+2026-01-12 18:40:41,810 - neo4j_backup - ERROR - 备份失败，请检查日志

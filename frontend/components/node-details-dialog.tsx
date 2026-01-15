@@ -36,9 +36,7 @@ export function NodeDetailsDialog({
   const nodeTypeName: Record<NodeType, string> = {
     Student: "学生",
     Teacher: "教师",
-    Course: "课程",
     KnowledgePoint: "知识点",
-    ErrorType: "错误类型",
   };
 
   // Map relationship types to display names

@@ -240,18 +240,14 @@ class VisualizationService:
     NODE_COLORS = {
         NodeType.STUDENT: "#4A90E2",  # 蓝色
         NodeType.TEACHER: "#E24A4A",  # 红色
-        NodeType.COURSE: "#50C878",   # 绿色
         NodeType.KNOWLEDGE_POINT: "#F5A623",  # 橙色
-        NodeType.ERROR_TYPE: "#9013FE",  # 紫色
     }
     
     # 节点类型到形状的映射
     NODE_SHAPES = {
         NodeType.STUDENT: "ellipse",
         NodeType.TEACHER: "triangle",
-        NodeType.COURSE: "rectangle",
         NodeType.KNOWLEDGE_POINT: "diamond",
-        NodeType.ERROR_TYPE: "hexagon",
     }
     
     # 关系类型到颜色的映射
@@ -261,8 +257,17 @@ class VisualizationService:
         RelationshipType.TEACHES: "#E24A4A",
         RelationshipType.LEARNS: "#50C878",
         RelationshipType.CONTAINS: "#F5A623",
-        RelationshipType.HAS_ERROR: "#9013FE",
-        RelationshipType.RELATES_TO: "#7B68EE",
+        RelationshipType.RELATES_TO: "#9B59B6",
+    }
+
+    # 关系类型显示名称映射
+    RELATIONSHIP_DISPLAY_NAMES = {
+        RelationshipType.CHAT_WITH: "聊天互动",
+        RelationshipType.LIKES: "点赞互动",
+        RelationshipType.TEACHES: "教学互动",
+        RelationshipType.LEARNS: "学习关系",
+        RelationshipType.CONTAINS: "包含关系",
+        RelationshipType.RELATES_TO: "关联关系",
     }
     
     def __init__(self):
@@ -380,12 +385,8 @@ class VisualizationService:
             return node.properties.get("name", node.properties.get("student_id", ""))
         elif node.type == NodeType.TEACHER:
             return node.properties.get("name", node.properties.get("teacher_id", ""))
-        elif node.type == NodeType.COURSE:
-            return node.properties.get("name", node.properties.get("course_id", ""))
         elif node.type == NodeType.KNOWLEDGE_POINT:
             return node.properties.get("name", node.properties.get("knowledge_point_id", ""))
-        elif node.type == NodeType.ERROR_TYPE:
-            return node.properties.get("name", node.properties.get("error_type_id", ""))
         
         return node.id[:8]
     
@@ -979,8 +980,7 @@ class VisualizationService:
                 relationship_counts[rel_type] = relationship_counts.get(rel_type, 0) + 1
                 
                 # 处理邻居节点类型
-                # 这里简化处理，假设关系的另一端节点类型为Course或ErrorType
-                neighbor_type = NodeType.COURSE if rel.type in [RelationshipType.LEARNS, RelationshipType.TEACHES] else NodeType.ERROR_TYPE
+                neighbor_type = NodeType.KNOWLEDGE_POINT
                 connected_node_types[neighbor_type] = connected_node_types.get(neighbor_type, 0) + 1
             
             # 创建连接节点摘要
@@ -1122,30 +1122,13 @@ class VisualizationService:
                     }
                     
                     # 根据节点类型选择不同的LLM分析方法
-                    if node.type == NodeType.ERROR_TYPE:
-                        # 使用LLM分析错误类型
-                        # 示例：llm_analysis = await llm_service.analyze_error("", CourseContext(course_id="", course_name=""))
-                        llm_analysis = {
-                            "type": "error_analysis",
-                            "confidence": 0.9,
-                            "analysis": "这是一个示例错误类型分析结果",
-                            "suggestions": ["建议1", "建议2"]
-                        }
-                    elif node.type == NodeType.KNOWLEDGE_POINT:
+                    if node.type == NodeType.KNOWLEDGE_POINT:
                         # 使用LLM分析知识点
                         llm_analysis = {
                             "type": "knowledge_point_analysis",
                             "confidence": 0.85,
                             "related_topics": ["相关主题1", "相关主题2"],
                             "difficulty": "medium"
-                        }
-                    elif node.type == NodeType.COURSE:
-                        # 使用LLM分析课程
-                        llm_analysis = {
-                            "type": "course_analysis",
-                            "confidence": 0.92,
-                            "key_concepts": ["关键概念1", "关键概念2"],
-                            "target_audience": "适合初学者"
                         }
                     elif node.type == NodeType.STUDENT:
                         # 使用LLM分析学生

@@ -17,18 +17,14 @@ export function convertSubgraphToVisualizationData(
   const nodeSizeMap: Record<NodeType, number> = {
     Student: 30,
     Teacher: 35,
-    Course: 40,
     KnowledgePoint: 25,
-    ErrorType: 25,
   };
 
   // Map node types to colors
   const nodeColorMap: Record<NodeType, string> = {
     Student: "#60a5fa", // blue
     Teacher: "#34d399", // green
-    Course: "#fbbf24", // yellow
     KnowledgePoint: "#a78bfa", // purple
-    ErrorType: "#f87171", // red
   };
 
   // Create visualization nodes
@@ -37,9 +33,7 @@ export function convertSubgraphToVisualizationData(
     let label =
       node.properties.name ||
       node.properties.studentId ||
-      node.properties.courseId ||
       node.properties.knowledgePointId ||
-      node.properties.errorTypeId ||
       node.id;
     label = String(label).substring(0, 20); // Truncate long labels
 
@@ -150,7 +144,8 @@ export function calculateGraphStatistics(data: VisualizationData) {
 
   // Count relationship types
   data.edges.forEach((edge) => {
-    relationshipTypeCount[edge.type] = (relationshipTypeCount[edge.type] || 0) + 1;
+    relationshipTypeCount[edge.type] =
+      (relationshipTypeCount[edge.type] || 0) + 1;
   });
 
   const nodeDegrees = calculateNodeDegrees(data.nodes, data.edges);

@@ -7,7 +7,7 @@ from typing import Optional
 
 from app.services.llm_service import LLMAnalysisService, llm_service
 from app.services.cache_service import CacheService, cache_service
-from app.services.graph_service import GraphManagementService, graph_service
+from app.services.graph_service import GraphService, graph_service
 from app.services.data_import_service import DataImportService, data_import_service
 from app.services.visualization_service import VisualizationService, visualization_service
 from app.services.report_service import ReportService, report_service
@@ -32,11 +32,11 @@ def get_cache_service() -> Optional[CacheService]:
     return cache_service
 
 
-def get_graph_service() -> Optional[GraphManagementService]:
-    """获取图管理服务实例
+def get_graph_service() -> Optional[GraphService]:
+    """获取图服务实例
     
     Returns:
-        图管理服务实例，如果未初始化则返回None
+        图服务实例，如果未初始化则返回None
     """
     return graph_service
 

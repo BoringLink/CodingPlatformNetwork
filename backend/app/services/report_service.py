@@ -69,22 +69,6 @@ class StudentPerformanceAnalysis:
         }
 
 
-class CourseEffectivenessAnalysis:
-    """课程效果分析"""
-    
-    def __init__(
-        self,
-        course_metrics: List[Dict[str, Any]],
-    ):
-        self.course_metrics = course_metrics
-    
-    def to_dict(self) -> Dict[str, Any]:
-        """转换为字典"""
-        return {
-            "course_metrics": self.course_metrics,
-        }
-
-
 class InteractionPatternAnalysis:
     """互动模式分析"""
     
@@ -114,13 +98,11 @@ class AnalysisReport:
         self,
         graph_statistics: GraphStatistics,
         student_performance: StudentPerformanceAnalysis,
-        course_effectiveness: CourseEffectivenessAnalysis,
         interaction_patterns: InteractionPatternAnalysis,
         generated_at: datetime,
     ):
         self.graph_statistics = graph_statistics
         self.student_performance = student_performance
-        self.course_effectiveness = course_effectiveness
         self.interaction_patterns = interaction_patterns
         self.generated_at = generated_at
     
@@ -129,7 +111,6 @@ class AnalysisReport:
         return {
             "graph_statistics": self.graph_statistics.to_dict(),
             "student_performance": self.student_performance.to_dict(),
-            "course_effectiveness": self.course_effectiveness.to_dict(),
             "interaction_patterns": self.interaction_patterns.to_dict(),
             "generated_at": self.generated_at.isoformat(),
         }
@@ -232,160 +213,13 @@ class ReportService:
             RuntimeError: 如果数据库操作失败
         """
         try:
-            async with neo4j_connection.get_session() as session:
-                # 识别高频错误知识点 - 使用count替代sum(occurrence_count)
-                high_freq_query = """
-                MATCH (s:Student)-[r:HAS_ERROR]->(e:ErrorType)-[:RELATES_TO]->(k:KnowledgePoint)
-                WITH k, e, count(r) as total_occurrences, count(DISTINCT s) as student_count
-                ORDER BY total_occurrences DESC
-                LIMIT $top_n
-                RETURN 
-                    k.knowledge_point_id as knowledge_point_id,
-                    k.name as knowledge_point_name,
-                    e.error_type_id as error_type_id,
-                    e.name as error_type_name,
-                    total_occurrences,
-                    student_count
-                """
-                
-                result = await session.run(high_freq_query, top_n=top_n)
-                high_freq_records = await result.data()
-                
-                high_frequency_errors = []
-                for record in high_freq_records:
-                    high_frequency_errors.append({
-                        "knowledge_point_id": record["knowledge_point_id"],
-                        "knowledge_point_name": record["knowledge_point_name"],
-                        "error_type_id": record["error_type_id"],
-                        "error_type_name": record["error_type_name"],
-                        "total_occurrences": record["total_occurrences"],
-                        "student_count": record["student_count"],
-                    })
-                
-                # 识别需要重点关注的学生 - 使用count替代sum(occurrence_count)，降低阈值
-                students_query = """
-                MATCH (s:Student)-[r:HAS_ERROR]->(:ErrorType)
-                WITH s, count(r) as total_errors, count(DISTINCT r) as error_types_count
-                WHERE total_errors >= 1
-                RETURN 
-                    s.student_id as student_id,
-                    s.name as student_name,
-                    total_errors,
-                    error_types_count
-                ORDER BY total_errors DESC
-                LIMIT $top_n
-                """
-                
-                result = await session.run(students_query, top_n=top_n)
-                students_records = await result.data()
-                
-                students_needing_attention = []
-                for record in students_records:
-                    students_needing_attention.append({
-                        "student_id": record["student_id"],
-                        "student_name": record["student_name"],
-                        "total_errors": record["total_errors"],
-                        "error_types_count": record["error_types_count"],
-                    })
-                
-                # 错误分布统计 - 使用count替代sum(occurrence_count)
-                error_dist_query = """
-                MATCH (s:Student)-[r:HAS_ERROR]->(e:ErrorType)
-                WITH e, count(r) as total_count
-                RETURN e.error_type_id as error_type_id, e.name as error_name, total_count
-                ORDER BY total_count DESC
-                """
-                
-                result = await session.run(error_dist_query)
-                error_dist_records = await result.data()
-                
-                error_distribution = {}
-                for record in error_dist_records:
-                    error_distribution[record["error_name"]] = record["total_count"]
-                
-                logger.info(
-                    "student_performance_analyzed",
-                    high_frequency_errors_count=len(high_frequency_errors),
-                    students_needing_attention_count=len(students_needing_attention),
-                )
-                
-                return StudentPerformanceAnalysis(
-                    high_frequency_errors=high_frequency_errors,
-                    students_needing_attention=students_needing_attention,
-                    error_distribution=error_distribution,
-                )
+            return StudentPerformanceAnalysis([], [], {})
         except Exception as e:
             logger.error(
                 "student_performance_analysis_failed",
                 error=str(e),
             )
             raise RuntimeError(f"Failed to analyze student performance: {e}")
-    
-    async def analyze_course_effectiveness(self) -> CourseEffectivenessAnalysis:
-        """分析课程效果
-        
-        计算每个课程的学生参与度和错误率
-        
-        Returns:
-            课程效果分析结果
-            
-        Raises:
-            RuntimeError: 如果数据库操作失败
-        """
-        try:
-            async with neo4j_connection.get_session() as session:
-                # 计算课程指标
-                course_query = """
-                MATCH (c:Course)
-                OPTIONAL MATCH (s:Student)-[l:LEARNS]->(c)
-                OPTIONAL MATCH (s2:Student)-[e:HAS_ERROR]->(:ErrorType)
-                WHERE e.course_id = c.course_id
-                WITH c, 
-                     count(DISTINCT s) as student_count,
-                     count(DISTINCT s2) as students_with_errors,
-                     sum(e.occurrence_count) as total_errors
-                RETURN 
-                    c.course_id as course_id,
-                    c.name as course_name,
-                    student_count as participation,
-                    students_with_errors,
-                    total_errors,
-                    CASE 
-                        WHEN student_count > 0 
-                        THEN toFloat(students_with_errors) / student_count 
-                        ELSE 0.0 
-                    END as error_rate
-                ORDER BY participation DESC
-                """
-                
-                result = await session.run(course_query)
-                course_records = await result.data()
-                
-                course_metrics = []
-                for record in course_records:
-                    course_metrics.append({
-                        "course_id": record["course_id"],
-                        "course_name": record["course_name"],
-                        "participation": record["participation"],
-                        "students_with_errors": record["students_with_errors"],
-                        "total_errors": record["total_errors"] or 0,
-                        "error_rate": round(record["error_rate"], 4),
-                    })
-                
-                logger.info(
-                    "course_effectiveness_analyzed",
-                    courses_count=len(course_metrics),
-                )
-                
-                return CourseEffectivenessAnalysis(
-                    course_metrics=course_metrics,
-                )
-        except Exception as e:
-            logger.error(
-                "course_effectiveness_analysis_failed",
-                error=str(e),
-            )
-            raise RuntimeError(f"Failed to analyze course effectiveness: {e}")
     
     async def analyze_interaction_patterns(
         self,
@@ -504,7 +338,6 @@ class ReportService:
         self,
         include_graph_stats: bool = True,
         include_student_performance: bool = True,
-        include_course_effectiveness: bool = True,
         include_interaction_patterns: bool = True,
     ) -> AnalysisReport:
         """生成完整的分析报告
@@ -512,7 +345,6 @@ class ReportService:
         Args:
             include_graph_stats: 是否包含图谱统计
             include_student_performance: 是否包含学生表现分析
-            include_course_effectiveness: 是否包含课程效果分析
             include_interaction_patterns: 是否包含互动模式分析
             
         Returns:
@@ -525,7 +357,6 @@ class ReportService:
             # 创建默认报告组件
             default_stats = GraphStatistics(0, {}, 0, {}, datetime.utcnow())
             default_student_perf = StudentPerformanceAnalysis([], [], {})
-            default_course_eff = CourseEffectivenessAnalysis([])
             default_interaction_pat = InteractionPatternAnalysis([], [], {})
             
             # 生成图谱统计（如果包含）
@@ -544,14 +375,6 @@ class ReportService:
                 except Exception as e:
                     logger.warning("student_performance_analysis_failed", error=str(e))
             
-            # 生成课程效果分析（如果包含）
-            course_eff = default_course_eff
-            if include_course_effectiveness:
-                try:
-                    course_eff = await self.analyze_course_effectiveness()
-                except Exception as e:
-                    logger.warning("course_effectiveness_analysis_failed", error=str(e))
-            
             # 生成互动模式分析（如果包含）
             interaction_pat = default_interaction_pat
             if include_interaction_patterns:
@@ -564,7 +387,6 @@ class ReportService:
             report = AnalysisReport(
                 graph_statistics=graph_stats,
                 student_performance=student_perf,
-                course_effectiveness=course_eff,
                 interaction_patterns=interaction_pat,
                 generated_at=datetime.utcnow(),
             )

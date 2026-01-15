@@ -6,9 +6,7 @@ from app.models.nodes import (
     NodeType,
     StudentNodeProperties,
     TeacherNodeProperties,
-    CourseNodeProperties,
     KnowledgePointNodeProperties,
-    ErrorTypeNodeProperties,
 )
 
 
@@ -20,11 +18,9 @@ class FieldMapping:
         self.mappings: Dict[NodeType, Dict[str, str]] = {
             NodeType.STUDENT: self._generate_mapping(StudentNodeProperties),
             NodeType.TEACHER: self._generate_mapping(TeacherNodeProperties),
-            NodeType.COURSE: self._generate_mapping(CourseNodeProperties),
             NodeType.KNOWLEDGE_POINT: self._generate_mapping(
                 KnowledgePointNodeProperties
             ),
-            NodeType.ERROR_TYPE: self._generate_mapping(ErrorTypeNodeProperties),
         }
 
         # 业务术语映射
@@ -41,9 +37,7 @@ class FieldMapping:
             "node_type": {
                 "Student": "学生",
                 "Teacher": "教师",
-                "Course": "课程",
                 "KnowledgePoint": "知识点",
-                "ErrorType": "错误类型",
             },
             # 深度学习方法
             "deep_learning": {

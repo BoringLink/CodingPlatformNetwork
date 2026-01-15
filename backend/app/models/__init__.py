@@ -11,9 +11,7 @@ from app.models.nodes import (
     NodeType,
     StudentNodeProperties,
     TeacherNodeProperties,
-    CourseNodeProperties,
     KnowledgePointNodeProperties,
-    ErrorTypeNodeProperties,
     Node,
 )
 from app.models.relationships import (
@@ -23,8 +21,6 @@ from app.models.relationships import (
     TeachesProperties,
     LearnsProperties,
     ContainsProperties,
-    HasErrorProperties,
-    RelatesToProperties,
     Relationship,
 )
 
@@ -39,9 +35,7 @@ __all__ = [
     "NodeType",
     "StudentNodeProperties",
     "TeacherNodeProperties",
-    "CourseNodeProperties",
     "KnowledgePointNodeProperties",
-    "ErrorTypeNodeProperties",
     "Node",
     # Relationship models
     "RelationshipType",
@@ -50,7 +44,5 @@ __all__ = [
     "TeachesProperties",
     "LearnsProperties",
     "ContainsProperties",
-    "HasErrorProperties",
-    "RelatesToProperties",
     "Relationship",
 ]

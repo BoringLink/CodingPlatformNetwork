@@ -22,14 +22,27 @@ import {
  * Custom hooks for API data fetching using TanStack Query
  */
 
+// 节点筛选参数接口
+export interface NodeFilterParams {
+  nodeTypes?: string[];
+  school?: string;
+  grade?: number;
+  class?: string;
+  limit?: number;
+  offset?: number;
+}
+
 // Nodes hooks
 export function useNodes(
-  params?: Record<string, unknown>,
-  options?: UseQueryOptions<{ nodes: Node[] }>
+  params?: NodeFilterParams,
+  options?: Omit<UseQueryOptions<{ nodes: Node[] }>, "queryKey" | "queryFn">
 ) {
   return useQuery({
     queryKey: ["nodes", params],
     queryFn: () => apiClient.nodes.list(params),
+    // 默认不启用，需要传入 enabled: true 才启用
+    enabled: options?.enabled ?? false,
+    staleTime: 5 * 60 * 1000, // 5分钟缓存
     ...options,
   });
 }
@@ -78,12 +91,12 @@ export function useVisualization(
   rootNodeId: string,
   depth: number,
   params?: Record<string, unknown>,
-  options?: UseQueryOptions<VisualizationData>
+  options?: Omit<UseQueryOptions<VisualizationData>, "queryKey" | "queryFn">
 ) {
   return useQuery({
     queryKey: ["visualization", rootNodeId, depth, params],
     queryFn: () => apiClient.visualization.get(rootNodeId, depth, params),
-    enabled: !!rootNodeId && depth > 0,
+    enabled: (options?.enabled ?? true) && !!rootNodeId && depth > 0,
     ...options,
   });
 }
@@ -152,6 +165,28 @@ export function useReport(
   return useQuery({
     queryKey: ["report", params],
     queryFn: () => apiClient.reports.generate(params),
+    ...options,
+  });
+}
+
+// Filter options hooks
+export function useFilterOptions(
+  selectedSchool?: string,
+  selectedGrade?: number,
+  options?: UseQueryOptions<{
+    schools: string[];
+    grades: number[];
+    classes: string[];
+  }>
+) {
+  return useQuery({
+    queryKey: ["filterOptions", selectedSchool, selectedGrade],
+    queryFn: () =>
+      apiClient.filterOptions.get({
+        school: selectedSchool,
+        grade: selectedGrade,
+      }),
+    staleTime: 5 * 60 * 1000,
     ...options,
   });
 }

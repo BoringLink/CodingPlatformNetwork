@@ -27,7 +27,7 @@ export interface GraphVisualizationRef {
 interface GraphVisualizationProps {
   nodes: VisualizationNode[];
   edges: VisualizationEdge[];
-  layout?: string;
+  layout?: string | { name: string; options: Record<string, unknown> };
   onNodeClick?: (nodeId: string) => void;
   onNodeHover?: (nodeId: string | null) => void;
   selectedNodeId?: string;
@@ -50,6 +50,9 @@ export const GraphVisualization = ({
   className = "w-full h-full",
   ref,
 }: GraphVisualizationProps & { ref?: React.Ref<GraphVisualizationRef> }) => {
+  // Debug logging
+  console.log('GraphVisualization received nodes:', nodes);
+  console.log('GraphVisualization received edges:', edges);
   const cytoscapeRef = useRef<{ cy: Core }>(null);
   // 使用 ref 保持回调最新，避免闭包问题
   const callbacksRef = useRef({
@@ -119,9 +122,7 @@ export const GraphVisualization = ({
     const nodeColorMap: Record<string, string> = {
       Student: "#60a5fa",
       Teacher: "#34d399",
-      Course: "#fbbf24",
       KnowledgePoint: "#a78bfa",
-      ErrorType: "#f87171",
     };
     const edgeColorMap: Record<string, string> = {
       CHAT_WITH: "#60a5fa",
@@ -216,14 +217,21 @@ export const GraphVisualization = ({
   // 3. 布局配置 (Memoized)
   const layoutConfig = useMemo<LayoutOptions>(() => {
     const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+
+    // 处理layout参数：可能是字符串或对象
+    const layoutName = typeof layout === 'object' && layout?.name ? layout.name : layout;
+    const layoutOptions = typeof layout === 'object' && layout?.options ? layout.options : {};
+
     return {
-      name: layout,
+      name: layoutName,
       fit: true,
       padding: 150, // 增加画布内边距
       animate: true,
       animationDuration: 500,
+      // 合并API提供的布局选项
+      ...layoutOptions,
       // Cose 特定配置
-      ...(layout === "cose"
+      ...(layoutName === "cose"
         ? {
             componentSpacing: 150, // 增加组件间间距
             nodeOverlap: 100, // 消除节点重叠
@@ -242,9 +250,9 @@ export const GraphVisualization = ({
           }
         : {}),
       // Dagre 特定配置
-      ...(layout === "dagre" ? { nodeSep: 150, rankSep: 200 } : {}), // 增加Dagre布局的节点间距
+      ...(layoutName === "dagre" ? { nodeSep: 150, rankSep: 200 } : {}), // 增加Dagre布局的节点间距
       // Circle 特定配置
-      ...(layout === "circle" ? { radius: 400 } : {}), // 增加Circle布局的半径
+      ...(layoutName === "circle" ? { radius: 400 } : {}), // 增加Circle布局的半径
     } as LayoutOptions;
   }, [layout]);
 

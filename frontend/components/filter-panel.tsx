@@ -10,17 +10,26 @@ import {
   CardFooter,
 } from "./ui/card";
 import { Button } from "./ui/button";
-import { DatePicker } from "./date-picker";
 import { NodeType, RelationshipType } from "@/types/api";
+import { useFilterOptions } from "@/hooks/use-api";
 import {
   Filter,
   RefreshCw,
   Save,
   Layers,
   Network,
-  CalendarClock,
   Check,
+  Building2,
+  GraduationCap,
+  Users,
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 import { cn } from "@/lib/utils";
 import { DateRange } from "react-day-picker";
 
@@ -31,6 +40,12 @@ interface FilterPanelProps {
   onRelationshipTypeChange: (relationshipTypes: RelationshipType[]) => void;
   dateRange?: DateRange;
   onDateRangeChange: (date: DateRange | undefined) => void;
+  selectedSchool?: string;
+  onSchoolChange: (school: string | undefined) => void;
+  selectedGrade?: number;
+  onGradeChange: (grade: number | undefined) => void;
+  selectedClass?: string;
+  onClassChange: (className: string | undefined) => void;
   onApplyFilters: () => void;
   onResetFilters: () => void;
   onCreateSubview: () => void;
@@ -41,9 +56,7 @@ interface FilterPanelProps {
 // 使用 Tailwind 类近似 hex 颜色:
 // Student(#60a5fa) -> blue-400
 // Teacher(#34d399) -> emerald-400
-// Course(#fbbf24) -> amber-400
 // KnowledgePoint(#a78bfa) -> violet-400
-// ErrorType(#f87171) -> red-400
 const NODE_CONFIG: Record<
   NodeType,
   { label: string; colorClass: string; icon?: React.ReactNode }
@@ -56,17 +69,9 @@ const NODE_CONFIG: Record<
     label: "教师",
     colorClass: "bg-emerald-400 border-emerald-400 hover:bg-emerald-500",
   },
-  Course: {
-    label: "课程",
-    colorClass: "bg-amber-400 border-amber-400 hover:bg-amber-500",
-  },
   KnowledgePoint: {
     label: "知识点",
     colorClass: "bg-violet-400 border-violet-400 hover:bg-violet-500",
-  },
-  ErrorType: {
-    label: "错误类型",
-    colorClass: "bg-red-400 border-red-400 hover:bg-red-500",
   },
 };
 
@@ -95,10 +100,6 @@ const RELATION_CONFIG: Record<
     label: "包含关系",
     colorClass: "text-violet-500 border-violet-200 bg-violet-50",
   },
-  HAS_ERROR: {
-    label: "错误关系",
-    colorClass: "text-red-500 border-red-200 bg-red-50",
-  },
   RELATES_TO: {
     label: "关联关系",
     colorClass: "text-gray-500 border-gray-200 bg-gray-50",
@@ -112,12 +113,22 @@ export function FilterPanel({
   onRelationshipTypeChange,
   dateRange,
   onDateRangeChange,
+  selectedSchool,
+  onSchoolChange,
+  selectedGrade,
+  onGradeChange,
+  selectedClass,
+  onClassChange,
   onApplyFilters,
   onResetFilters,
   onCreateSubview,
   isLoading = false,
 }: FilterPanelProps) {
-  // Toggle helpers
+  // Fetch filter options with hierarchical filtering
+  const { data: filterOptions, isLoading: isFilterOptionsLoading } =
+    useFilterOptions(selectedSchool, selectedGrade);
+
+  // Toggle helpers for node and relationship types (still multi-select)
   const toggleNodeType = (type: NodeType) => {
     const newTypes = selectedNodeTypes.includes(type)
       ? selectedNodeTypes.filter((t) => t !== type)
@@ -142,6 +153,30 @@ export function FilterPanel({
     );
   const clearAllRels = () => onRelationshipTypeChange([]);
 
+  // 处理学校选择
+  const handleSchoolChange = (school: string | undefined) => {
+    onSchoolChange(school);
+    // 级联重置由父组件处理
+  };
+
+  // 处理年级选择
+  const handleGradeChange = (grade: string | undefined) => {
+    const gradeNumber = grade ? parseInt(grade, 10) : undefined;
+    onGradeChange(gradeNumber);
+    // 级联重置由父组件处理
+  };
+
+  // 处理班级选择
+  const handleClassChange = (className: string | undefined) => {
+    onClassChange(className);
+  };
+
+  // 检查年级是否可用 - 必须先选择学校
+  const isGradesDisabled = !selectedSchool;
+
+  // 检查班级是否可用 - 必须先选择年级
+  const isClassesDisabled = !selectedGrade;
+
   return (
     <Card className="w-full border shadow-sm hover:shadow-md transition-all duration-300 bg-white/80 backdrop-blur-sm dark:bg-gray-900/80">
       {/* Header Area */}
@@ -159,15 +194,231 @@ export function FilterPanel({
           )}
         </div>
         <CardDescription className="flex justify-between items-center text-xs mt-1 text-muted-foreground">
-          <span>定制图谱的显示元素与连接</span>
-          <span>
-            已选 {selectedNodeTypes.length + selectedRelationshipTypes.length}{" "}
-            项
-          </span>
+          <div className="flex items-center flex-col">
+            <span>定制图谱的显示元素与连接</span>
+            <div className="flex content-start gap-2">
+              <span>
+                已选
+                {selectedNodeTypes.length +
+                  selectedRelationshipTypes.length +
+                  (selectedSchool ? 1 : 0) +
+                  (selectedGrade ? 1 : 0) +
+                  (selectedClass ? 1 : 0)}
+                项
+              </span>
+            </div>
+            {selectedSchool && selectedGrade && selectedClass && (
+              <span className="text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded text-xs">
+                可加载
+              </span>
+            )}
+          </div>
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="p-5 space-y-6">
+      <CardContent className="p-5 space-y-5">
+        {/* Student Filters - Primary filters for data scoping */}
+        <div className="space-y-4">
+          {/* School Section */}
+          <div className="space-y-3 pl-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-sm font-medium">
+                <Building2 className="h-4 w-4 text-blue-500" />
+                <h3 className="text-foreground">学校</h3>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Select
+                value={selectedSchool ?? ""}
+                onValueChange={(value) =>
+                  handleSchoolChange(value || undefined)
+                }
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="请选择学校" />
+                </SelectTrigger>
+                <SelectContent>
+                  {isFilterOptionsLoading ? (
+                    <div className="p-2 text-center text-sm text-muted-foreground">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500 inline-block mr-2" />
+                      加载学校数据中...
+                    </div>
+                  ) : filterOptions?.schools &&
+                    filterOptions.schools.length > 0 ? (
+                    filterOptions.schools.map((school) => (
+                      <SelectItem key={school} value={school}>
+                        {school}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <div className="p-2 text-center text-sm text-muted-foreground">
+                      暂无可选学校
+                    </div>
+                  )}
+                </SelectContent>
+              </Select>
+
+              {(!filterOptions?.schools ||
+                filterOptions.schools.length === 0) &&
+                !isFilterOptionsLoading && (
+                  <div className="text-xs text-muted-foreground bg-blue-50 border border-blue-200 rounded-md p-3">
+                    <p className="font-medium text-blue-800">📚 暂无可选学校</p>
+                    <div className="text-blue-600 mt-1 space-y-1">
+                      <p>• 导入包含学校信息的学生数据后可使用此筛选</p>
+                    </div>
+                  </div>
+                )}
+            </div>
+          </div>
+
+          <div className="h-[1px] bg-border/30 w-full ml-6" />
+
+          {/* Grade Section */}
+          <div className="space-y-3 pl-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-sm font-medium">
+                <GraduationCap className="h-4 w-4 text-green-500" />
+                <h3 className="text-foreground">年级</h3>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Select
+                value={selectedGrade?.toString() ?? ""}
+                onValueChange={(value) => handleGradeChange(value || undefined)}
+                disabled={isGradesDisabled}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue
+                    placeholder={
+                      isGradesDisabled ? "请先选择学校" : "请选择年级"
+                    }
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {isFilterOptionsLoading ? (
+                    <div className="p-2 text-center text-sm text-muted-foreground">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-500 inline-block mr-2" />
+                      加载年级数据中...
+                    </div>
+                  ) : !isGradesDisabled &&
+                    filterOptions?.grades &&
+                    filterOptions.grades.length > 0 ? (
+                    filterOptions.grades.map((grade) => (
+                      <SelectItem key={grade} value={grade.toString()}>
+                        {grade}年级
+                      </SelectItem>
+                    ))
+                  ) : !isGradesDisabled ? (
+                    <div className="p-2 text-center text-sm text-muted-foreground">
+                      暂无可选年级
+                    </div>
+                  ) : null}
+                </SelectContent>
+              </Select>
+
+              {isGradesDisabled && (
+                <div className="text-xs text-gray-600 bg-gray-50 border border-gray-200 rounded-md p-3">
+                  <p className="font-medium text-gray-800">📚 请先选择学校</p>
+                  <p className="text-gray-500 mt-1">
+                    选择学校后，系统将显示该学校可用的年级列表
+                  </p>
+                </div>
+              )}
+
+              {!isGradesDisabled &&
+                !isFilterOptionsLoading &&
+                (!filterOptions?.grades ||
+                  filterOptions.grades.length === 0) && (
+                  <div className="text-xs text-muted-foreground bg-green-50 border border-green-200 rounded-md p-3">
+                    <p className="font-medium text-green-800">
+                      📚 暂无可选年级
+                    </p>
+                    <div className="text-green-600 mt-1 space-y-1">
+                      <p>• 所选学校暂无可用年级数据</p>
+                      <p>• 请选择其他学校或导入相关数据</p>
+                    </div>
+                  </div>
+                )}
+            </div>
+          </div>
+
+          <div className="h-[1px] bg-border/30 w-full ml-6" />
+
+          {/* Class Section */}
+          <div className="space-y-3 pl-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-sm font-medium">
+                <Users className="h-4 w-4 text-purple-500" />
+                <h3 className="text-foreground">班级</h3>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Select
+                value={selectedClass ?? ""}
+                onValueChange={(value) => handleClassChange(value || undefined)}
+                disabled={isClassesDisabled}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue
+                    placeholder={
+                      isClassesDisabled ? "请先选择年级" : "请选择班级"
+                    }
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {isFilterOptionsLoading ? (
+                    <div className="p-2 text-center text-sm text-muted-foreground">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-500 inline-block mr-2" />
+                      加载班级数据中...
+                    </div>
+                  ) : !isClassesDisabled &&
+                    filterOptions?.classes &&
+                    filterOptions.classes.length > 0 ? (
+                    filterOptions.classes.map((className) => (
+                      <SelectItem key={className} value={className}>
+                        {className}
+                      </SelectItem>
+                    ))
+                  ) : !isClassesDisabled ? (
+                    <div className="p-2 text-center text-sm text-muted-foreground">
+                      暂无可选班级
+                    </div>
+                  ) : null}
+                </SelectContent>
+              </Select>
+
+              {isClassesDisabled && (
+                <div className="text-xs text-gray-600 bg-gray-50 border border-gray-200 rounded-md p-3">
+                  <p className="font-medium text-gray-800">👥 请先选择年级</p>
+                  <p className="text-gray-500 mt-1">
+                    选择年级后，系统将显示该年级可用的班级列表
+                  </p>
+                </div>
+              )}
+
+              {!isClassesDisabled &&
+                !isFilterOptionsLoading &&
+                (!filterOptions?.classes ||
+                  filterOptions.classes.length === 0) && (
+                  <div className="text-xs text-muted-foreground bg-purple-50 border border-purple-200 rounded-md p-3">
+                    <p className="font-medium text-purple-800">
+                      👥 暂无可选班级
+                    </p>
+                    <div className="text-purple-600 mt-1 space-y-1">
+                      <p>• 所选年级暂无可用班级数据</p>
+                      <p>• 请选择其他年级或导入相关数据</p>
+                    </div>
+                  </div>
+                )}
+            </div>
+          </div>
+        </div>
+
+        <div className="h-[1px] bg-border/50 w-full" />
+
         {/* Node Types Section */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
@@ -289,26 +540,37 @@ export function FilterPanel({
 
         {/* Date Range Section */}
         <div className="flex items-center w-full">
-          <DatePicker
+          {/* <DatePicker
             title="时间筛选"
             dateRange={dateRange}
             onDateRangeChange={onDateRangeChange}
-          />
+          /> */}
         </div>
       </CardContent>
 
       <CardFooter className="p-4 flex flex-col gap-2 border-t bg-muted/10">
         <Button
-          className="w-full shadow-md hover:shadow-lg transition-all bg-blue-600 hover:bg-blue-700 text-white"
+          className={`w-full shadow-md hover:shadow-lg transition-all ${
+            selectedSchool && selectedGrade !== undefined && selectedClass
+              ? "bg-blue-600 hover:bg-blue-700 text-white"
+              : "bg-gray-400 hover:bg-gray-500 text-white"
+          }`}
           onClick={onApplyFilters}
-          disabled={isLoading}
+          disabled={
+            isLoading ||
+            !selectedSchool ||
+            selectedGrade === undefined ||
+            !selectedClass
+          }
         >
           {isLoading ? (
             <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
           ) : (
             <Filter className="mr-2 h-4 w-4" />
           )}
-          应用筛选
+          {selectedSchool && selectedGrade !== undefined && selectedClass
+            ? "应用筛选并加载数据"
+            : "请完成学校、年级和班级选择"}
         </Button>
 
         <div className="flex gap-2">

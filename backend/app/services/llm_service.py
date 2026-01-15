@@ -76,17 +76,6 @@ class KnowledgePoint(BaseModel):
     embedding: Optional[List[float]] = None
 
 
-class CourseContext(BaseModel):
-    """课程上下文
-
-    包含课程的基本信息
-    """
-
-    course_id: str
-    course_name: str
-    description: Optional[str] = None
-
-
 class ClassifiedData(BaseModel):
     """分类后的数据
 
@@ -370,15 +359,14 @@ class LLMAnalysisService:
 
     @_rate_limit_decorator
     async def analyze_error(
-        self, error_text: str, context: CourseContext
+        self, error_text: str
     ) -> ErrorAnalysis:
         """分析错误记录
 
-        使用大语言模型分析错误文本，结合课程上下文识别错误类型和相关知识点
+        使用大语言模型分析错误文本，识别错误类型和相关知识点
 
         Args:
             error_text: 错误记录文本
-            context: 课程上下文信息
 
         Returns:
             错误分析结果
@@ -386,16 +374,13 @@ class LLMAnalysisService:
         logger.info(
             "analyzing_error",
             error_text_length=len(error_text),
-            course_id=context.course_id,
         )
 
         # 构建提示词
-        context_str = f"课程：{context.course_name}（{context.course_id}）"
-        if context.description:
-            context_str += f"\n课程描述：{context.description}"
+        context_str = ""
 
         prompt = f"""
-        请分析以下错误记录，结合课程上下文，输出JSON格式结果，包含：
+        请分析以下错误记录，输出JSON格式结果，包含：
         1. error_type: 错误类型
         2. related_knowledge_points: 相关知识点列表
         3. difficulty: 难度等级（easy/medium/hard）
@@ -403,7 +388,6 @@ class LLMAnalysisService:
         5. confidence: 置信度（0-1）
         6. course_context: 课程上下文
         
-        课程上下文：{context_str}
         错误记录：{error_text}
         """
 
@@ -593,9 +577,8 @@ class LLMAnalysisService:
                 if request.type == "interaction":
                     result = await self.analyze_interaction(request.data["text"])
                 elif request.type == "error":
-                    context = CourseContext(**request.data["context"])
                     result = await self.analyze_error(
-                        request.data["error_text"], context
+                        request.data["error_text"]
                     )
                 elif request.type == "knowledge_points":
                     result = await self.extract_knowledge_points(

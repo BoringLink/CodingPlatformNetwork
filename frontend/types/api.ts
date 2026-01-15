@@ -5,12 +5,7 @@
 // Node Types
 import { ElementDefinition } from "cytoscape";
 
-export type NodeType =
-  | "Student"
-  | "Teacher"
-  | "Course"
-  | "KnowledgePoint"
-  | "ErrorType";
+export type NodeType = "Student" | "Teacher" | "KnowledgePoint";
 
 // Relationship Types
 export type RelationshipType =
@@ -19,7 +14,6 @@ export type RelationshipType =
   | "TEACHES"
   | "LEARNS"
   | "CONTAINS"
-  | "HAS_ERROR"
   | "RELATES_TO";
 
 // Node interface
@@ -72,7 +66,11 @@ export interface VisualizationEdge {
 export interface VisualizationData {
   nodes: VisualizationNode[];
   edges: VisualizationEdge[];
-  layout?: string;
+  layout?: {
+    name: string;
+    options: Record<string, unknown>;
+  };
+  llm_analysis?: unknown;
 }
 
 // Node details
@@ -99,6 +97,9 @@ export interface GraphFilter {
   nodeTypes?: NodeType[];
   relationshipTypes?: RelationshipType[];
   dateRange?: { start: string; end: string };
+  school?: string;
+  grade?: number;
+  class?: string;
   properties?: Record<string, unknown>;
   limit?: number;
   offset?: number;

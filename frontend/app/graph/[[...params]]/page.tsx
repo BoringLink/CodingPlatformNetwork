@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { debounce } from "@/lib/utils";
 import {
   GraphVisualization,
   GraphVisualizationRef,
@@ -15,9 +14,9 @@ import { GraphLegend } from "@/components/graph-legend";
 import { GraphStats } from "@/components/graph-stats";
 
 import { useVisualization, useNodeDetails, useNodes } from "@/hooks/use-api";
-import { NodeType, RelationshipType } from "@/types/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { GraduationCap } from "lucide-react";
 
 import { useGraphStore } from "@/store/graph-store";
 
@@ -62,26 +61,55 @@ export default function GraphPage() {
     // TODO: Implement loading subview filter and data
   };
 
-  // Fetch nodes first to get a valid root node ID
-  const { data: nodesData } = useNodes();
+  // 判断筛选条件是否完整（学校、年级、班级都必选）
+  const isFilterComplete =
+    appliedFilter.school !== undefined &&
+    appliedFilter.grade !== undefined &&
+    appliedFilter.class !== undefined &&
+    appliedFilter.nodeTypes.length > 0;
 
-  // Use the first node as root if available, otherwise default to "1"
-  const rootNodeId = nodesData?.nodes?.[0]?.id || "1";
+  // 只有筛选完整时才请求节点
+  const { data: nodesData, isLoading: isNodesLoading } = useNodes(
+    {
+      school: appliedFilter.school,
+      grade: appliedFilter.grade,
+      class: appliedFilter.class,
+      nodeTypes: appliedFilter.nodeTypes,
+      limit: 1, // 只需要获取第一个节点作为 rootNodeId
+    },
+    { enabled: isFilterComplete }
+  );
 
-  // Use the API hook to fetch visualization data
+  // 获取第一个节点作为根节点
+  const rootNodeId = nodesData?.nodes?.[0]?.id;
+
+  // 只有获取到 rootNodeId 才请求可视化
   const {
     data: visualizationData,
-    isLoading,
+    isLoading: isVisualizationLoading,
     refetch,
-  } = useVisualization(rootNodeId, depth, {
-    nodeTypes: appliedFilter.nodeTypes,
-    relationshipTypes: appliedFilter.relationshipTypes,
-    school: appliedFilter.school,
-    grade: appliedFilter.grade,
-    class: appliedFilter.class,
-    startDate: appliedFilter.dateRange?.from,
-    endDate: appliedFilter.dateRange?.to,
-  });
+  } = useVisualization(
+    rootNodeId || "",
+    depth,
+    {
+      nodeTypes: appliedFilter.nodeTypes,
+      relationshipTypes: appliedFilter.relationshipTypes,
+      school: appliedFilter.school,
+      grade: appliedFilter.grade,
+      class: appliedFilter.class,
+    },
+    { enabled: !!rootNodeId }
+  );
+
+  // 综合加载状态
+  const isLoading = isNodesLoading || isVisualizationLoading;
+
+  // Debug logging
+  console.log("Applied filter:", appliedFilter);
+  console.log("Is filter complete:", isFilterComplete);
+  console.log("Root node ID:", rootNodeId);
+  console.log("Visualization data:", visualizationData);
+  console.log("Nodes count:", visualizationData?.nodes?.length);
 
   // Fetch node details when selectedNodeId changes
   const { data: nodeDetails } = useNodeDetails(selectedNodeId || "");
@@ -166,6 +194,23 @@ export default function GraphPage() {
             onDateRangeChange={(date) =>
               setPendingFilter({ ...pendingFilter, dateRange: date })
             }
+            selectedSchool={pendingFilter.school}
+            onSchoolChange={(school) =>
+              setPendingFilter({
+                ...pendingFilter,
+                school,
+                grade: undefined,
+                class: undefined,
+              })
+            }
+            selectedGrade={pendingFilter.grade}
+            onGradeChange={(grade) =>
+              setPendingFilter({ ...pendingFilter, grade, class: undefined })
+            }
+            selectedClass={pendingFilter.class}
+            onClassChange={(cls) =>
+              setPendingFilter({ ...pendingFilter, class: cls })
+            }
             onApplyFilters={handleApplyFilters}
             onResetFilters={handleResetFilters}
             onCreateSubview={() => setShowSubviewManager(true)}
@@ -217,7 +262,7 @@ export default function GraphPage() {
             </div>
           ) : visualizationData &&
             visualizationData.nodes.length > 0 &&
-            appliedFilter.nodeTypes.length > 0 ? (
+            isFilterComplete ? (
             <>
               <GraphVisualization
                 ref={cytoscapeRef}
@@ -239,13 +284,46 @@ export default function GraphPage() {
                 className="absolute bottom-4 right-4"
               />
             </>
+          ) : !isFilterComplete ? (
+            <div className="h-full flex items-center justify-center">
+              <div className="text-center max-w-md">
+                <div className="mb-4">
+                  <GraduationCap className="h-16 w-16 text-blue-500 mx-auto mb-4" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                  请完成筛选条件
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400 mb-6">
+                  请在左侧筛选面板中选择学校、年级和班级，然后点击"应用筛选"查看数据
+                </p>
+                <div className="text-sm text-gray-500 space-y-1">
+                  <p>
+                    {appliedFilter.school ? "✅" : "⬜"} 学校:{" "}
+                    {appliedFilter.school || "未选择"}
+                  </p>
+                  <p>
+                    {appliedFilter.grade !== undefined ? "✅" : "⬜"} 年级:{" "}
+                    {appliedFilter.grade !== undefined
+                      ? `${appliedFilter.grade}年级`
+                      : "未选择"}
+                  </p>
+                  <p>
+                    {appliedFilter.class ? "✅" : "⬜"} 班级:{" "}
+                    {appliedFilter.class || "未选择"}
+                  </p>
+                </div>
+              </div>
+            </div>
           ) : (
             <div className="h-full flex items-center justify-center">
               <div className="text-center">
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
                   暂无图谱数据
                 </p>
-                <Button onClick={() => refetch()}>加载数据</Button>
+                <p className="text-sm text-gray-500 mb-4">
+                  请检查筛选条件，或尝试重新加载
+                </p>
+                <Button onClick={() => refetch()}>重新加载</Button>
               </div>
             </div>
           )}

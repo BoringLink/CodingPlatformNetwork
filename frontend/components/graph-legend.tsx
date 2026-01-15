@@ -7,9 +7,7 @@ import { NodeType, RelationshipType } from "@/types/api";
 const nodeColorMap: Record<NodeType | string, string> = {
   Student: "#60a5fa",
   Teacher: "#34d399",
-  Course: "#fbbf24",
   KnowledgePoint: "#a78bfa",
-  ErrorType: "#f87171",
 };
 
 const edgeColorMap: Record<RelationshipType | string, string> = {
@@ -47,9 +45,7 @@ const relationshipTypeLabels: Record<RelationshipType | string, string> = {
 const nodeTypeLabels: Record<NodeType | string, string> = {
   Student: "学生",
   Teacher: "教师",
-  Course: "课程",
   KnowledgePoint: "知识点",
-  ErrorType: "错误类型",
 };
 
 export const GraphLegend = () => {
@@ -61,7 +57,9 @@ export const GraphLegend = () => {
       <CardContent>
         {/* 节点图例 */}
         <div className="mb-4">
-          <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">节点类型</h4>
+          <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">
+            节点类型
+          </h4>
           <div className="space-y-2">
             {Object.entries(nodeColorMap).map(([type, color]) => (
               <div key={type} className="flex items-center gap-2">
@@ -69,9 +67,7 @@ export const GraphLegend = () => {
                   className="w-4 h-4 rounded-full border border-white"
                   style={{ backgroundColor: color }}
                 />
-                <span className="text-sm">
-                  {nodeTypeLabels[type] || type}
-                </span>
+                <span className="text-sm">{nodeTypeLabels[type] || type}</span>
               </div>
             ))}
           </div>
@@ -79,7 +75,9 @@ export const GraphLegend = () => {
 
         {/* 边图例 */}
         <div>
-          <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">关系类型</h4>
+          <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">
+            关系类型
+          </h4>
           <div className="space-y-2">
             {Object.entries(edgeColorMap).map(([type, color]) => (
               <div key={type} className="flex items-center gap-2">
@@ -91,7 +89,8 @@ export const GraphLegend = () => {
                       backgroundColor: color,
                       borderStyle: edgeStyleMap[type] as any,
                       borderWidth: edgeStyleMap[type] === "dot" ? "2px" : "1px",
-                      borderColor: edgeStyleMap[type] === "dot" ? "transparent" : color,
+                      borderColor:
+                        edgeStyleMap[type] === "dot" ? "transparent" : color,
                     }}
                   />
                   {/* 箭头 */}

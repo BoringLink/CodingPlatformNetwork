@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """为数据库中的所有节点添加UUID格式的id属性"""
 
 import asyncio
@@ -34,42 +33,55 @@ async def add_uuid_to_all_nodes():
                 logger.info("所有节点都已经有id属性，无需处理")
                 return
 
-            # 获取所有没有id的节点
-            query = "MATCH (n) WHERE n.id IS NULL RETURN id(n) AS node_id, labels(n) AS labels LIMIT 1000"
-            result = await session.run(query)
-            records = await result.data()
+            total_processed = 0
+            batch_size = 1000
 
-            logger.info(f"开始处理 {len(records)} 个节点")
+            while True:
+                # 获取当前批次的没有id的节点
+                query = "MATCH (n) WHERE n.id IS NULL RETURN id(n) AS node_id, labels(n) AS labels LIMIT $batch_size"
+                result = await session.run(query, batch_size=batch_size)
+                records = await result.data()
 
-            # 为每个节点添加UUID格式的id
-            for record in records:
-                node_internal_id = record["node_id"]
-                labels = record["labels"]
+                if not records:
+                    break
 
-                # 生成UUID作为id
-                new_id = str(uuid.uuid4())
-
-                # 更新节点
-                update_query = "MATCH (n) WHERE id(n) = $node_id SET n.id = $new_id RETURN labels(n) AS labels"
-                await session.run(update_query, node_id=node_internal_id, new_id=new_id)
-
+                batch_count = len(records)
                 logger.info(
-                    f"为节点 {node_internal_id} 添加id: {new_id}, 标签: {labels}"
+                    f"开始处理第 {total_processed // batch_size + 1} 批，共 {batch_count} 个节点"
                 )
 
-            logger.info(f"成功为 {len(records)} 个节点添加了UUID格式的id")
+                # 为每个节点添加UUID格式的id
+                for record in records:
+                    node_internal_id = record["node_id"]
+                    labels = record["labels"]
 
-            # 再次检查是否还有没有id的节点
-            count_result = await session.run(count_query)
-            count_record = await count_result.single()
-            remaining_nodes = count_record["count"] if count_record else 0
+                    # 生成UUID作为id
+                    new_id = str(uuid.uuid4())
 
-            if remaining_nodes > 0:
-                logger.warning(
-                    f"仍有 {remaining_nodes} 个节点没有id属性，可能需要分批处理"
-                )
-            else:
-                logger.info("所有节点都已添加id属性")
+                    # 更新节点
+                    update_query = "MATCH (n) WHERE id(n) = $node_id SET n.id = $new_id RETURN labels(n) AS labels"
+                    await session.run(
+                        update_query, node_id=node_internal_id, new_id=new_id
+                    )
+
+                    logger.info(
+                        f"为节点 {node_internal_id} 添加id: {new_id}, 标签: {labels}"
+                    )
+
+                total_processed += batch_count
+                logger.info(f"已成功处理 {total_processed} 个节点")
+
+                # 检查是否还有剩余节点
+                count_result = await session.run(count_query)
+                count_record = await count_result.single()
+                remaining_nodes = count_record["count"] if count_record else 0
+
+                logger.info(f"剩余 {remaining_nodes} 个节点需要处理")
+
+            logger.info(
+                f"所有节点处理完成，共为 {total_processed} 个节点添加了UUID格式的id"
+            )
+            logger.info("所有节点都已添加id属性")
 
     except Exception as e:
         logger.error(f"处理过程中发生错误: {str(e)}")
