@@ -28,3 +28,6 @@ dist-ssr
 *.xls
 ~$*.xlsx
 ~$*.xls
+
+# Vite generated files
+.vite/
