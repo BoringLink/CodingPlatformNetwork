@@ -1,22 +1,22 @@
-import { SimulationNodeDatum, SimulationLinkDatum } from 'd3';
+import { SimulationNodeDatum, SimulationLinkDatum } from "d3";
 
 export enum NodeType {
-  STUDENT = 'STUDENT',
-  TEACHER = 'TEACHER',
-  KNOWLEDGE = 'KNOWLEDGE'
+  STUDENT = "STUDENT",
+  TEACHER = "TEACHER",
+  KNOWLEDGE = "KNOWLEDGE",
 }
 
 export enum InteractionType {
-  PHYSICAL = 'PHYSICAL', // 基于物理空间采集 (实线)
-  PLATFORM = 'PLATFORM'  // 基于平台采集 (虚线)
+  PHYSICAL = "PHYSICAL", // 基于物理空间采集 (实线)
+  PLATFORM = "PLATFORM", // 基于平台采集 (虚线)
 }
 
 export enum Scenario {
-  ONLINE_COURSE = '学科课程在线学习',
-  AFTER_SCHOOL_QA = '课后线上教师授课答疑',
-  HOME_LEARNING = '家庭在线学习',
-  COLLABORATIVE = '在线协作学习',
-  INFORMAL_CLUBS = '社团课等非正式学习'
+  ONLINE_COURSE = "学科课程在线学习",
+  AFTER_SCHOOL_QA = "课后线上教师授课答疑",
+  HOME_LEARNING = "家庭在线学习",
+  COLLABORATIVE = "在线协作学习",
+  INFORMAL_CLUBS = "社团课等非正式学习",
 }
 
 export interface CognitiveAttributes {
@@ -31,7 +31,7 @@ export interface CognitiveAttributes {
 }
 
 export interface StudentProfile extends CognitiveAttributes {
-  gender: '男' | '女';
+  gender: "男" | "女";
   school: string;
   grade: string;
   classId: string;
@@ -40,18 +40,17 @@ export interface StudentProfile extends CognitiveAttributes {
 export interface KnowledgeProfile {
   content: string; // 知识点具体内容/操作步骤
   category: string; // 分类，如 Word操作，数学概念
+  type: "知识单元" | "知识点"; // 知识点类型
+  parentId?: string; // 上级知识点ID
+  parentName?: string; // 上级知识点名称
+  relatedKnowledgeIds?: string[]; // 关联知识点ID数组
+  relatedKnowledgeNames?: string[]; // 关联知识点名称数组
 }
 
 export interface TeacherProfile {
-  gender: '男' | '女';
-  age: number;
   school: string;
-  employeeId: string;
-  title: string;
   teachingGrade: string;
   teachingClass: string;
-  subject: string;
-  slogan: string;
 }
 
 export interface GraphNode extends SimulationNodeDatum {
