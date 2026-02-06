@@ -128,14 +128,10 @@ GEMINI_API_KEY=your_gemini_api_key
 ```env
 # .env
 # 数据库连接配置
-DATABASE_HOST=rm-bp10v29fkj305q3smfo.sqlserver.rds.aliyuncs.com
-DATABASE_PORT=3433
-DATABASE_USERNAME=coding_data
-DATABASE_PASSWORD=root
-DATABASE_NAME=interaction_network_db
+DATABASE_URL=your_database_url
 
 # AI API Key
-AI_API_KEY=your_aliyun_ai_key
+AI_API_KEY=your_ai_api_key
 ```
 
 ### 4. 启动项目
@@ -257,16 +253,16 @@ npm run dev
 
 ### 2. API命名规范
 
-- **API路径**：使用小写字母和连字符（kebab-case），如`/api/v1/students`
-- **查询参数**：使用小写字母和连字符（kebab-case），如`teacher-id`
+- **API路径**：使用蛇形命名法（snake_case），如`/api/v1/students`
+- **查询参数**：使用蛇形命名法（snake_case），如`teacher_id`
 - **请求体参数**：使用驼峰命名法（camelCase），如`teacherId`
 - **响应字段**：使用驼峰命名法（camelCase），如`studentProfile`
 
 ### 3. 数据库命名规范
 
-- **表名**：使用帕斯卡命名法（PascalCase），复数形式，如`Students`
+- **表名**：使用蛇形命名法（snake_case），全部小写，单词之间使用下划线分隔，复数形式，如`students`
 - **字段名**：使用蛇形命名法（snake_case），全部小写，如`learning_engagement`
-- **索引名**：使用`[表名小写]_[字段1]_[字段2]...`格式，如`students_school_grade`
+- **索引名**：使用`[表名]_[字段1]_[字段2]...`格式，如`students_school_grade`
 
 ### 4. 代码风格规范
 
@@ -276,6 +272,7 @@ npm run dev
 - **大括号**：使用K&R风格，左大括号放在行尾
 - **空格**：在操作符和括号之间添加空格
 - **注释**：使用JSDoc风格注释，为类、方法和重要变量添加说明
+- **校验**: 使用Oxlint进行代码校验，确保符合规范
 
 ### 5. 最佳实践
 
