@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model Student {
+  id                  String   @id @default(cuid())
+  name                String
+  school              String
+  grade               String
+  classId             String
+  knowledgeReserve    Float
+  learningEngagement  Float
+  cognitiveLoad       Float
+  learningMotivation  Float
+  computationalThinking Float
+  humanAiTrust        Float
+  learningMethod      Float
+  learningAttitude    Float
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@map("students")
+}
+
+model Teacher {
+  id            String   @id @default(cuid())
+  name          String
+  school        String
+  teachingGrade String
+  teachingClass String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("teachers")
+}
+
+model TeacherClassMapping {
+  id        String   @id @default(cuid())
+  teacherId String
+  grade     String
+  classId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("teacher_class_mappings")
+}
+
+model Knowledge {
+  id                    String   @id @default(cuid())
+  content               String
+  knowledgePoint        String
+  grade                 String
+  type                  String
+  parentId              String?
+  parentName            String?
+  relatedKnowledgeIds   String
+  relatedKnowledgeNames String
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("knowledge_points")
+}
+
+model Interaction {
+  id            String   @id @default(cuid())
+  sourceId      String
+  targetId      String
+  sourceType    String
+  targetType    String
+  value         Float
+  type          String
+  interactionType String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("interactions")
+}
