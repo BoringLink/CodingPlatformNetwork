@@ -42,7 +42,6 @@ src/
 │   ├── teacher/
 │   ├── knowledge/
 │   ├── interaction/
-│   ├── teacher-observation/
 │   └── data-migration/
 ├── prisma/
 │   └── schema.prisma
@@ -71,7 +70,6 @@ datasource db {
 model Student {
   id                  String   @id @default(cuid())
   name                String
-  gender              String
   school              String
   grade               String
   classId             String
@@ -169,7 +167,6 @@ model Interaction {
     {
       "id": "S001",
       "name": "陆雨欣",
-      "gender": "女",
       "school": "湖州市爱山小学教育集团常溪小学",
       "grade": "5年级",
       "classId": "新五年级2班",
@@ -195,23 +192,22 @@ model Interaction {
 
   ```json
   {
-    "id": "S001",
-    "name": "陆雨欣",
-    "gender": "女",
-    "school": "湖州市爱山小学教育集团常溪小学",
-    "grade": "5年级",
-    "classId": "新五年级2班",
-    "knowledgeReserve": 5,
-    "learningEngagement": 5,
-    "cognitiveLoad": 3,
-    "learningMotivation": 5,
-    "computationalThinking": 4,
-    "humanAiTrust": 3,
-    "learningMethod": 5,
-    "learningAttitude": 5,
-    "createdAt": "2026-02-06T10:00:00Z",
-    "updatedAt": "2026-02-06T10:00:00Z"
-  }
+      "id": "S001",
+      "name": "陆雨欣",
+      "school": "湖州市爱山小学教育集团常溪小学",
+      "grade": "5年级",
+      "classId": "新五年级2班",
+      "knowledgeReserve": 5,
+      "learningEngagement": 5,
+      "cognitiveLoad": 3,
+      "learningMotivation": 5,
+      "computationalThinking": 4,
+      "humanAiTrust": 3,
+      "learningMethod": 5,
+      "learningAttitude": 5,
+      "createdAt": "2026-02-06T10:00:00Z",
+      "updatedAt": "2026-02-06T10:00:00Z"
+    }
   ```
 
 #### 4.1.3 创建学生
@@ -223,7 +219,6 @@ model Interaction {
   ```json
   {
     "name": "张三",
-    "gender": "男",
     "school": "杭州市文澜实验学校",
     "grade": "4年级",
     "classId": "四年级10班",
@@ -242,23 +237,22 @@ model Interaction {
 
   ```json
   {
-    "id": "S002",
-    "name": "张三",
-    "gender": "男",
-    "school": "杭州市文澜实验学校",
-    "grade": "4年级",
-    "classId": "四年级10班",
-    "knowledgeReserve": 4,
-    "learningEngagement": 4,
-    "cognitiveLoad": 3,
-    "learningMotivation": 4,
-    "computationalThinking": 3,
-    "humanAiTrust": 4,
-    "learningMethod": 3,
-    "learningAttitude": 4,
-    "createdAt": "2026-02-06T10:00:00Z",
-    "updatedAt": "2026-02-06T10:00:00Z"
-  }
+      "id": "S002",
+      "name": "张三",
+      "school": "杭州市文澜实验学校",
+      "grade": "4年级",
+      "classId": "四年级10班",
+      "knowledgeReserve": 4,
+      "learningEngagement": 4,
+      "cognitiveLoad": 3,
+      "learningMotivation": 4,
+      "computationalThinking": 3,
+      "humanAiTrust": 4,
+      "learningMethod": 3,
+      "learningAttitude": 4,
+      "createdAt": "2026-02-06T10:00:00Z",
+      "updatedAt": "2026-02-06T10:00:00Z"
+    }
   ```
 
 #### 4.1.4 更新学生
@@ -278,23 +272,22 @@ model Interaction {
 
   ```json
   {
-    "id": "S001",
-    "name": "陆雨欣",
-    "gender": "女",
-    "school": "湖州市爱山小学教育集团常溪小学",
-    "grade": "5年级",
-    "classId": "新五年级2班",
-    "knowledgeReserve": 5,
-    "learningEngagement": 5,
-    "cognitiveLoad": 3,
-    "learningMotivation": 5,
-    "computationalThinking": 4,
-    "humanAiTrust": 3,
-    "learningMethod": 5,
-    "learningAttitude": 5,
-    "createdAt": "2026-02-06T10:00:00Z",
-    "updatedAt": "2026-02-06T10:30:00Z"
-  }
+      "id": "S001",
+      "name": "陆雨欣",
+      "school": "湖州市爱山小学教育集团常溪小学",
+      "grade": "5年级",
+      "classId": "新五年级2班",
+      "knowledgeReserve": 5,
+      "learningEngagement": 5,
+      "cognitiveLoad": 3,
+      "learningMotivation": 5,
+      "computationalThinking": 4,
+      "humanAiTrust": 3,
+      "learningMethod": 5,
+      "learningAttitude": 5,
+      "createdAt": "2026-02-06T10:00:00Z",
+      "updatedAt": "2026-02-06T10:30:00Z"
+    }
   ```
 
 #### 4.1.5 删除学生
@@ -827,7 +820,6 @@ model Interaction {
         "group": 3,
         "val": 8,
         "studentProfile": {
-          "gender": "女",
           "school": "湖州市爱山小学教育集团常溪小学",
           "grade": "5年级",
           "classId": "新五年级2班",
@@ -1106,7 +1098,6 @@ export class GraphService {
         group: 3,
         val: 8,
         studentProfile: {
-          gender: student.gender,
           school: student.school,
           grade: student.grade,
           classId: student.classId,
@@ -1174,7 +1165,6 @@ import { z } from 'zod';
 
 export const createStudentSchema = z.object({
   name: z.string().min(1, '姓名不能为空'),
-  gender: z.enum(['男', '女'], { required_error: '性别必须是男或女' }),
   school: z.string().min(1, '学校名称不能为空'),
   grade: z.string().min(1, '年级不能为空'),
   classId: z.string().min(1, '班级不能为空'),
