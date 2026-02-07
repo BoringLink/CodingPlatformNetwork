@@ -1,18 +1,25 @@
-import { Controller, Post, Body, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Get, HttpException, HttpStatus } from '@nestjs/common';
 import { DataMigrationService } from './data-migration.service';
-import { ImportDataDto, importDataSchema } from './data-migration.dto';
 
 @Controller('api/v1/data-migration')
 export class DataMigrationController {
   constructor(private readonly dataMigrationService: DataMigrationService) {}
 
-  @Post('import')
-  async importData(@Body() body: ImportDataDto) {
+  @Post('migrate')
+  async migrateData() {
     try {
-      const validatedData = importDataSchema.parse(body);
-      return this.dataMigrationService.importData(validatedData);
+      return await this.dataMigrationService.executeFullMigration();
     } catch (error) {
-      throw new HttpException(error.errors || '请求参数错误', HttpStatus.BAD_REQUEST);
+      throw new HttpException(error.message || '数据迁移失败', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Get('verify')
+  async verifyMigration() {
+    try {
+      return await this.dataMigrationService.verifyMigration();
+    } catch (error) {
+      throw new HttpException(error.message || '验证迁移结果失败', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }
