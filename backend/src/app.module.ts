@@ -6,12 +6,13 @@ import { KnowledgeModule } from "./modules/knowledge/knowledge.module";
 import { InteractionModule } from "./modules/interaction/interaction.module";
 import { DataMigrationModule } from "./modules/data-migration/data-migration.module";
 import { GraphModule } from "./modules/graph/graph.module";
+import { PrismaService } from "./shared/utils/prisma.service";
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: "../.env.local",
+      envFilePath: "../.env",
     }),
     StudentModule,
     TeacherModule,
@@ -21,6 +22,7 @@ import { GraphModule } from "./modules/graph/graph.module";
     GraphModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [PrismaService],
+  exports: [PrismaService],
 })
 export class AppModule {}

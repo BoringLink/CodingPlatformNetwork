@@ -91,8 +91,8 @@ export class GraphService {
           type: k.type,
           parentId: k.parentId,
           parentName: k.parentName,
-          relatedKnowledgeIds: k.relatedKnowledgeIds,
-          relatedKnowledgeNames: k.relatedKnowledgeNames,
+          relatedKnowledgeIds: JSON.parse(k.relatedKnowledgeIds),
+          relatedKnowledgeNames: JSON.parse(k.relatedKnowledgeNames),
         },
       })),
     ];
