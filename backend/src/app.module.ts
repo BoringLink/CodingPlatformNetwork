@@ -6,6 +6,7 @@ import { KnowledgeModule } from "./modules/knowledge/knowledge.module";
 import { InteractionModule } from "./modules/interaction/interaction.module";
 import { DataMigrationModule } from "./modules/data-migration/data-migration.module";
 import { GraphModule } from "./modules/graph/graph.module";
+import { TeacherClassMappingModule } from "./modules/teacher-class-mapping/teacher-class-mapping.module";
 import { PrismaService } from "./shared/utils/prisma.service";
 
 @Module({
@@ -20,6 +21,7 @@ import { PrismaService } from "./shared/utils/prisma.service";
     InteractionModule,
     DataMigrationModule,
     GraphModule,
+    TeacherClassMappingModule,
   ],
   controllers: [],
   providers: [PrismaService],
