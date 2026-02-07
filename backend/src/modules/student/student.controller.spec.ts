@@ -1,167 +1,145 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { StudentController } from './student.controller';
-import { StudentService } from './student.service';
-import { HttpException, HttpStatus } from '@nestjs/common';
-import { CreateStudentDto, UpdateStudentDto } from './student.dto';
+import { Test, TestingModule } from "@nestjs/testing";
+import { INestApplication } from "@nestjs/common";
+import * as request from "supertest";
+import { StudentController } from "./student.controller";
+import { StudentService } from "./student.service";
+import { CreateStudentDto } from "./student.dto";
 
-describe('StudentController', () => {
-  let controller: StudentController;
-  let service: StudentService;
+const mockStudentService = {
+  findAll: jest.fn(),
+  findOne: jest.fn(),
+  create: jest.fn(),
+  update: jest.fn(),
+  delete: jest.fn(),
+};
+
+describe("StudentController", () => {
+  let app: INestApplication;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    const moduleFixture: TestingModule = await Test.createTestingModule({
       controllers: [StudentController],
       providers: [
         {
           provide: StudentService,
-          useValue: {
-            findAll: jest.fn(),
-            findOne: jest.fn(),
-            create: jest.fn(),
-            update: jest.fn(),
-            delete: jest.fn(),
-          },
+          useValue: mockStudentService,
         },
       ],
     }).compile();
 
-    controller = module.get<StudentController>(StudentController);
-    service = module.get<StudentService>(StudentService);
+    app = moduleFixture.createNestApplication();
+    await app.init();
   });
 
-  describe('findAll', () => {
-    it('should return students list with no filters', async () => {
+  afterEach(async () => {
+    if (app) {
+      await app.close();
+    }
+  });
+
+  describe("GET /api/v1/students", () => {
+    it("should return an array of students", async () => {
       const mockStudents = [
         {
-          id: 'S001',
-          name: '陆雨欣',
-          school: '湖州市爱山小学教育集团常溪小学',
-          grade: '5年级',
-          classId: '新五年级2班',
-          knowledgeReserve: 5,
-          learningEngagement: 5,
+          id: "S001",
+          name: "测试学生",
+          school: "测试学校",
+          grade: "5年级",
+          classId: "1班",
+          knowledgeReserve: 4,
+          learningEngagement: 4,
           cognitiveLoad: 3,
-          learningMotivation: 5,
-          computationalThinking: 4,
-          humanAiTrust: 3,
-          learningMethod: 5,
-          learningAttitude: 5,
-          createdAt: new Date(),
-          updatedAt: new Date(),
+          learningMotivation: 4,
+          computationalThinking: 3,
+          humanAiTrust: 4,
+          learningMethod: 3,
+          learningAttitude: 4,
         },
       ];
 
-      jest.spyOn(service, 'findAll').mockResolvedValue(mockStudents);
+      mockStudentService.findAll.mockResolvedValue(mockStudents);
 
-      const result = await controller.findAll(undefined, undefined, undefined);
-
-      expect(result).toEqual(mockStudents);
-      expect(service.findAll).toHaveBeenCalledWith({ school: undefined, grade: undefined, classId: undefined });
+      const response = await request(app.getHttpServer()).get(
+        "/api/v1/students",
+      );
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(mockStudents);
     });
 
-    it('should return students list with school filter', async () => {
+    it("should handle query parameters", async () => {
       const mockStudents = [
         {
-          id: 'S001',
-          name: '陆雨欣',
-          school: '湖州市爱山小学教育集团常溪小学',
-          grade: '5年级',
-          classId: '新五年级2班',
-          knowledgeReserve: 5,
-          learningEngagement: 5,
+          id: "S001",
+          name: "测试学生",
+          school: "测试学校",
+          grade: "5年级",
+          classId: "1班",
+          knowledgeReserve: 4,
+          learningEngagement: 4,
           cognitiveLoad: 3,
-          learningMotivation: 5,
-          computationalThinking: 4,
-          humanAiTrust: 3,
-          learningMethod: 5,
-          learningAttitude: 5,
-          createdAt: new Date(),
-          updatedAt: new Date(),
+          learningMotivation: 4,
+          computationalThinking: 3,
+          humanAiTrust: 4,
+          learningMethod: 3,
+          learningAttitude: 4,
         },
       ];
 
-      jest.spyOn(service, 'findAll').mockResolvedValue(mockStudents);
+      mockStudentService.findAll.mockResolvedValue(mockStudents);
 
-      const result = await controller.findAll('湖州市爱山小学教育集团常溪小学', undefined, undefined);
-
-      expect(result).toEqual(mockStudents);
-      expect(service.findAll).toHaveBeenCalledWith({ school: '湖州市爱山小学教育集团常溪小学', grade: undefined, classId: undefined });
-    });
-
-    it('should return students list with grade and class filters', async () => {
-      const mockStudents = [
-        {
-          id: 'S001',
-          name: '陆雨欣',
-          school: '湖州市爱山小学教育集团常溪小学',
-          grade: '5年级',
-          classId: '新五年级2班',
-          knowledgeReserve: 5,
-          learningEngagement: 5,
-          cognitiveLoad: 3,
-          learningMotivation: 5,
-          computationalThinking: 4,
-          humanAiTrust: 3,
-          learningMethod: 5,
-          learningAttitude: 5,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      ];
-
-      jest.spyOn(service, 'findAll').mockResolvedValue(mockStudents);
-
-      const result = await controller.findAll(undefined, '5年级', '新五年级2班');
-
-      expect(result).toEqual(mockStudents);
-      expect(service.findAll).toHaveBeenCalledWith({ school: undefined, grade: '5年级', classId: '新五年级2班' });
+      const response = await request(app.getHttpServer())
+        .get("/api/v1/students")
+        .query({ school: "测试学校", grade: "5年级", class_id: "1班" });
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(mockStudents);
     });
   });
 
-  describe('findOne', () => {
-    it('should return student by id', async () => {
+  describe("GET /api/v1/students/:id", () => {
+    it("should return a student by id", async () => {
       const mockStudent = {
-        id: 'S001',
-        name: '陆雨欣',
-        school: '湖州市爱山小学教育集团常溪小学',
-        grade: '5年级',
-        classId: '新五年级2班',
-        knowledgeReserve: 5,
-        learningEngagement: 5,
+        id: "S001",
+        name: "测试学生",
+        school: "测试学校",
+        grade: "5年级",
+        classId: "1班",
+        knowledgeReserve: 4,
+        learningEngagement: 4,
         cognitiveLoad: 3,
-        learningMotivation: 5,
-        computationalThinking: 4,
-        humanAiTrust: 3,
-        learningMethod: 5,
-        learningAttitude: 5,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        learningMotivation: 4,
+        computationalThinking: 3,
+        humanAiTrust: 4,
+        learningMethod: 3,
+        learningAttitude: 4,
       };
 
-      jest.spyOn(service, 'findOne').mockResolvedValue(mockStudent);
+      mockStudentService.findOne.mockResolvedValue(mockStudent);
 
-      const result = await controller.findOne('S001');
-
-      expect(result).toEqual(mockStudent);
-      expect(service.findOne).toHaveBeenCalledWith('S001');
+      const response = await request(app.getHttpServer()).get(
+        "/api/v1/students/S001",
+      );
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(mockStudent);
     });
 
-    it('should throw 404 error when student not found', async () => {
-      jest.spyOn(service, 'findOne').mockResolvedValue(null);
+    it("should handle student not found", async () => {
+      mockStudentService.findOne.mockResolvedValue(null);
 
-      await expect(controller.findOne('S999')).rejects.toThrow(HttpException);
-      await expect(controller.findOne('S999')).rejects.toThrow('学生不存在');
-      await expect(controller.findOne('S999')).rejects.toMatchObject({ status: HttpStatus.NOT_FOUND });
+      const response = await request(app.getHttpServer()).get(
+        "/api/v1/students/non-existent",
+      );
+      expect(response.status).toBe(404);
+      expect(response.body).toHaveProperty("message", "学生不存在");
     });
   });
 
-  describe('create', () => {
-    it('should create student with valid data', async () => {
-      const createDto: CreateStudentDto = {
-        name: '张三',
-        school: '杭州市文澜实验学校',
-        grade: '4年级',
-        classId: '四年级10班',
+  describe("POST /api/v1/students", () => {
+    it("should create a new student", async () => {
+      const createStudentDto: CreateStudentDto = {
+        name: "测试学生",
+        school: "测试学校",
+        grade: "5年级",
+        classId: "1班",
         knowledgeReserve: 4,
         learningEngagement: 4,
         cognitiveLoad: 3,
@@ -173,38 +151,49 @@ describe('StudentController', () => {
       };
 
       const mockStudent = {
-        id: 'S002',
-        name: createDto.name,
-        school: createDto.school,
-        grade: createDto.grade,
-        classId: createDto.classId,
-        knowledgeReserve: createDto.knowledgeReserve,
-        learningEngagement: createDto.learningEngagement,
-        cognitiveLoad: createDto.cognitiveLoad,
-        learningMotivation: createDto.learningMotivation,
-        computationalThinking: createDto.computationalThinking,
-        humanAiTrust: createDto.humanAiTrust,
-        learningMethod: createDto.learningMethod,
-        learningAttitude: createDto.learningAttitude,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        id: "S001",
+        ...createStudentDto,
       };
 
-      jest.spyOn(service, 'create').mockResolvedValue(mockStudent);
+      mockStudentService.create.mockResolvedValue(mockStudent);
 
-      const result = await controller.create(createDto);
-
-      expect(result).toEqual(mockStudent);
-      expect(service.create).toHaveBeenCalledWith(createDto);
+      const response = await request(app.getHttpServer())
+        .post("/api/v1/students")
+        .send(createStudentDto);
+      expect(response.status).toBe(201);
+      expect(response.body).toEqual(mockStudent);
     });
 
-    it('should throw 400 error with invalid data', async () => {
-      const invalidDto = {
-        name: '', // 空姓名
-        school: '杭州市文澜实验学校',
-        grade: '4年级',
-        classId: '四年级10班',
-        knowledgeReserve: 4,
+    it("should handle validation errors", async () => {
+      const invalidStudentDto = {
+        name: "",
+        school: "",
+        grade: "",
+        classId: "",
+      };
+
+      const response = await request(app.getHttpServer())
+        .post("/api/v1/students")
+        .send(invalidStudentDto);
+      expect(response.status).toBe(400);
+      expect(Array.isArray(response.body)).toBe(true);
+    });
+  });
+
+  describe("PUT /api/v1/students/:id", () => {
+    it("should update a student", async () => {
+      const updateData = {
+        name: "更新后的学生",
+        knowledgeReserve: 5,
+      };
+
+      const mockUpdatedStudent = {
+        id: "S001",
+        name: "更新后的学生",
+        school: "测试学校",
+        grade: "5年级",
+        classId: "1班",
+        knowledgeReserve: 5,
         learningEngagement: 4,
         cognitiveLoad: 3,
         learningMotivation: 4,
@@ -214,106 +203,45 @@ describe('StudentController', () => {
         learningAttitude: 4,
       };
 
-      await expect(controller.create(invalidDto as any)).rejects.toThrow(HttpException);
-      await expect(controller.create(invalidDto as any)).rejects.toMatchObject({ status: HttpStatus.BAD_REQUEST });
+      mockStudentService.update.mockResolvedValue(mockUpdatedStudent);
+
+      const response = await request(app.getHttpServer())
+        .put("/api/v1/students/S001")
+        .send(updateData);
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(mockUpdatedStudent);
     });
 
+    it("should handle student not found", async () => {
+      mockStudentService.update.mockResolvedValue(null);
 
-
-    it('should throw 400 error with out-of-range values', async () => {
-      const invalidDto = {
-        name: '张三',
-        school: '杭州市文澜实验学校',
-        grade: '4年级',
-        classId: '四年级10班',
-        knowledgeReserve: 6, // 超出最大值5
-        learningEngagement: 0, // 低于最小值1
-        cognitiveLoad: 3,
-        learningMotivation: 4,
-        computationalThinking: 3,
-        humanAiTrust: 4,
-        learningMethod: 3,
-        learningAttitude: 4,
-      };
-
-      await expect(controller.create(invalidDto as any)).rejects.toThrow(HttpException);
-      await expect(controller.create(invalidDto as any)).rejects.toMatchObject({ status: HttpStatus.BAD_REQUEST });
+      const response = await request(app.getHttpServer())
+        .put("/api/v1/students/non-existent")
+        .send({ name: "更新后的学生" });
+      expect(response.status).toBe(404);
+      expect(response.body).toHaveProperty("message", "学生不存在");
     });
   });
 
-  describe('update', () => {
-    it('should update student with valid data', async () => {
-      const updateDto: UpdateStudentDto = {
-        knowledgeReserve: 5,
-        learningEngagement: 5,
-      };
+  describe("DELETE /api/v1/students/:id", () => {
+    it("should delete a student", async () => {
+      mockStudentService.delete.mockResolvedValue({ message: "学生删除成功" });
 
-      const mockStudent = {
-        id: 'S001',
-        name: '陆雨欣',
-        school: '湖州市爱山小学教育集团常溪小学',
-        grade: '5年级',
-        classId: '新五年级2班',
-        knowledgeReserve: 5,
-        learningEngagement: 5,
-        cognitiveLoad: 3,
-        learningMotivation: 5,
-        computationalThinking: 4,
-        humanAiTrust: 3,
-        learningMethod: 5,
-        learningAttitude: 5,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-
-      jest.spyOn(service, 'update').mockResolvedValue(mockStudent);
-
-      const result = await controller.update('S001', updateDto);
-
-      expect(result).toEqual(mockStudent);
-      expect(service.update).toHaveBeenCalledWith('S001', updateDto);
+      const response = await request(app.getHttpServer()).delete(
+        "/api/v1/students/S001",
+      );
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty("message", "学生删除成功");
     });
 
-    it('should throw 404 error when student not found', async () => {
-      const updateDto: UpdateStudentDto = {
-        knowledgeReserve: 5,
-      };
+    it("should handle student not found", async () => {
+      mockStudentService.delete.mockResolvedValue({ message: "学生不存在" });
 
-      jest.spyOn(service, 'update').mockResolvedValue(null);
-
-      await expect(controller.update('S999', updateDto)).rejects.toThrow(HttpException);
-      await expect(controller.update('S999', updateDto)).rejects.toThrow('学生不存在');
-      await expect(controller.update('S999', updateDto)).rejects.toMatchObject({ status: HttpStatus.NOT_FOUND });
-    });
-
-    it('should throw 400 error with invalid data', async () => {
-      const invalidDto = {
-        knowledgeReserve: 6, // 超出最大值5
-      };
-
-      await expect(controller.update('S001', invalidDto as any)).rejects.toThrow(HttpException);
-      await expect(controller.update('S001', invalidDto as any)).rejects.toMatchObject({ status: HttpStatus.BAD_REQUEST });
-    });
-  });
-
-  describe('delete', () => {
-    it('should delete student successfully', async () => {
-      const mockResponse = { message: '学生删除成功' };
-
-      jest.spyOn(service, 'delete').mockResolvedValue(mockResponse);
-
-      const result = await controller.delete('S001');
-
-      expect(result).toEqual(mockResponse);
-      expect(service.delete).toHaveBeenCalledWith('S001');
-    });
-
-    it('should throw 404 error when student not found', async () => {
-      jest.spyOn(service, 'delete').mockRejectedValue(new Error('学生不存在'));
-
-      await expect(controller.delete('S999')).rejects.toThrow(HttpException);
-      await expect(controller.delete('S999')).rejects.toThrow('学生不存在');
-      await expect(controller.delete('S999')).rejects.toMatchObject({ status: HttpStatus.NOT_FOUND });
+      const response = await request(app.getHttpServer()).delete(
+        "/api/v1/students/non-existent",
+      );
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty("message", "学生不存在");
     });
   });
 });

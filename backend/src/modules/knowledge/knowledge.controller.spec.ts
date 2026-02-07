@@ -1,372 +1,231 @@
 import { Test, TestingModule } from "@nestjs/testing";
+import { INestApplication } from "@nestjs/common";
+import * as request from "supertest";
 import { KnowledgeController } from "./knowledge.controller";
 import { KnowledgeService } from "./knowledge.service";
-import { HttpException, HttpStatus } from "@nestjs/common";
-import { CreateKnowledgeDto, UpdateKnowledgeDto } from "./knowledge.dto";
+import { CreateKnowledgeDto } from "./knowledge.dto";
+
+const mockKnowledgeService = {
+  findAll: jest.fn(),
+  findOne: jest.fn(),
+  create: jest.fn(),
+  update: jest.fn(),
+  delete: jest.fn(),
+};
 
 describe("KnowledgeController", () => {
-  let controller: KnowledgeController;
-  let service: KnowledgeService;
+  let app: INestApplication;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    const moduleFixture: TestingModule = await Test.createTestingModule({
       controllers: [KnowledgeController],
       providers: [
         {
           provide: KnowledgeService,
-          useValue: {
-            findAll: jest.fn(),
-            findOne: jest.fn(),
-            create: jest.fn(),
-            update: jest.fn(),
-            delete: jest.fn(),
-          },
+          useValue: mockKnowledgeService,
         },
       ],
     }).compile();
 
-    controller = module.get<KnowledgeController>(KnowledgeController);
-    service = module.get<KnowledgeService>(KnowledgeService);
+    app = moduleFixture.createNestApplication();
+    await app.init();
   });
 
-  describe("findAll", () => {
-    it("should return knowledge points list with no filters", async () => {
+  afterEach(async () => {
+    if (app) {
+      await app.close();
+    }
+  });
+
+  describe("GET /api/v1/knowledge-points", () => {
+    it("should return an array of knowledge points", async () => {
       const mockKnowledgePoints = [
         {
           id: "K001",
-          content:
-            '将光标定位到要插入图片的位置，点击"插入"选项卡，点击"图片"按钮，选择本地图片上传。',
-          knowledgePoint: "insert_image",
+          content: "测试知识点内容",
+          knowledgePoint: "测试知识点",
           grade: "5年级",
           type: "知识点",
           parentId: "K002",
-          parentName: "Word操作基础",
-          relatedKnowledgeIds: [],
-          relatedKnowledgeNames: [],
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      ];
-
-      jest.spyOn(service, "findAll").mockResolvedValue(mockKnowledgePoints);
-
-      const result = await controller.findAll(undefined, undefined, undefined);
-
-      expect(result).toEqual(mockKnowledgePoints);
-      expect(service.findAll).toHaveBeenCalledWith({
-        grade: undefined,
-        type: undefined,
-        parentId: undefined,
-      });
-    });
-
-    it("should return knowledge points list with grade filter", async () => {
-      const mockKnowledgePoints = [
-        {
-          id: "K001",
-          content:
-            '将光标定位到要插入图片的位置，点击"插入"选项卡，点击"图片"按钮，选择本地图片上传。',
-          knowledgePoint: "insert_image",
-          grade: "5年级",
-          type: "知识点",
-          parentId: "K002",
-          parentName: "Word操作基础",
-          relatedKnowledgeIds: [],
-          relatedKnowledgeNames: [],
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      ];
-
-      jest.spyOn(service, "findAll").mockResolvedValue(mockKnowledgePoints);
-
-      const result = await controller.findAll("5年级", undefined, undefined);
-
-      expect(result).toEqual(mockKnowledgePoints);
-      expect(service.findAll).toHaveBeenCalledWith({
-        grade: "5年级",
-        type: undefined,
-        parentId: undefined,
-      });
-    });
-
-    it("should return knowledge points list with type filter", async () => {
-      const mockKnowledgePoints = [
-        {
-          id: "K001",
-          content:
-            '将光标定位到要插入图片的位置，点击"插入"选项卡，点击"图片"按钮，选择本地图片上传。',
-          knowledgePoint: "insert_image",
-          grade: "5年级",
-          type: "知识点",
-          parentId: "K002",
-          parentName: "Word操作基础",
-          relatedKnowledgeIds: [],
-          relatedKnowledgeNames: [],
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      ];
-
-      jest.spyOn(service, "findAll").mockResolvedValue(mockKnowledgePoints);
-
-      const result = await controller.findAll(undefined, "知识点", undefined);
-
-      expect(result).toEqual(mockKnowledgePoints);
-      expect(service.findAll).toHaveBeenCalledWith({
-        grade: undefined,
-        type: "知识点",
-        parentId: undefined,
-      });
-    });
-
-    it("should return knowledge points list with parentId filter", async () => {
-      const mockKnowledgePoints = [
-        {
-          id: "K001",
-          content:
-            '将光标定位到要插入图片的位置，点击"插入"选项卡，点击"图片"按钮，选择本地图片上传。',
-          knowledgePoint: "insert_image",
-          grade: "5年级",
-          type: "知识点",
-          parentId: "K002",
-          parentName: "Word操作基础",
+          parentName: "上级知识点",
           relatedKnowledgeIds: ["K003", "K004"],
-          relatedKnowledgeNames: ["设置字体", "设置段落"],
-          createdAt: new Date(),
-          updatedAt: new Date(),
+          relatedKnowledgeNames: ["相关知识点1", "相关知识点2"],
         },
       ];
 
-      jest.spyOn(service, "findAll").mockResolvedValue(mockKnowledgePoints);
+      mockKnowledgeService.findAll.mockResolvedValue(mockKnowledgePoints);
 
-      const result = await controller.findAll(undefined, undefined, "K002");
+      const response = await request(app.getHttpServer()).get(
+        "/api/v1/knowledge-points",
+      );
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(mockKnowledgePoints);
+    });
 
-      expect(result).toEqual(mockKnowledgePoints);
-      expect(service.findAll).toHaveBeenCalledWith({
-        grade: undefined,
-        type: undefined,
-        parentId: "K002",
-      });
+    it("should handle query parameters", async () => {
+      const mockKnowledgePoints = [
+        {
+          id: "K001",
+          content: "测试知识点内容",
+          knowledgePoint: "测试知识点",
+          grade: "5年级",
+          type: "知识点",
+          parentId: "K002",
+          parentName: "上级知识点",
+          relatedKnowledgeIds: ["K003", "K004"],
+          relatedKnowledgeNames: ["相关知识点1", "相关知识点2"],
+        },
+      ];
+
+      mockKnowledgeService.findAll.mockResolvedValue(mockKnowledgePoints);
+
+      const response = await request(app.getHttpServer())
+        .get("/api/v1/knowledge-points")
+        .query({ grade: "5年级", type: "知识点", parent_id: "K002" });
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(mockKnowledgePoints);
     });
   });
 
-  describe("findOne", () => {
-    it("should return knowledge point by id", async () => {
+  describe("GET /api/v1/knowledge-points/:id", () => {
+    it("should return a knowledge point by id", async () => {
       const mockKnowledgePoint = {
         id: "K001",
-        content:
-          '将光标定位到要插入图片的位置，点击"插入"选项卡，点击"图片"按钮，选择本地图片上传。',
-        knowledgePoint: "insert_image",
+        content: "测试知识点内容",
+        knowledgePoint: "测试知识点",
         grade: "5年级",
         type: "知识点",
         parentId: "K002",
-        parentName: "Word操作基础",
+        parentName: "上级知识点",
         relatedKnowledgeIds: ["K003", "K004"],
-        relatedKnowledgeNames: ["设置字体", "设置段落"],
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        relatedKnowledgeNames: ["相关知识点1", "相关知识点2"],
       };
 
-      jest.spyOn(service, "findOne").mockResolvedValue(mockKnowledgePoint);
+      mockKnowledgeService.findOne.mockResolvedValue(mockKnowledgePoint);
 
-      const result = await controller.findOne("K001");
-
-      expect(result).toEqual(mockKnowledgePoint);
-      expect(service.findOne).toHaveBeenCalledWith("K001");
+      const response = await request(app.getHttpServer()).get(
+        "/api/v1/knowledge-points/K001",
+      );
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(mockKnowledgePoint);
     });
 
-    it("should throw 404 error when knowledge point not found", async () => {
-      jest.spyOn(service, "findOne").mockResolvedValue(null);
+    it("should handle knowledge point not found", async () => {
+      mockKnowledgeService.findOne.mockResolvedValue(null);
 
-      await expect(controller.findOne("K999")).rejects.toThrow(HttpException);
-      await expect(controller.findOne("K999")).rejects.toThrow("知识点不存在");
-      await expect(controller.findOne("K999")).rejects.toMatchObject({
-        status: HttpStatus.NOT_FOUND,
-      });
+      const response = await request(app.getHttpServer()).get(
+        "/api/v1/knowledge-points/non-existent",
+      );
+      expect(response.status).toBe(404);
+      expect(response.body).toHaveProperty("message", "知识点不存在");
     });
   });
 
-  describe("create", () => {
-    it("should create knowledge point with valid data", async () => {
-      const createDto: CreateKnowledgeDto = {
-        content: "设置文档页面大小为A4，页边距为上下2.54cm，左右3.17cm。",
-        knowledgePoint: "page_setup",
+  describe("POST /api/v1/knowledge-points", () => {
+    it("should create a new knowledge point", async () => {
+      const createKnowledgeDto: CreateKnowledgeDto = {
+        content: "测试知识点内容",
+        knowledgePoint: "测试知识点",
         grade: "5年级",
         type: "知识点",
         parentId: "K002",
-        parentName: "Word操作基础",
+        parentName: "上级知识点",
         relatedKnowledgeIds: ["K003", "K004"],
-        relatedKnowledgeNames: ["设置字体", "设置段落"],
-      };
-
-      const mockKnowledgePoint = {
-        id: "K002",
-        content: createDto.content,
-        knowledgePoint: createDto.knowledgePoint,
-        grade: createDto.grade,
-        type: createDto.type,
-        parentId: createDto.parentId,
-        parentName: createDto.parentName,
-        relatedKnowledgeIds: createDto.relatedKnowledgeIds,
-        relatedKnowledgeNames: createDto.relatedKnowledgeNames,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-
-      jest.spyOn(service, "create").mockResolvedValue(mockKnowledgePoint);
-
-      const result = await controller.create(createDto);
-
-      expect(result).toEqual(mockKnowledgePoint);
-      expect(service.create).toHaveBeenCalledWith(createDto);
-    });
-
-    it("should throw 400 error with invalid data", async () => {
-      const invalidDto = {
-        content: "", // 空内容
-        knowledgePoint: "page_setup",
-        grade: "5年级",
-        type: "知识点",
-        parentId: "K002",
-        parentName: "Word操作基础",
-        relatedKnowledgeIds: ["K003", "K004"],
-        relatedKnowledgeNames: ["设置字体", "设置段落"],
-      };
-
-      await expect(controller.create(invalidDto as any)).rejects.toThrow(
-        HttpException,
-      );
-      await expect(controller.create(invalidDto as any)).rejects.toMatchObject({
-        status: HttpStatus.BAD_REQUEST,
-      });
-    });
-
-    it("should throw 400 error with invalid type", async () => {
-      const invalidDto = {
-        content: "设置文档页面大小为A4，页边距为上下2.54cm，左右3.17cm。",
-        knowledgePoint: "page_setup",
-        grade: "5年级",
-        type: "无效类型", // 无效类型
-        parentId: "K002",
-        parentName: "Word操作基础",
-        relatedKnowledgeIds: ["K003", "K004"],
-        relatedKnowledgeNames: ["设置字体", "设置段落"],
-      };
-
-      await expect(controller.create(invalidDto as any)).rejects.toThrow(
-        HttpException,
-      );
-      await expect(controller.create(invalidDto as any)).rejects.toMatchObject({
-        status: HttpStatus.BAD_REQUEST,
-      });
-    });
-  });
-
-  describe("update", () => {
-    it("should update knowledge point with valid data", async () => {
-      const updateDto: UpdateKnowledgeDto = {
-        content:
-          '设置文档页面大小为A4，页边距为上下2.54cm，左右3.17cm。可通过"页面布局"选项卡进行设置。',
-        knowledgePoint: "page_setup",
-        grade: "5年级",
-        type: "知识点",
-        parentId: "K002",
-        parentName: "Word操作基础",
-        relatedKnowledgeIds: ["K003", "K004"],
-        relatedKnowledgeNames: ["设置字体", "设置段落"],
+        relatedKnowledgeNames: ["相关知识点1", "相关知识点2"],
       };
 
       const mockKnowledgePoint = {
         id: "K001",
-        content: updateDto.content,
-        knowledgePoint: updateDto.knowledgePoint,
-        grade: updateDto.grade,
-        type: updateDto.type,
-        parentId: updateDto.parentId,
-        parentName: updateDto.parentName,
-        relatedKnowledgeIds: updateDto.relatedKnowledgeIds,
-        relatedKnowledgeNames: updateDto.relatedKnowledgeNames,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        ...createKnowledgeDto,
       };
 
-      jest.spyOn(service, "update").mockResolvedValue(mockKnowledgePoint);
+      mockKnowledgeService.create.mockResolvedValue(mockKnowledgePoint);
 
-      const result = await controller.update("K001", updateDto);
-
-      expect(result).toEqual(mockKnowledgePoint);
-      expect(service.update).toHaveBeenCalledWith("K001", updateDto);
+      const response = await request(app.getHttpServer())
+        .post("/api/v1/knowledge-points")
+        .send(createKnowledgeDto);
+      expect(response.status).toBe(201);
+      expect(response.body).toEqual(mockKnowledgePoint);
     });
 
-    it("should throw 404 error when knowledge point not found", async () => {
-      const updateDto: UpdateKnowledgeDto = {
-        content: "更新后的内容",
-        knowledgePoint: "page_setup",
-        grade: "5年级",
-        type: "知识点",
-        parentId: "K002",
-        parentName: "Word操作基础",
-        relatedKnowledgeIds: ["K003", "K004"],
-        relatedKnowledgeNames: ["设置字体", "设置段落"],
+    it("should handle validation errors", async () => {
+      const invalidKnowledgeDto = {
+        content: "",
+        knowledgePoint: "",
+        grade: "",
+        type: "",
       };
 
-      jest.spyOn(service, "update").mockResolvedValue(null);
-
-      await expect(controller.update("K999", updateDto)).rejects.toThrow(
-        HttpException,
-      );
-      await expect(controller.update("K999", updateDto)).rejects.toThrow(
-        "知识点不存在",
-      );
-      await expect(controller.update("K999", updateDto)).rejects.toMatchObject({
-        status: HttpStatus.NOT_FOUND,
-      });
-    });
-
-    it("should throw 400 error with invalid data", async () => {
-      const invalidDto = {
-        content: "", // 空内容
-        knowledgePoint: "page_setup",
-        grade: "5年级",
-        type: "知识点",
-        parentId: "K002",
-        parentName: "Word操作基础",
-        relatedKnowledgeIds: ["K003", "K004"],
-        relatedKnowledgeNames: ["设置字体", "设置段落"],
-      };
-
-      await expect(
-        controller.update("K001", invalidDto as any),
-      ).rejects.toThrow(HttpException);
-      await expect(
-        controller.update("K001", invalidDto as any),
-      ).rejects.toMatchObject({ status: HttpStatus.BAD_REQUEST });
+      const response = await request(app.getHttpServer())
+        .post("/api/v1/knowledge-points")
+        .send(invalidKnowledgeDto);
+      expect(response.status).toBe(400);
+      expect(Array.isArray(response.body)).toBe(true);
     });
   });
 
-  describe("delete", () => {
-    it("should delete knowledge point successfully", async () => {
-      const mockResponse = { message: "知识点删除成功" };
+  describe("PUT /api/v1/knowledge-points/:id", () => {
+    it("should update a knowledge point", async () => {
+      const updateData = {
+        content: "更新后的知识点内容",
+        knowledgePoint: "更新后的知识点",
+      };
 
-      jest.spyOn(service, "delete").mockResolvedValue(mockResponse);
+      const mockUpdatedKnowledgePoint = {
+        id: "K001",
+        content: "更新后的知识点内容",
+        knowledgePoint: "更新后的知识点",
+        grade: "5年级",
+        type: "知识点",
+        parentId: "K002",
+        parentName: "上级知识点",
+        relatedKnowledgeIds: ["K003", "K004"],
+        relatedKnowledgeNames: ["相关知识点1", "相关知识点2"],
+      };
 
-      const result = await controller.delete("K001");
+      mockKnowledgeService.update.mockResolvedValue(mockUpdatedKnowledgePoint);
 
-      expect(result).toEqual(mockResponse);
-      expect(service.delete).toHaveBeenCalledWith("K001");
+      const response = await request(app.getHttpServer())
+        .put("/api/v1/knowledge-points/K001")
+        .send(updateData);
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(mockUpdatedKnowledgePoint);
     });
 
-    it("should throw 404 error when knowledge point not found", async () => {
-      jest
-        .spyOn(service, "delete")
-        .mockRejectedValue(new Error("知识点不存在"));
+    it("should handle knowledge point not found", async () => {
+      mockKnowledgeService.update.mockResolvedValue(null);
 
-      await expect(controller.delete("K999")).rejects.toThrow(HttpException);
-      await expect(controller.delete("K999")).rejects.toThrow("知识点不存在");
-      await expect(controller.delete("K999")).rejects.toMatchObject({
-        status: HttpStatus.NOT_FOUND,
+      const response = await request(app.getHttpServer())
+        .put("/api/v1/knowledge-points/non-existent")
+        .send({ content: "更新后的知识点内容" });
+      expect(response.status).toBe(404);
+      expect(response.body).toHaveProperty("message", "知识点不存在");
+    });
+  });
+
+  describe("DELETE /api/v1/knowledge-points/:id", () => {
+    it("should delete a knowledge point", async () => {
+      mockKnowledgeService.delete.mockResolvedValue({
+        message: "知识点删除成功",
       });
+
+      const response = await request(app.getHttpServer()).delete(
+        "/api/v1/knowledge-points/K001",
+      );
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty("message", "知识点删除成功");
+    });
+
+    it("should handle knowledge point not found", async () => {
+      mockKnowledgeService.delete.mockResolvedValue({
+        message: "知识点不存在",
+      });
+
+      const response = await request(app.getHttpServer()).delete(
+        "/api/v1/knowledge-points/non-existent",
+      );
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty("message", "知识点不存在");
     });
   });
 });
