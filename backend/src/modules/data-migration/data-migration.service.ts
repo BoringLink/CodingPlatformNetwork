@@ -422,4 +422,21 @@ export class DataMigrationService {
 
     return result;
   }
+
+  /**
+   * 导入数据
+   */
+  async importData(data: { fileType?: string; fileUrl?: string }) {
+    this.logger.log(`开始导入数据: ${data.fileType} from ${data.fileUrl}`);
+    
+    // 这里可以根据fileType和fileUrl执行相应的导入逻辑
+    const result = await this.executeFullMigration();
+    
+    return {
+      message: '数据导入成功',
+      importedCount: result.successfulRecords,
+      updatedCount: 0,
+      errors: result.errors
+    };
+  }
 }

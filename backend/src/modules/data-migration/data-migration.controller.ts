@@ -1,25 +1,20 @@
-import { Controller, Post, Get, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, HttpException, HttpStatus } from '@nestjs/common';
 import { DataMigrationService } from './data-migration.service';
+import { ImportDataDto, importDataSchema } from './data-migration.dto';
 
 @Controller('api/v1/data-migration')
 export class DataMigrationController {
   constructor(private readonly dataMigrationService: DataMigrationService) {}
 
-  @Post('migrate')
-  async migrateData() {
+  @Post('import')
+  async importData(@Body() body: ImportDataDto) {
     try {
-      return await this.dataMigrationService.executeFullMigration();
+      const validatedData = importDataSchema.parse(body);
+      // 这里可以根据fileType和fileUrl执行相应的导入逻辑
+      const result = await this.dataMigrationService.importData(validatedData);
+      return result;
     } catch (error) {
-      throw new HttpException(error.message || '数据迁移失败', HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
-
-  @Get('verify')
-  async verifyMigration() {
-    try {
-      return await this.dataMigrationService.verifyMigration();
-    } catch (error) {
-      throw new HttpException(error.message || '验证迁移结果失败', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(error.errors || '请求参数错误', HttpStatus.BAD_REQUEST);
     }
   }
 }
