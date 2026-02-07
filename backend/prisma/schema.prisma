@@ -25,6 +25,7 @@ model Student {
   updatedAt           DateTime @updatedAt
 
   @@map("students")
+  @@index([school, grade, classId])
 }
 
 model Teacher {
@@ -37,6 +38,8 @@ model Teacher {
   updatedAt     DateTime @updatedAt
 
   @@map("teachers")
+  @@index([school])
+  @@index([teachingGrade, teachingClass])
 }
 
 model TeacherClassMapping {
@@ -48,6 +51,8 @@ model TeacherClassMapping {
   updatedAt DateTime @updatedAt
 
   @@map("teacher_class_mappings")
+  @@index([teacherId])
+  @@index([grade, classId])
 }
 
 model Knowledge {
@@ -64,6 +69,9 @@ model Knowledge {
   updatedAt             DateTime @updatedAt
 
   @@map("knowledge_points")
+  @@index([grade])
+  @@index([type])
+  @@index([parentId])
 }
 
 model Interaction {
@@ -79,4 +87,7 @@ model Interaction {
   updatedAt     DateTime @updatedAt
 
   @@map("interactions")
+  @@index([sourceId, sourceType])
+  @@index([targetId, targetType])
+  @@index([type])
 }
