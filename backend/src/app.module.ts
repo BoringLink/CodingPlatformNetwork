@@ -13,7 +13,7 @@ import { PrismaService } from "./shared/utils/prisma.service";
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: "../.env",
+      envFilePath: ".env",
     }),
     StudentModule,
     TeacherModule,

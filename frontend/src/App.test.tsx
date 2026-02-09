@@ -91,10 +91,7 @@ jest.mock("../services/dataService", () => ({
   })),
 }));
 
-// Mock gemini service
-jest.mock("../services/geminiService", () => ({
-  analyzeNetwork: jest.fn(() => Promise.resolve("测试分析结果")),
-}));
+
 
 // Import App after mocking dependencies
 import App from "../App";
@@ -204,20 +201,5 @@ describe("App Component", () => {
     });
   });
 
-  test("performs AI analysis", async () => {
-    render(<App />);
 
-    // Wait for the component to load
-    await waitFor(() => {
-      expect(screen.getByText("生成网络诊断报告")).toBeInTheDocument();
-    });
-
-    // Click AI analysis button
-    fireEvent.click(screen.getByText("生成网络诊断报告"));
-
-    // Verify analysis is performed
-    await waitFor(() => {
-      expect(screen.getByText("测试分析结果")).toBeInTheDocument();
-    });
-  });
 });

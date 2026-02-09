@@ -48,12 +48,101 @@ export class DataMigrationService {
       result.failedRecords += aiResult.failed;
       result.errors = [...result.errors, ...aiResult.errors];
 
+      // 4. 迁移知识点数据
+      const knowledgeResult = await this.migrateKnowledgeData();
+      result.totalRecords += knowledgeResult.total;
+      result.successfulRecords += knowledgeResult.successful;
+      result.failedRecords += knowledgeResult.failed;
+      result.errors = [...result.errors, ...knowledgeResult.errors];
+
       this.logger.log(`数据迁移完成: 总计 ${result.totalRecords} 条记录, 成功 ${result.successfulRecords} 条, 失败 ${result.failedRecords} 条`);
     } catch (error) {
       this.logger.error('数据迁移过程中发生错误', error);
       result.errors.push(`迁移过程中发生错误: ${error.message}`);
     }
 
+    return result;
+  }
+
+  /**
+   * 迁移知识点数据
+   */
+  private async migrateKnowledgeData() {
+    this.logger.log('开始迁移知识点数据');
+
+    const result = {
+      total: 0,
+      successful: 0,
+      failed: 0,
+      errors: [] as string[],
+    };
+
+    const filePath = path.join(
+      __dirname, '../../../../Real Data/知识点_处理后.json',
+    );
+
+    try {
+      const knowledgeData = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+      result.total = knowledgeData.length;
+
+      for (const item of knowledgeData) {
+        try {
+          // 检查知识点是否已存在
+          const existingKnowledge = await this.prisma.knowledge.findFirst({
+            where: {
+              knowledgePoint: item.knowledge_point,
+              grade: item.grade,
+            },
+          });
+
+          // 转换相关知识点ID和名称为字符串
+          const relatedKnowledgeIds = JSON.stringify(item.related_knowledge_ids);
+          const relatedKnowledgeNames = JSON.stringify(item.related_knowledge_names);
+
+          if (existingKnowledge) {
+            // 更新现有知识点
+            await this.prisma.knowledge.update({
+              where: { id: existingKnowledge.id },
+              data: {
+                content: item.content || '',
+                knowledgePoint: item.knowledge_point || '',
+                grade: item.grade || '',
+                type: item.type || '知识点',
+                parentId: item.parent_id || null,
+                parentName: item.parent_name || null,
+                relatedKnowledgeIds,
+                relatedKnowledgeNames,
+              },
+            });
+          } else {
+            // 创建新知识点
+            await this.prisma.knowledge.create({
+              data: {
+                content: item.content || '',
+                knowledgePoint: item.knowledge_point || '',
+                grade: item.grade || '',
+                type: item.type || '知识点',
+                parentId: item.parent_id || null,
+                parentName: item.parent_name || null,
+                relatedKnowledgeIds,
+                relatedKnowledgeNames,
+              },
+            });
+          }
+
+          result.successful++;
+        } catch (error) {
+          this.logger.error(`处理知识点数据失败: ${error.message}`);
+          result.failed++;
+          result.errors.push(`处理知识点数据失败: ${error.message}`);
+        }
+      }
+    } catch (error) {
+      this.logger.error(`读取知识点文件失败: ${error.message}`);
+      result.errors.push(`读取知识点文件失败: ${error.message}`);
+    }
+
+    this.logger.log(`知识点数据迁移完成: 总计 ${result.total} 条记录, 成功 ${result.successful} 条, 失败 ${result.failed} 条`);
     return result;
   }
 

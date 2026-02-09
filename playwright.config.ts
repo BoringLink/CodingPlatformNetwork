@@ -10,13 +10,13 @@ export default defineConfig({
     },
     {
       command: "cd frontend && pnpm run dev",
-      port: 3000,
+      port: 5173,
       reuseExistingServer: !process.env.CI,
     },
   ],
   reporter: [["html"]],
   use: {
-    baseURL: "http://localhost:3000",
+    baseURL: "http://localhost:5173",
     screenshot: "only-on-failure",
     video: "retain-on-failure",
   },

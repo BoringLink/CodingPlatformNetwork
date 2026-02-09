@@ -1,0 +1,3604 @@
+[
+  {
+    "id": 3,
+    "content": "<p>\r\n\t购买火车票时年龄小于6周岁则免票。基于该购票规则的购票算法流程图如下所示，尝试运行程序并观察输出结果<br />\r\n<br />\r\n<strong>Python</strong>：if语句<br />\r\n当条件为真时执行if下的代码<br />\r\n<br />\r\n<strong>示例</strong>：&nbsp;<br />\r\n输入：5<br />\r\n输出：免票<br />\r\n<br />\r\n输入：6<br />\r\n输出：（无输出）\r\n</p>\r\n<p>\r\n\t<br />\r\n</p>",
+    "knowledge_point": "if语句",
+    "grade": "5",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      99,
+      5
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "int()函数",
+      "输出函数",
+      "整数",
+      "关系运算符",
+      "if语句"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 4,
+    "content": "请实现：输入的年龄是“6”时，输出“购买车票”（在给出的程序后补充语句）<br />\r\n<br />\r\n<strong>Python</strong>：比较运算符<br />\r\n比较运算符是用来比较两个值之间关系的符号，比较运算符通常用于条件和循环语句中。常见的比较运算符有：等于“==”、小于“&lt;”、大于“&gt;”、不等于“！=”、大于等于“&gt;=”、小于等于“&lt;=”<br />\r\n<br />\r\n<strong>示例</strong>：&nbsp;<br />\r\n输入：5<br />\r\n输出：免票<br />\r\n<br />\r\n输入：6<br />\r\n输出：购买车票<br />",
+    "knowledge_point": "if语句",
+    "grade": "5",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      99,
+      5
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "int()函数",
+      "输出函数",
+      "整数",
+      "关系运算符",
+      "if语句"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 5,
+    "content": "若购票规则改为身高小于120cm则免票，请在给出程序的基础上实现更改后的购票规则<br />\r\n<br />\r\n<strong>示例</strong>：&nbsp;<br />\r\n输入：110<br />\r\n输出：免票<br />\r\n<br />\r\n输入：120<br />\r\n输出：（无输出）<br />\r\n<br />",
+    "knowledge_point": "if语句",
+    "grade": "5",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      99,
+      5
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "int()函数",
+      "输出函数",
+      "整数",
+      "关系运算符",
+      "if语句"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 6,
+    "content": "购买火车票时年龄小于6周岁免票，否则请购票。完整体现该购票规则的购票算法流程图如下所示，尝试运行程序并观察输出结果<br />\r\n<br />\r\n<strong>Python</strong>：if...else语句<br />\r\n双分支条件语句由“if...else...”组成，当条件为真时执行if下的代码，否则执行else下的代码。<br />\r\n<br />\r\n<strong>示例</strong>：&nbsp;<br />\r\n输入：5<br />\r\n输出：免票<br />\r\n<br />\r\n输入：6<br />\r\n输出：请购票<br />\r\n<br />\r\n输入：7<br />\r\n输出：请购票<br />\r\n<div>\r\n\t<br />\r\n</div>\r\n<br />",
+    "knowledge_point": "有分支的条件语句",
+    "grade": "5",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      99,
+      5,
+      50
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "int()函数",
+      "输出函数",
+      "整数",
+      "关系运算符",
+      "if语句",
+      "有分支的条件语句"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 7,
+    "content": "程序实现：某景区规定身高不足120cm的游客可以免票进入，否则请购票。<br />\r\n<br />\r\n<strong>示例</strong>：&nbsp;<br />\r\n输入：100<br />\r\n输出：免票<br />\r\n<br />\r\n输入：120<br />\r\n输出：请购票<br />\r\n<br />\r\n输入：130<br />\r\n输出：请购票<br />\r\n<br />",
+    "knowledge_point": "有分支的条件语句",
+    "grade": "5",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      99,
+      5,
+      50
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "int()函数",
+      "输出函数",
+      "整数",
+      "关系运算符",
+      "if语句",
+      "有分支的条件语句"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 8,
+    "content": "教材情境：购买火车票时年龄小于6岁免票，否则进一步判断年龄是否小于14岁，如果小于14岁则购买优惠票，否则购买全价票。<br />\r\n完整体现该购票规则的购票算法流程图如下所示，尝试运行程序并观察输出结果。<br />\r\n<br />\r\n<strong>Python</strong>：冒号与缩进的含义<br />\r\npython语句使用缩进和“：”区分代码之间的层次，如循环语句和条件语句等。<br />\r\n相同层级的代码保留相同相同的缩进，“：”代表下一层代码的开始。<br />\r\n<br />\r\n<strong>示例</strong>：&nbsp;<br />\r\n输入：3<br />\r\n输出：免票<br />\r\n<br />\r\n输入：6<br />\r\n输出：优惠票<br />\r\n<br />\r\n输入：130<br />\r\n输出：全价票<br />\r\n<br />",
+    "knowledge_point": "连缀的if-elif-else",
+    "grade": "5",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      99,
+      5,
+      50,
+      82
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "int()函数",
+      "输出函数",
+      "整数",
+      "关系运算符",
+      "if语句",
+      "有分支的条件语句",
+      "连缀的if-elif-else"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 9,
+    "content": "尝试先判断是否满14周岁，若满14周岁购买全价票，否则进一步判断是否满6周岁，若满6周岁购买优惠票，否则免票。<br />\r\n<br />\r\n<strong>示例</strong>：&nbsp;<br />\r\n输入：16<br />\r\n输出：全价票<br />\r\n<br />\r\n输入：5<br />\r\n输出：免票<br />\r\n<br />\r\n输入：6<br />\r\n输出：优惠票<br />\r\n<br />",
+    "knowledge_point": "连缀的if-elif-else",
+    "grade": "5",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      99,
+      5,
+      50,
+      82
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "int()函数",
+      "输出函数",
+      "整数",
+      "关系运算符",
+      "if语句",
+      "有分支的条件语句",
+      "连缀的if-elif-else"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 10,
+    "content": "购买火车票时，身高不足120cm的游客可免票否则进一步判断是否小于14岁，如果小于14岁则购买优惠票，否则买全价票。<br />\r\n<br />\r\n<strong>示例</strong>：&nbsp;<br />\r\n输入：12；120<br />\r\n输出：优惠票<br />\r\n<br />\r\n输入：14；100<br />\r\n输出：免票<br />\r\n<br />\r\n输入：14；150<br />\r\n输出：全价票<br />\r\n<br />",
+    "knowledge_point": "连缀的if-elif-else",
+    "grade": "5",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      99,
+      5,
+      50,
+      82
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "int()函数",
+      "输出函数",
+      "整数",
+      "关系运算符",
+      "if语句",
+      "有分支的条件语句",
+      "连缀的if-elif-else"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 11,
+    "content": "教材情境：“规划从仓库到信息科技教室的最短路线”（图1；图2）<br />\r\n<br />\r\n规模分解后路线距离计算列表如下所示（图3）<br />\r\n<br />\r\n实现计算的算法程序已给出，尝试运行程序并观察输出结果。<br />\r\n<br />\r\n<strong>Python</strong>：赋值“=”<br />\r\n在python中使用“=”为变量赋值。“=”的作用是将右边的值传递给“=”左边的变量。这与数学中“=”的作用不同。<br />\r\n<br />\r\n<strong>示例</strong>：&nbsp;<br />\r\n输入：170；230；100；150；10；30；50<br />\r\n输出：S1 = 270&nbsp; S2 = 380&nbsp; S3 = 60&nbsp; S4 = 30<br />\r\n<br />",
+    "knowledge_point": "赋值语句",
+    "grade": "5",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      18,
+      99
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "int()函数",
+      "输出函数",
+      "赋值语句",
+      "关系运算符"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 12,
+    "content": "<p>生活中的投票选举主要有哪几个步骤，有哪些途径可以实现这些步骤？</p>",
+    "knowledge_point": "",
+    "grade": "6",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [],
+    "related_knowledge_names": [],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 13,
+    "content": "<p>继续修改完善后的猜数字算法，实现以下功能：如果用户的猜数次数超过3次，提示“挑战失败”。</p>",
+    "knowledge_point": "线性搜索",
+    "grade": "6",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      99,
+      5,
+      50,
+      18,
+      22,
+      33
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "int()函数",
+      "输出函数",
+      "整数",
+      "关系运算符",
+      "if语句",
+      "有分支的条件语句",
+      "赋值语句",
+      "while循环",
+      "while循环语法格式",
+      "线性搜索"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 14,
+    "content": "修改上述程序，增加一个变量 ci 来统计 while 语句的执行次数，并显示数值。",
+    "knowledge_point": "跳出循环break、线性搜索",
+    "grade": "6",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      107,
+      99,
+      5,
+      50,
+      18,
+      22,
+      33
+    ],
+    "related_knowledge_names": [
+      "输出函数",
+      "整数",
+      "关系运算符",
+      "if语句",
+      "有分支的条件语句",
+      "赋值语句",
+      "while循环",
+      "while循环语法格式",
+      "跳出循环break",
+      "线性搜索"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 15,
+    "content": "在1-1000范围内查找目标数37，利用二分查找算法，循环执行的次数是多少？",
+    "knowledge_point": "二分搜索",
+    "grade": "6",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      107,
+      99,
+      5,
+      82,
+      18,
+      22,
+      28
+    ],
+    "related_knowledge_names": [
+      "输出函数",
+      "整数",
+      "关系运算符",
+      "if语句",
+      "连缀的if-elif-else",
+      "赋值语句",
+      "while循环",
+      "while循环语法格式",
+      "跳出循环break",
+      "二分搜索"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 16,
+    "content": "将“韩信点兵”的问题用筛选法实现，显示 1000~1100 范围内满足“x 除以 3 余数为 2”条件的数。",
+    "knowledge_point": "线性搜索",
+    "grade": "6",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      107,
+      99,
+      5,
+      52,
+      18,
+      22,
+      33
+    ],
+    "related_knowledge_names": [
+      "输出函数",
+      "整数",
+      "关系运算符",
+      "逻辑运算符",
+      "if语句",
+      "基本的条件语句",
+      "赋值语句",
+      "while循环",
+      "while循环语法格式",
+      "线性搜索"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 17,
+    "content": "直接路线距离计算的列表如下所示。<br />\r\n<br />\r\n补充程序实现计算各路线需要走的距离。<br />\r\n<br />\r\n<strong>示例</strong>：&nbsp;<br />\r\n输入：170；230；100；150；10；30；50<br />\r\n输出：S1 = 330&nbsp; S2 = 300&nbsp; S3 = 440&nbsp; S4 = 410<br />\r\n<br />",
+    "knowledge_point": "赋值语句",
+    "grade": "5",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      18,
+      99
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "int()函数",
+      "输出函数",
+      "赋值语句",
+      "关系运算符"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 18,
+    "content": "较短距离比较模型：在比较两条路线的总距离时，将数值较小的确定为较短举例，用变量min表示。比较模型表示为：令Smin1=S1;如果S2&lt;Smin1，则Smin1=S2<br />\r\n<br />\r\n算法程序已给出，尝试运行程序并观察输出结果。<br />\r\n<br />\r\n<br />\r\n<strong>示例</strong>：<br />\r\n输入：（无输入）<br />\r\n输出：Smin1= 270<br />",
+    "knowledge_point": "赋值语句",
+    "grade": "5",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      99,
+      5,
+      52,
+      18
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "int()函数",
+      "输出函数",
+      "整数",
+      "关系运算符",
+      "if语句",
+      "基本的条件语句",
+      "赋值语句"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 19,
+    "content": "使用规模分解的方法寻找最短路线，我们已经找到了第一段路线的最短距离，接下来请你完成找到第二段路线最短距离的程序。<br />\r\n<br />\r\n<br />\r\n<strong>示例</strong>：<br />\r\n输入：（无输入）<br />\r\n输出：Smin2= 30<br />\r\n<br />",
+    "knowledge_point": "基本的条件语句",
+    "grade": "5",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      99,
+      5,
+      52,
+      18
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "int()函数",
+      "输出函数",
+      "整数",
+      "关系运算符",
+      "if语句",
+      "基本的条件语句",
+      "赋值语句"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 20,
+    "content": "使用规模分解的方法寻找从仓库到信息技术教室最短路线的算法流程图如下所示。<br />\r\n<br />\r\n请补充程序实现算法。<br />\r\n<br />\r\n<strong>示例</strong>：<br />\r\n输入：170；230；100；150；10；30；50<br />\r\n输出：最短距离：300<br />\r\n<br />",
+    "knowledge_point": "基本的条件语句",
+    "grade": "5",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      99,
+      5,
+      52,
+      18
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "int()函数",
+      "输出函数",
+      "整数",
+      "关系运算符",
+      "if语句",
+      "基本的条件语句",
+      "赋值语句"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 21,
+    "content": "<p>\r\n\t在问题解决的过程中，模型可以重复使用。比如在求最短距离问题时，可以重复利用“较短距离比较模型”得出所有路线的最短距离。<br />\r\n<br />\r\n利用较短距离比较模型求最短距离<br />\r\nSmin=S1<br />\r\n如果S2&lt;Smin，则Smin=S2。<br />\r\n如果S3&lt;Smin，则Smin=S3。<br />\r\n...<br />\r\n输出最短距离Smin。<br />\r\n<br />\r\n如果不采用规模分解的方法，采用直接路线距离计算的方法寻找最短路线，其算法流程图以及实现算法的程序应当是怎样的？<br />\r\n<br />\r\n<br />\r\n<br />\r\n<strong>示例：</strong><br />\r\n输入：170；230；100；150；10；30；50<br />\r\n输出：最短距离：300\r\n</p>\r\n<p>\r\n\t<br />\r\n</p>",
+    "knowledge_point": "基本的条件语句",
+    "grade": "5",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      99,
+      5,
+      52,
+      18
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "int()函数",
+      "输出函数",
+      "整数",
+      "关系运算符",
+      "if语句",
+      "基本的条件语句",
+      "赋值语句"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 22,
+    "content": "<p>\r\n\t大约在 1500 年前，《孙子算经》中记载了这个经典的数学问题， 用现代汉语描述如下：有若干只鸡、兔同在一个笼子里，从上面数有 35 个 头，从下面数有 94 只脚，问笼中各有多少只鸡和多少只兔?<br />\r\n<br />\r\n<strong>示例</strong><br />\r\n输入：（无输入）<br />\r\n输出：23 只鸡 12 只兔。\r\n</p>\r\n<p>\r\n\t<br />\r\n</p>\r\n<p>\r\n\t<br />\r\n</p>\r\n<img src=\" https://coding-platform.oss-cn-beijing.aliyuncs.com/6/3.png\" />",
+    "knowledge_point": "while循环语法格式",
+    "grade": "6",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      107,
+      99,
+      5,
+      52,
+      18,
+      22
+    ],
+    "related_knowledge_names": [
+      "输出函数",
+      "整数",
+      "关系运算符",
+      "if语句",
+      "基本的条件语句",
+      "赋值语句",
+      "while循环",
+      "while循环语法格式"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 23,
+    "content": "<p>\r\n\t有100元钱，要买100只鸡，公鸡5元一只，母鸡3元一只，小鸡1元三只，问可以买到多少只公鸡、母鸡和小鸡?&nbsp;<br />\r\n<br />\r\n<strong>示例</strong><br />\r\n输入：（无输入）<br />\r\n输出：0 只公鸡， 25 只母鸡， 75 只小鸡<br />\r\n4 只公鸡， 18 只母鸡， 78 只小鸡<br />\r\n8 只公鸡， 11 只母鸡， 81 只小鸡<br />\r\n12 只公鸡， 4 只母鸡， 84 只小鸡\r\n</p>",
+    "knowledge_point": "for…in循环",
+    "grade": "6",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      107,
+      99,
+      5,
+      52,
+      18,
+      24
+    ],
+    "related_knowledge_names": [
+      "输出函数",
+      "整数",
+      "关系运算符",
+      "if语句",
+      "基本的条件语句",
+      "赋值语句",
+      "for…in循环",
+      "range()函数"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 24,
+    "content": "<p>\r\n\t36 个小凳子，36 人搬，男搬 4，女搬 3，两个小孩抬 1 凳，要求一次全搬完，问男、女和小孩各若干？<br />\r\n<br />\r\n<strong>示例</strong><br />\r\n输入：（无输入）<br />\r\n输出：3 个男生， 3 个女生， 30个小孩\r\n</p>\r\n<p>\r\n\t<br />\r\n</p>",
+    "knowledge_point": "for…in循环",
+    "grade": "6",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      107,
+      99,
+      5,
+      52,
+      18,
+      24
+    ],
+    "related_knowledge_names": [
+      "输出函数",
+      "整数",
+      "关系运算符",
+      "if语句",
+      "基本的条件语句",
+      "赋值语句",
+      "for…in循环",
+      "range()函数1"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 25,
+    "content": "<p>\r\n\t<span>一名同学从 0~100 之间选择一个数字，让另一名同学猜，根据该同学所猜的数，给出“大了”“小了”或“对了”的提示。</span> \r\n</p>\r\n<p>\r\n\t<br />\r\n</p>\r\n<img src=\"https://coding-platform.oss-cn-beijing.aliyuncs.com/6/4.png\" />",
+    "knowledge_point": "线性搜索",
+    "grade": "6",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      99,
+      5,
+      50,
+      18,
+      22,
+      33
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "int()函数",
+      "输出函数",
+      "整数",
+      "关系运算符",
+      "if语句",
+      "有分支的条件语句",
+      "赋值语句",
+      "while循环",
+      "while循环语法格式",
+      "线性搜索"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 26,
+    "content": "<p>\r\n\t<span>为了提高猜数字程序的实用性与趣味性，可以 在程序中增加记录猜测次数的功能:用变量 ci 表示次数，用户每猜一次，ci 就加 1，用户答对后输出一共猜了多少次的提示。</span> \r\n</p>\r\n<p>\r\n\t<br />\r\n</p>\r\n<img src=\"https://coding-platform.oss-cn-beijing.aliyuncs.com/6/5.png\" />",
+    "knowledge_point": "线性搜索",
+    "grade": "6",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      99,
+      5,
+      50,
+      18,
+      22,
+      33
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "int()函数",
+      "输出函数",
+      "整数",
+      "关系运算符",
+      "if语句",
+      "有分支的条件语句",
+      "赋值语句",
+      "while循环",
+      "while循环语法格式",
+      "线性搜索"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 27,
+    "content": "<p>\r\n\t采用“按顺序依次查找”的策略，在 1~100 范围内查找数 37，一 共需比较多少次？假设目标数为 37，并用变量 da 表示，取到的数用变量 cai 表示。\r\n</p>\r\n<img src=\"https://coding-platform.oss-cn-beijing.aliyuncs.com/6/6.png\"/>",
+    "knowledge_point": "跳出循环break、线性搜索",
+    "grade": "6",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      107,
+      99,
+      5,
+      50,
+      18,
+      22,
+      33
+    ],
+    "related_knowledge_names": [
+      "输出函数",
+      "整数",
+      "关系运算符",
+      "if语句",
+      "有分支的条件语句",
+      "赋值语句",
+      "while循环",
+      "while循环语法格式",
+      "跳出循环break",
+      "线性搜索"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 28,
+    "content": "<p>采用“二分查找”，假设目标数为 37，并用变量 da 表示，计算得到的中间值用变量 cai 表示，用变量 cz 和 zz 表示可取数的范围，初始查找范围为 1~100，则 cz 的初值为 1，zz 的终值为 100。</p><p><br></p><img src=\"\nhttps://coding-platform.oss-cn-beijing.aliyuncs.com/6/7.png\">",
+    "knowledge_point": "二分搜索",
+    "grade": "6",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      107,
+      99,
+      5,
+      82,
+      18,
+      22,
+      28
+    ],
+    "related_knowledge_names": [
+      "输出函数",
+      "整数",
+      "关系运算符",
+      "if语句",
+      "连缀的if-elif-else",
+      "赋值语句",
+      "while循环",
+      "while循环语法格式",
+      "跳出循环break",
+      "二分搜索"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 29,
+    "content": "在 1000~1100 范围内将满足“x 除以 7 余数为 2”条件的数显示出来。",
+    "knowledge_point": "线性搜索",
+    "grade": "6",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      107,
+      99,
+      5,
+      52,
+      18,
+      22,
+      33
+    ],
+    "related_knowledge_names": [
+      "输出函数",
+      "整数",
+      "关系运算符",
+      "逻辑运算符",
+      "if语句",
+      "基本的条件语句",
+      "赋值语句",
+      "while循环",
+      "while循环语法格式",
+      "线性搜索"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 30,
+    "content": "<p>\r\n\t将“韩信点兵”的问题用同余法实现\r\n</p>\r\n<img src=\"https://coding-platform.oss-cn-beijing.aliyuncs.com/6/8.png\" />",
+    "knowledge_point": "有分支的条件语句、while循环语法格式",
+    "grade": "6",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      107,
+      99,
+      5,
+      50,
+      18,
+      22
+    ],
+    "related_knowledge_names": [
+      "输出函数",
+      "整数",
+      "关系运算符",
+      "逻辑运算符",
+      "if语句",
+      "有分支的条件语句",
+      "赋值语句",
+      "while循环",
+      "while循环语法格式"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 31,
+    "content": "<p>（1）将程序补充完整<br>（2）若输入的code为“verygood”，key为2，则输出什么</p>",
+    "knowledge_point": "ASCII码",
+    "grade": "11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      99,
+      5,
+      82,
+      18,
+      61,
+      63,
+      37,
+      103
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "输出函数",
+      "字符",
+      "关系运算符",
+      "if语句",
+      "连缀的if-elif-else",
+      "赋值语句",
+      "str()函数",
+      "ASCII码",
+      "函数的定义",
+      "函数的调用",
+      "关键字参数",
+      "for...in循环",
+      "range()函数"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 32,
+    "content": "相传有一次，韩信带领 1500 名士兵打仗。战后，死伤四五百人。剩下的士兵中，他命令士兵 3 人一排，结果多出 2 名；接着命令士兵 5 人一排，结果多出 3 名；又命令士兵 7 人一排，结果又多出 2 名。韩信马上算出人数：我军还有1073 名勇士！假如由你来“点兵”，你将采用何种算法？",
+    "knowledge_point": "线性搜索",
+    "grade": "6",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      107,
+      99,
+      5,
+      52,
+      18,
+      22,
+      33
+    ],
+    "related_knowledge_names": [
+      "输出函数",
+      "整数",
+      "关系运算符",
+      "逻辑运算符",
+      "if语句",
+      "基本的条件语句",
+      "赋值语句",
+      "while循环",
+      "while循环语法格式",
+      "跳出循环break",
+      "线性搜索"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 33,
+    "content": "假如“韩信点兵”的问题描述修改为:韩信带领 1500 名士兵打仗。战后，死伤一二百人。剩下的士兵中，他命令士兵 3 人一排，结果多出 1 名；接着命令士兵 5 人一排，结果多出 4 名；又命令士兵 7 人一排，结果又多出 3 名。问：剩下的士兵一共多少人?请你利用枚举算法解决上述问题。",
+    "knowledge_point": "线性搜索",
+    "grade": "6",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      107,
+      99,
+      5,
+      52,
+      18,
+      22,
+      33
+    ],
+    "related_knowledge_names": [
+      "输出函数",
+      "整数",
+      "关系运算符",
+      "逻辑运算符",
+      "if语句",
+      "基本的条件语句",
+      "赋值语句",
+      "while循环",
+      "while循环语法格式",
+      "跳出循环break",
+      "线性搜索"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 34,
+    "content": "若将上述“韩信点兵”问题的查找范围调整为 2500~2600，修改上述算 法及程序，并输出结果。",
+    "knowledge_point": "有分支的条件语句、while循环语法格式",
+    "grade": "6",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      107,
+      99,
+      5,
+      50,
+      18,
+      22
+    ],
+    "related_knowledge_names": [
+      "输出函数",
+      "整数",
+      "关系运算符",
+      "逻辑运算符",
+      "if语句",
+      "有分支的条件语句",
+      "赋值语句",
+      "while循环",
+      "while循环语法格式"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 35,
+    "content": "<p>(1)连接传感器、控制板与计算机。<br>(2)开IDE程序，新建一个编辑界面，并输入代码，保存文件。<br>(3)单击“烧录”按钮，将程序上传到控制板，打开串口调试工具，即查看串口数据。</p>",
+    "knowledge_point": "函数的调用",
+    "grade": "7",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      18,
+      65,
+      22,
+      107,
+      37
+    ],
+    "related_knowledge_names": [
+      "丰富的库",
+      "赋值语句",
+      "布尔值",
+      "while循环",
+      "while循环语法格式",
+      "输出函数",
+      "函数的调用"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 36,
+    "content": "<p>(1)连接控制板与计算机。<br>(2)导入实现控制板与无线网络连接的具体代码。<br>(3)将程序上传到控制板，运行程序，OLED显示IP地址，表示联网成功。</p>",
+    "knowledge_point": "函数的调用",
+    "grade": "7",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      18,
+      37
+    ],
+    "related_knowledge_names": [
+      "丰富的库",
+      "赋值语句",
+      "函数的调用"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 37,
+    "content": "<p>对“自动通风”物联子系统原型的“温度”获取功能原型进行验证</p>",
+    "knowledge_point": "函数的调用",
+    "grade": "7",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      65,
+      22,
+      107,
+      37
+    ],
+    "related_knowledge_names": [
+      "布尔值",
+      "while循环",
+      "while循环语法格式",
+      "输出函数",
+      "函数的调用"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 38,
+    "content": "<p>完善自动浇灌实现过程流程图</p>",
+    "knowledge_point": "",
+    "grade": "7",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [],
+    "related_knowledge_names": [],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 39,
+    "content": "<p>(1)连接控制板、扩展板、水位传感器(P1引脚)、继电器模块(P16引脚)、直流抽水水泵，并接到计算机。 </p><p>(2)打开IDE程序，导人代码。</p><p>(3)\"单击“烧录”按钮，将程序上传到控制板，调试超声波传感器在水位上方的合适位置。当前水位低于所设定的阈值时，水泵开始供水;当前水位已达设定的阈值时，水泵停止供水。</p>",
+    "knowledge_point": "",
+    "grade": "7",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [],
+    "related_knowledge_names": [],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 40,
+    "content": "<p>（1）绘制“自动浇灌”、“智能光照”、“自动通风”、“智能水位控制”的流程图 </p><p>（2）根据流程图完成程序编写</p>",
+    "knowledge_point": "",
+    "grade": "7",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [],
+    "related_knowledge_names": [],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 41,
+    "content": "<p>（1）完善流程图<br>（2）完善程序编写</p>",
+    "knowledge_point": "",
+    "grade": "7",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [],
+    "related_knowledge_names": [],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 42,
+    "content": "<p>通过print()语句输出一行字符”Hello World“，一起来完成你的第一个python程序吧！</p><p></p><p></p><p>你也可以使用print()语句输出一些别的东西，例如你的名字、班级，或者用print()回答我们刚刚学习的：”数据的类型有哪些？“</p>",
+    "knowledge_point": "字符串",
+    "grade": "8",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      107,
+      93
+    ],
+    "related_knowledge_names": [
+      "输出函数",
+      "字符串"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 43,
+    "content": "<p>对比两段程序，感受input()语句在程序的组成中有什么意义。</p>",
+    "knowledge_point": "输入函数",
+    "grade": "8",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      93,
+      18,
+      99,
+      22,
+      5,
+      52
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "输出函数",
+      "字符串",
+      "赋值语句",
+      "关系运算符",
+      "整数",
+      "while循环",
+      "while循环语法格式",
+      "if语句",
+      "基本的条件语句"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 44,
+    "content": "<p>分别尝试下面的程序，观察例子中浮点数运算的结果有什么不同。</p>",
+    "knowledge_point": "浮点数",
+    "grade": "8",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      107,
+      44
+    ],
+    "related_knowledge_names": [
+      "输出函数",
+      "浮点数"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 45,
+    "content": "<p>对于整数，我们可以像数学中一样直接相加，或者其他加减乘除；</p><p>那么如果对字符做“加法”会发生什么呢？如果字符中存储的是数字又会怎么样？</p>",
+    "knowledge_point": "加号连接两个序列",
+    "grade": "8",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      107,
+      93,
+      45
+    ],
+    "related_knowledge_names": [
+      "输出函数",
+      "字符串",
+      "加号连接两个序列"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 46,
+    "content": "<p><strong>布尔值是逻辑数据类型，只有两个值，True和False；可以用于逻辑判断和条件控制。</strong></p><p><strong>怎么才能得到布尔值呢？最常见的有直接赋值和通过比较运算（这个我们后面会再学）</strong></p>",
+    "knowledge_point": "布尔值",
+    "grade": "8",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      65,
+      107,
+      5,
+      52,
+      18,
+      99
+    ],
+    "related_knowledge_names": [
+      "布尔值",
+      "输出函数",
+      "if语句",
+      "基本的条件语句",
+      "赋值语句",
+      "关系运算符"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 47,
+    "content": "<p>如果得知今天的气温是79华氏度，那么你可以用刚学习的python的算术运算，计算出对应的摄氏度气温吗？</p><p></p><p>如果反过来，摄氏度转换成华氏度要怎么做呢？</p>",
+    "knowledge_point": "关系运算符",
+    "grade": "8",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      18,
+      99,
+      44
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "输出函数",
+      "赋值语句",
+      "关系运算符",
+      "浮点数",
+      "整数",
+      "float()函数"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 48,
+    "content": "<p>我们前面说过，产生布尔值的第二种常用方法是通过比较运算，那么下面我们一起来试试看吧。</p><p>数字我们在学习数学的时候都比过不少，那字母之间可以比较吗？其他字符呢？</p>",
+    "knowledge_point": "关系运算符",
+    "grade": "8",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      107,
+      44,
+      99,
+      65
+    ],
+    "related_knowledge_names": [
+      "输出函数",
+      "浮点数",
+      "整数",
+      "字符",
+      "关系运算符",
+      "布尔值"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 49,
+    "content": "<p>1+1=2，那么 1 and 1 的答案是什么呢？</p><p>逻辑运算符是用在布尔值之间的运算符，运算的结果依然是一个布尔值。还记得布尔值的特点吗。</p><p>你能快速得到 1+1==2 or (3-2)/8*11&lt;(9*21-28)%7 的结果吗？如果可以，那么恭喜你，你已经理解了短路逻辑了</p>",
+    "knowledge_point": "布尔值",
+    "grade": "8",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      107,
+      65
+    ],
+    "related_knowledge_names": [
+      "输出函数",
+      "逻辑运算符",
+      "整数",
+      "布尔值"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 50,
+    "content": "<p>比比谁更大：</p><p>用分支结构写一个简单的程序，实现在输入两个数字后，返回（输出）其中较大的那个数。</p>",
+    "knowledge_point": "有分支的条件语句",
+    "grade": "8",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      18,
+      5,
+      50
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "输出函数",
+      "赋值语句",
+      "整数",
+      "字符",
+      "if语句",
+      "有分支的条件语句"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 51,
+    "content": "<pre><code class=\"language-python\"># 最近同学们刚结束体育抽测，假设现在老师想要对表现优秀的同学们进行表彰以及奖励，但是需要统计学生考试成绩的情况\n# 请设计程序帮助老师统计 优秀 良好 及格 不及格 的学生的数量\n# （优秀：90-100   良好：80-89    及格：60-79   不及格：&lt;60）\n现在请同学在下面标数字处补充合适的语句，完善程序使其能够实现，对输入的成绩等级进行判断的功能。</code></pre>",
+    "knowledge_point": "连缀的if-elif-else",
+    "grade": "8",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      18,
+      99,
+      5,
+      82
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "输出函数",
+      "赋值语句",
+      "整数",
+      "字符",
+      "关系运算符",
+      "if语句",
+      "连缀的if-elif-else"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 52,
+    "content": "<pre><code class=\"language-python\">生活中的遍历\n如果我要从一本书中找到我想要的那一页，我该怎么去找？\n假设这本书的每一页都只写一个数字,而我要得到其中写有3的那一页的页码</code></pre><p></p>",
+    "knowledge_point": "基本的条件语句",
+    "grade": "8",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      90,
+      103,
+      5,
+      52
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "输出函数",
+      "复制语句",
+      "整数",
+      "列表",
+      "for...in循环",
+      "range()函数",
+      "if语句",
+      "基本的条件语句"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 53,
+    "content": "<pre><code class=\"language-python\"># 最近同学们刚结束体育抽测，假设现在老师想要对表现优秀的同学们进行表彰以及奖励，但是需要统计学生考试成绩的情况\n# 请设计程序帮助老师统计 优秀 良好 及格 不及格 的学生的数量\n# （优秀：90-100   良好：80-89    及格：60-79   不及格：&lt;60）\n现在补充下面循环结构，实现输入一串成绩（用逗号分隔）后，返回每个成绩段的人数。</code></pre>",
+    "knowledge_point": "连缀的if-elif-else",
+    "grade": "8",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      18,
+      90,
+      103,
+      5,
+      82
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "输出函数",
+      "赋值语句",
+      "字符",
+      "整数",
+      "列表",
+      "for...in循环",
+      "if语句",
+      "连缀的if-elif-else"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 54,
+    "content": "<p>输入一个十进制数，要求输出其对应二进制。</p><p>示例：输入：11</p><p>输出：1011</p>",
+    "knowledge_point": "二进制",
+    "grade": "10",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      18,
+      99
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "输出函数",
+      "整数",
+      "二进制数",
+      "十进制",
+      "基数",
+      "数位",
+      "赋值语句",
+      "关系运算符"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 55,
+    "content": "<p>如何改进第4题，用程序实现“十进制转k进制”(2≤k≤16)。</p>",
+    "knowledge_point": "二进制数、八进制、十进制、十六进制",
+    "grade": "10",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      85,
+      18,
+      99,
+      5,
+      82
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "输出函数",
+      "整数",
+      "二进制数",
+      "八进制",
+      "十进制",
+      "十六进制",
+      "基数",
+      "数位",
+      "赋值语句",
+      "关系运算符",
+      "函数定义",
+      "函数调用",
+      "if语句",
+      "连缀的if-elif-else"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 56,
+    "content": "<p><strong>请打印单行文本进度条</strong></p><p><strong>效果如下所示：</strong></p><p></p><p>10 %[*-&gt;.........]</p><p>20 %[**-&gt;........]</p>",
+    "knowledge_point": "输出函数",
+    "grade": "21",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      18,
+      107,
+      99
+    ],
+    "related_knowledge_names": [
+      "赋值语句",
+      "输出函数",
+      "关系运算符",
+      "字符",
+      "format()函数"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 57,
+    "content": "<p>使用替代加密法，通过将明文中使用的字母表按照一定的字数“平移”进行加密，其中平移的字母数量相当于密钥。本任务可设置密钥为3的替代加密法，英文字母“A”向后平移3位变成“D”，“B”变成“E”，“Z”变成“C”，这样就把明文变成密文，从而把捐赠者原本设置的密码变成一个新密码，从而提升密码等级。</p><img src=\"https://coding-platform.oss-cn-beijing.aliyuncs.com/%E8%A1%8C%E7%9F%A5%E4%B8%AD%E5%AD%A6/%E5%85%AB%E4%B8%8A/%E7%AC%AC11%E8%AF%BE%20%E6%95%B0%E6%8D%AE%E5%A4%87%E4%BB%BD%E4%B8%8E%E5%8A%A0%E5%AF%86/%E5%87%AF%E6%92%92%E5%8A%A0%E5%AF%86_%E6%B5%81%E7%A8%8B%E5%9B%BE.png\">",
+    "knowledge_point": "chr()函数、ord()函数、ASCII码",
+    "grade": "8",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      18,
+      99,
+      93,
+      5,
+      82,
+      103,
+      59,
+      58,
+      61
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "输出函数",
+      "赋值语句",
+      "关系运算符",
+      "字符串",
+      "if语句",
+      "连缀的if-elif-else",
+      "for...in循环",
+      "chr()函数",
+      "ord()函数",
+      "ASCII码"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 58,
+    "content": "<p>试着测试ord( )函数的结果</p><p>感受这个函数的作用</p><p></p>",
+    "knowledge_point": "ord()函数",
+    "grade": "8",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      58,
+      61
+    ],
+    "related_knowledge_names": [
+      "ord()函数",
+      "ASCII码"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 59,
+    "content": "<p>试着测试chr( )函数的结果</p><p>感受这个函数的作用</p>",
+    "knowledge_point": "chr()函数",
+    "grade": "8",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      59,
+      61
+    ],
+    "related_knowledge_names": [
+      "chr()函数",
+      "ASCII码"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 60,
+    "content": "<p>输入一串英文字母，且所有字母均为大写字母，现根据要求将所有大写字母，按照字母表左移key位进行加密，key为加密密钥。<br>例如：<br>输入：APPLE<br>输出：VKKGZ</p><img src=\"https://coding-platform.oss-cn-beijing.aliyuncs.com/12/11.png \">",
+    "knowledge_point": "ASCII码",
+    "grade": "11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      99,
+      18,
+      59,
+      58,
+      61,
+      63,
+      37,
+      103
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "输出函数",
+      "字符",
+      "关系运算符",
+      "赋值语句",
+      "chr()函数",
+      "ord()函数",
+      "int()函数",
+      "ASCII码",
+      "函数的定义",
+      "函数的调用",
+      "关键字参数",
+      "for...in循环"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 61,
+    "content": "<p>按照凯撒加密方式编写程序：<br>要求①：大写字母按照字母表右移5位，例如：字母“A”加密后为“F”，字母“X”加密后为“C”。<br>要求②：小写字母按照字母表左移5位，例如：字母“a”加密后为“v”，字母“b”加密后为“g”。<br>要求③：数字按照数字顺序右移3位，例如：数字1加密后为4，数字8加密后为1。<br>测试如下图所示：<br>例如：<br>输入：ABCXYZ abcxyz 012789<br>输出：FGHCDE vwxstu 345012</p ><img src=\"https://coding-platform.oss-cn-beijing.aliyuncs.com/12/12.png \">",
+    "knowledge_point": "ASCII码",
+    "grade": "11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      99,
+      5,
+      82,
+      18,
+      61,
+      63,
+      37,
+      103
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "输出函数",
+      "字符",
+      "关系运算符",
+      "if语句",
+      "连缀的if-elif-else",
+      "赋值语句",
+      "str()函数",
+      "ASCII码",
+      "函数的定义",
+      "函数的调用",
+      "关键字参数",
+      "for...in循环",
+      "range()函数"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 62,
+    "content": "<p>输入一篇英文短文，且单词之间都有空格或者标点符号相隔，现在要求将每个单词进行倒置换位加密，其余字符位置保持不变。<br>例如：<br>输入：“Hello World2024！”<br>输出：“olleH dlroW2024!”</p ><img src=\"https://coding-platform.oss-cn-beijing.aliyuncs.com/12/13.png \">",
+    "knowledge_point": "嵌套的条件语句",
+    "grade": "11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      99,
+      5,
+      50,
+      62,
+      18,
+      103
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "输出函数",
+      "字符",
+      "关系运算符",
+      "逻辑运算符",
+      "if语句",
+      "有分支的条件语句",
+      "嵌套的条件语句",
+      "赋值语句",
+      "for...in循环"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 63,
+    "content": "<p>换位密码（列换位）加密技术是将明文按固定长m（秘钥长度）分组,即每行m个字母，在密钥控制下排列成矩阵，最后根据秘钥的字典序按列优先的顺序依次读出，即为密文，加密过程如下图所示。<br>例如：输入字符串“helloworld”，m为4，则输出密文为“holewdlolr”</p ><img src=\"https://coding-platform.oss-cn-beijing.aliyuncs.com/12/14.png \"><br><img src=\"https://coding-platform.oss-cn-beijing.aliyuncs.com/12/15.png \">",
+    "knowledge_point": "函数的定义",
+    "grade": "11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      99,
+      18,
+      61,
+      63,
+      37,
+      103,
+      22,
+      80
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "输出函数",
+      "字符",
+      "关系运算符",
+      "赋值语句",
+      "整数",
+      "int()函数",
+      "ASCII码",
+      "函数的定义",
+      "函数的调用",
+      "关键字参数",
+      "for...in循环",
+      "range()函数",
+      "while循环",
+      "while循环语法格式",
+      "len()",
+      "计算序列的长度和最值"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 64,
+    "content": "<p>输入原文字符串和密钥字符串，长度一致且都由0和1组成，现将原文字符和对应位置的密钥进行异或加密，加密方式如下：1⊕0=1，0⊕0=0，1⊕1=0，0⊕1=1。<br>例如：<br>输入：101010<br>密钥：111000<br>输出：010010</p ><img src=\"https://coding-platform.oss-cn-beijing.aliyuncs.com/12/16.png\">",
+    "knowledge_point": "布尔值",
+    "grade": "11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      99,
+      18,
+      80,
+      45,
+      65
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "输出函数",
+      "字符",
+      "关系运算符",
+      "赋值语句",
+      "len()",
+      "计算序列的长度和最值",
+      "整数",
+      "加号连接两个序列",
+      "布尔值"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 65,
+    "content": "<p>输入字符串，将每个字符转换成8位二进制，输入秘钥，按异或加密方式进行加密，并输出最终结果。<br>例如：<br>输入：hello<br>密钥：10110001<br>输出：11011001 11010100 11011101 11011101 11011110\t</p><img src=\"https://coding-platform.oss-cn-beijing.aliyuncs.com/12/17.png\">",
+    "knowledge_point": "布尔值",
+    "grade": "11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      99,
+      18,
+      61,
+      63,
+      37,
+      103,
+      80,
+      58,
+      65
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "输出函数",
+      "字符",
+      "关系运算符",
+      "赋值语句",
+      "整数",
+      "str()函数",
+      "ASCII码",
+      "函数的定义",
+      "函数的调用",
+      "关键字参数",
+      "for...in循环",
+      "range()函数",
+      "len()",
+      "计算序列的长度和最值",
+      "ord()函数",
+      "布尔值"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 66,
+    "content": "<p>杨辉三角，是二项式系数在三角形中的一种几何排列，在我国南宋数学家杨辉1261年所编写的《详解九章算法》一书中出现。我们可以把杨辉三角看作这样的图形：最左侧一列数字和右边的斜边数字均为1，内部其他位置上的每个数字均为上一行同一列的数字与上一行前一列数字之和，前10行的杨辉三角如图所示。<br>实现输出该图形的代码如下，在程序划线处填入适当的语句或表达式，将程序补充完整。</p><img src=\"http://coding-platform.oss-cn-beijing.aliyuncs.com/12/8.png\">",
+    "knowledge_point": "列表",
+    "grade": "11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      99,
+      18,
+      103,
+      90
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "整数",
+      "int()函数",
+      "输出函数",
+      "关系运算符",
+      "赋值语句",
+      "for...in循环",
+      "range()函数",
+      "列表",
+      "追加函数append()"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 67,
+    "content": "<p>随着网络视听新媒体技术的不断发展，近年来，网络电影逐渐受到观众热捧。某影业公司邀请了1000名来自全国各地的大众评审对即将出品的某网络电影进行观影评价，观影结束后通过手机平台打分，最终的评分数据保存在文件pj.csv中（部分数据如图2-3所示）。<br>现编程实现用Python读取文件中的”评分”列数据到数组scores中，并统计均分及高于均分的人数（程序运行结果如图2-4所示）。<br>实现该算法的程序如下，请在划线处填入合适的代码。</p><img src=\"http://coding-platform.oss-cn-beijing.aliyuncs.com/12/7.png\">",
+    "knowledge_point": "读取CSV和表格文件、列表",
+    "grade": "11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      44,
+      99,
+      103,
+      5,
+      52,
+      90,
+      107
+    ],
+    "related_knowledge_names": [
+      "丰富的库",
+      "打开文件",
+      "读取CSV和表格文件",
+      "浮点数",
+      "float()函数",
+      "关系运算符",
+      "for...in循环",
+      "if语句",
+      "基本的条件语句",
+      "列表",
+      "列表元素赋值",
+      "关闭文件",
+      "输出函数"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 68,
+    "content": "<p>判断回文字符串的问题可以通过多种方法来解决。如下 Python 程序段利用栈来解决回文字符串的问题，请补全划线处的代码。</p>",
+    "knowledge_point": "列表",
+    "grade": "11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      90,
+      80,
+      65,
+      18,
+      99,
+      107,
+      5,
+      52,
+      50
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "乘号重复序列",
+      "列表",
+      "列表元素赋值",
+      "len()",
+      "计算序列的长度和最值",
+      "整数",
+      "布尔值",
+      "赋值语句",
+      "关系运算符",
+      "输出函数",
+      "if语句",
+      "基本的条件语句",
+      "有分支的条件语句"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 69,
+    "content": "<p>对于项目1，你有什么其他的想法？</p>",
+    "knowledge_point": "",
+    "grade": "11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [],
+    "related_knowledge_names": [],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 70,
+    "content": "<p>输入任意一个三位数x，将其以倒序形式输出。</p><p>示例：输入：581</p><p>输出：185</p><p>提示：可以尝试使用多种方式实现。</p>",
+    "knowledge_point": "字符串、反转函数reverse()",
+    "grade": "10",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      93,
+      18
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "输出函数",
+      "字符串",
+      "赋值语句",
+      "反转函数reverse()"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 71,
+    "content": "<p>杨辉三角中的数据除了可使用二维数组存储外，还可以使用一维数组来存储（如图2-5）。实现上述功能的代码如下 ，请在划线处填入合适的代码。</p><img src=\"http://coding-platform.oss-cn-beijing.aliyuncs.com/12/6.png\">",
+    "knowledge_point": "列表",
+    "grade": "11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      99,
+      103,
+      90
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "int()函数",
+      "输出函数",
+      "关系运算符",
+      "for...in循环",
+      "range()函数",
+      "列表",
+      "列表元素赋值"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 72,
+    "content": "<p>在Python语言中，可以使用列表模拟单向链表的删除节点操作。我们可以使用两个列表分别保存链表中的数据区域及指针区域，需要删除第k个节点，可以从头指针出发根据指针的链接关系找到该节点。<br>为了实现该操作，编写的代码如下。</p>",
+    "knowledge_point": "列表",
+    "grade": "11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      90,
+      80,
+      18,
+      99,
+      5,
+      50,
+      22
+    ],
+    "related_knowledge_names": [
+      "丰富的库",
+      "列表",
+      "len()",
+      "计算序列的长度和最值",
+      "int()函数",
+      "str()函数",
+      "赋值语句",
+      "关系运算符",
+      "逻辑运算符",
+      "if语句",
+      "有分支的条件语句",
+      "while循环",
+      "while循环语法格式"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 73,
+    "content": "<p>在各种应用中，用于学习英语的APP软件不仅能查询单词的读音及词义，还能指导用户背诵 习单词，这其中用户单词库的积累是一个重要的环节。单词库中英文单词的排序是按照英文字母的先后顺序排列，比如binary排在byte的前面。我们查询英文单词库时会先找到该单词的首字母所在位置，然后根据后续字母的顺序<br>去查找所需单词的位置及词义。<br>小林尝试编写了一个简易的查字典程序，功能如下：输入单词进行词义查询，若该单词在词汇库中，则输出单词的词义；若不在词库中，则将该单词及词义添加到词库中。<br>以下代码模拟了a，b，c三个字母开头的单词查询过程，输入单词，若单词在词库中，则输出词义；否则，输出“没找到该单词”。在程序划线处填入适当的语句或表达式，将程序补充完整。</p>",
+    "knowledge_point": "列表",
+    "grade": "11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      93,
+      90,
+      43,
+      107,
+      5,
+      62,
+      50,
+      103,
+      22
+    ],
+    "related_knowledge_names": [
+      "字符",
+      "字符串",
+      "列表",
+      "输入函数",
+      "输出函数",
+      "if语句",
+      "嵌套的条件语句",
+      "有分支的条件语句",
+      "for...in循环",
+      "while循环",
+      "while循环语法格式",
+      "跳出循环break"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 74,
+    "content": "<p>生成若干个有序数列的方法如下：将每一个新生成的数据元素插入到前面已有序的数据序列中（第1个元素默认已有序）。如已有序数列“10 20 35 40”，新数据为30，将30插入到20和35之间，即生成了新的有序数列“10 20 30 35 40”。如下程序使用了链表来实现生成有序数列过程，生成的数据量为5000个，数据元素为1~5000之间的整数。<br>程序运行的部分界面如图2-14所示，在程序中的划线处填入合适的代码。</p><img src=\"http://coding-platform.oss-cn-beijing.aliyuncs.com/12/5.png\">",
+    "knowledge_point": "列表",
+    "grade": "11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      90,
+      107,
+      5,
+      52,
+      103,
+      22
+    ],
+    "related_knowledge_names": [
+      "丰富的库",
+      "整数",
+      "列表",
+      "输出函数",
+      "if语句",
+      "基本的条件语句",
+      "for...in循环",
+      "while循环",
+      "while循环语法格式"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 75,
+    "content": "<p>某商场举行开业酬宾活动，从已报名的前5000个顾客中抽取100个幸运顾客发放奖品。用户报名数据汇总存储在文件user.csv中，部分数据如图2-17所示，报名序号为报名系统按序自动生成（序号唯一），其他信息由顾客在报名时输入。使用链式结构来实现上述抽奖功能的程序如下，请在划线处填入合适的代码。</p><img src=\"http://coding-platform.oss-cn-beijing.aliyuncs.com/12/4.png\">",
+    "knowledge_point": "列表",
+    "grade": "11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      99,
+      103,
+      5,
+      52,
+      90,
+      22,
+      107
+    ],
+    "related_knowledge_names": [
+      "丰富的库",
+      "打开文件",
+      "读取CSV和表格文件",
+      "整数",
+      "关系运算符",
+      "for...in循环",
+      "if语句",
+      "基本的条件语句",
+      "列表",
+      "列表元素赋值",
+      "while循环",
+      "while循环语法格式",
+      "关闭文件",
+      "输出函数"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 76,
+    "content": "<p>在Word 等文字编辑软件中，通过查找功能能够快速找出内容中的某个关键词是否出现过及其出现的次数，如图3-1和图3-2所示。下列 Python 程序段实现了在字符串s中查找某个关键词 keyword，并输出关键词出现的次数（未出现输出0），请补全划线处的语句。</p><img src=\"http://coding-platform.oss-cn-beijing.aliyuncs.com/12/3.png\">",
+    "knowledge_point": "查找子串",
+    "grade": "11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      93,
+      79,
+      99,
+      5,
+      52,
+      22
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "字符串",
+      "查找子串",
+      "替换字符串中的字符",
+      "len()",
+      "计算序列的长度和最值赋值语句",
+      "关系运算符",
+      "if语句",
+      "基本的条件语句",
+      "while循环",
+      "while循环语法格式",
+      "跳出循环break"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 77,
+    "content": "<p>一个非空字符串与其翻转后的字符串拼接可以构造回文字符串 例如，字符串 “abc\" 翻转后的字符串为 “cba\" ，经过拼接后可得到回文字符串 \"abccba\" ，下面的程序段用 Python 语言实现输入一个字符串，输出该字符串翻转并拼接后的回文字符串。①处代码有误，请改正。</p>",
+    "knowledge_point": "字符串",
+    "grade": "11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      93,
+      80,
+      45,
+      18,
+      99,
+      22,
+      107
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "字符串",
+      "整数",
+      "len()",
+      "计算序列的长度和最值",
+      "访问单个数据",
+      "加号连接两个序列",
+      "赋值语句",
+      "关系运算符",
+      "while循环",
+      "while循环语法格式",
+      "输出函数"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 78,
+    "content": "<p>现有一批会员卡号，卡号的编号规则为 “年份（4位）＋序号（4位）”，如 “20190001\" 开卡年份为 2019。以下代码是小李编写的用于统计某年共开了多少张卡的 Python 程序，但①处代码有误，请改正。</p>",
+    "knowledge_point": "检查数据是否在序列中",
+    "grade": "11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      93,
+      78,
+      18,
+      99,
+      103,
+      5,
+      52,
+      90,
+      107
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "字符串",
+      "检查数据是否在序列中",
+      "整数",
+      "赋值语句",
+      "关系运算符",
+      "for...in循环",
+      "range()函数",
+      "if语句",
+      "基本的条件语句",
+      "列表",
+      "输出函数"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 79,
+    "content": "<p>根据相关规定，年满6周岁的儿童可以入学（一般截止到当年8月31 日），如 2019年6月7日出生的儿童可以在2025 年秋季入学，而 2019年12月11日出生的儿童需要在 2026 年秋季入。如下程序根据输入的身份证号码信息，判断该儿童是否可以在2021年秋季入学。请在划线处填入合适的语句。</p>",
+    "knowledge_point": "查找子串",
+    "grade": "11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      93,
+      18,
+      99,
+      5,
+      50,
+      79,
+      107
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "字符串",
+      "赋值语句",
+      "关系运算符",
+      "if语句",
+      "有分支的条件语句",
+      "查找子串",
+      "输出函数"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 80,
+    "content": "<p>某短信群发平台会对短信内容进行审查，会过滤掉某些不能通过审查的短信，并能根据短信推送的时间将短信排队后逐一发送。现假定审查的依据是字符串的长度，所有超过 100 个字符的短信都将被过滤掉。以下代码利用队列编程模拟了短信的审查、排队和发送的过程，请补全代码划线处的语句。</p>",
+    "knowledge_point": "计算序列的长度和最值",
+    "grade": "11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      93,
+      18,
+      99,
+      103,
+      5,
+      52,
+      80,
+      90,
+      22,
+      107
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "字符串",
+      "乘号重复序列",
+      "整数",
+      "赋值语句",
+      "关系运算符",
+      "for...in循环",
+      "range()函数",
+      "if语句",
+      "基本的条件语句",
+      "len()",
+      "计算序列的长度和最值",
+      "列表",
+      "while循环",
+      "while循环语法格式",
+      "输出函数"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 81,
+    "content": "<p>小华从某起点到某目的地需要经过若干次公交转车 乘车不存在绕圈现象，且保证可以到达），但坐车的方案可能不唯一。如图 3-6 所示，从起点A到目的地H可以选择公交线路\"A-D-E-F-H\" ，也可以选择公交线\"A-D-G-H\"。前者需要在“D”“E”“F“ 个公交车站下车后转车3次，而后者只需要在 “D”和“G” 两个公交车站下车后转车2次，且是所有乘坐公交车方案里转车次数最少的一种方案。现给出某公交车坐车方案图，求从某个起点到终点的最少转车方案。<br></p><img src=\"http://coding-platform.oss-cn-beijing.aliyuncs.com/12/2.png\"><p><br>（1）在设计算法解决问题的时候 ，首先将起点入队， 然后取出队首元素c，将从编号为c的站点可达 (a 数组元素的值为 1) 点依次入队，不断重复操作，直到遇到目的地站点或者队列为空为止。实现上述功能的 Python 程序如下， ④处代码有误，请修正。<br><br>（2）请补全划线①②③处的代码。</p>",
+    "knowledge_point": "列表",
+    "grade": "11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      65,
+      90,
+      18,
+      99,
+      22,
+      107,
+      103,
+      5,
+      52,
+      82
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "布尔值",
+      "乘号重复序列",
+      "列表",
+      "列表元素赋值",
+      "int()函数",
+      "整数",
+      "赋值语句",
+      "关系运算符",
+      "逻辑运算符",
+      "while循环",
+      "while循环语法格式",
+      "输出函数",
+      "for...in循环",
+      "range()函数",
+      "if语句",
+      "基本的条件语句",
+      "连缀的if-elif-else",
+      "跳出循环break"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 82,
+    "content": "<p>输入一个得分（正整数），判断并输出分数对应的等级。</p><p>A对应分数（80，100]，B对应分数（60,80],C对应分数(0,60]。</p><p>示例：输入：95</p><p>输出：A</p><p>提示：分支结构。</p>",
+    "knowledge_point": "连缀的if-elif-else",
+    "grade": "10",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      5,
+      82
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "输出函数",
+      "整数",
+      "int()函数",
+      "字符",
+      "if语句",
+      "连缀的if-elif-else"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 83,
+    "content": "<p>输入一个正整数，输出其所有因数的和。</p><p>示例：输入：4</p><p>输出：7</p><p>提示：循环结构+分支结构。</p>",
+    "knowledge_point": "for...in循环",
+    "grade": "10",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      18,
+      99,
+      103,
+      5,
+      50
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "输出函数",
+      "赋值语句",
+      "整数",
+      "关系运算符",
+      "for...in循环",
+      "range()函数",
+      "if语句",
+      "有分支的条件语句"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 84,
+    "content": "<p>为便于计算表达式的值，波兰数学家提出了将运算符置于运算对象之后的表示方法（如图 3-9 所示），不用考虑运算符的优先性。如下 Python 程序段实现了对逆波兰式的计算（假定逆波兰式中的运算对象均为一位数的正整数，且运算只有加减乘除），当输入\"682-2*3/+\"时，输出“10\" 。请补全划线处代码。</p><img src=\"http://coding-platform.oss-cn-beijing.aliyuncs.com/12/1.png\">",
+    "knowledge_point": "列表",
+    "grade": "11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      90,
+      80,
+      18,
+      99,
+      22,
+      107,
+      5,
+      52,
+      82
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "乘号重复序列",
+      "列表",
+      "列表元素赋值",
+      "len()",
+      "计算序列的长度和最值",
+      "整数",
+      "int()",
+      "赋值语句",
+      "关系运算符",
+      "while循环",
+      "while循环语法格式",
+      "输出函数",
+      "if语句",
+      "基本的条件语句",
+      "连缀的if-elif-else"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 85,
+    "content": "<p>利用栈可以解决十进制数转其他进制数的问题。 在解决这类问题之前，先观察如何将十进制数 1237 转成八进制数的过程。首先将 1237除以8得到商154和余数5，然后继续将商 154 除以8得到商19和余数2，继续重复此操作，直到商为0为止， 最后将余数按如图3 -12所示方向依次读取 ，即可得到转换结果 2325。根据以上转换思想和计算过程，现有如下 Python 程序段，实现了将十进制数a转换为b进制数，请补全划线处的代码。</p><img src=\"http://coding-platform.oss-cn-beijing.aliyuncs.com/12/10.png\">",
+    "knowledge_point": "八进制",
+    "grade": "11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      85,
+      18,
+      90,
+      93,
+      22
+    ],
+    "related_knowledge_names": [
+      "十进制",
+      "八进制",
+      "整数",
+      "赋值语句",
+      "乘号重复序列",
+      "列表",
+      "列表元素赋值",
+      "字符串",
+      "拆分字符串函数split()",
+      "while循环",
+      "while循环语法格式"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 86,
+    "content": "<p>扑克牌顺子。某一副扑克牌，里面有2个大王和2个小王，看看能不能抽到顺子。其中大、小王可以看成任何数字，并且A看作1, J为11，Q为12,K为13。抽到的牌为 “红心A，黑桃3，小王，大王，方片 5\" ，就可以看成“1,2,3,4,5\"（大、小王分别看作2和4），构成顺子。若牌能组成顺子，就输出“可以组成顺子”，否则就输出“无法组成顺子＂。为了方便起见，你可以认为大、小王在输入时用“0” 表示。Python程序如下。（1）④处有错误，请修正。（2）请在序号①②③处填写代码。</p>",
+    "knowledge_point": "列表",
+    "grade": "11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      90,
+      80,
+      65,
+      18,
+      99,
+      107,
+      5,
+      50,
+      82
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "乘号重复序列",
+      "列表",
+      "列表元素赋值",
+      "len()",
+      "计算序列的长度和最值",
+      "整数",
+      "布尔值",
+      "赋值语句",
+      "关系运算符",
+      "输出函数",
+      "if语句",
+      "有分支的条件语句",
+      "连缀的if-elif-else"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 87,
+    "content": "<p>将数学表达式转换成后缀表达式，同时验证计算结果是否正确，例如：表达式1+3-5=0，它的后缀表达式为1 3 + 5 -，而答案0是错误的答案，因此输出“错误！”，并输出后缀表达式。<br>备注：所有计算数字都是一位数字。</p><img src=\"https://coding-platform.oss-cn-beijing.aliyuncs.com/12/d720edbc464c65fe35857a44b2b41882.png\">",
+    "knowledge_point": "列表",
+    "grade": "11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      90,
+      80,
+      18,
+      99,
+      107,
+      5,
+      50,
+      62,
+      82,
+      103,
+      63,
+      37
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "乘号重复序列",
+      "列表",
+      "列表元素赋值",
+      "len()",
+      "计算序列的长度和最值",
+      "整数",
+      "赋值语句",
+      "关系运算符",
+      "输出函数",
+      "if语句",
+      "有分支的条件语句",
+      "嵌套的条件语句",
+      "连缀的if-elif-else",
+      "for...in循环",
+      "range()函数",
+      "函数的定义",
+      "函数的调用",
+      "关键字参数",
+      "跳出循环break"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 88,
+    "content": "<p>将数学表达式转换成后缀表达式，同时验证计算结果是否正确，例如：表达式\"6+9*5/3=21\"，它的后缀表达式为6 9 5 * 3 / +，而答案21是正确的答案，因此输出“正确！”，并输出后缀表达式。<br>备注：所有计算数字都是一位数字。</p><img src=\"https://coding-platform.oss-cn-beijing.aliyuncs.com/12/4bf34c2777268c5f29e7742d6c481bef.png\">",
+    "knowledge_point": "列表",
+    "grade": "11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      90,
+      80,
+      18,
+      99,
+      107,
+      5,
+      50,
+      62,
+      82,
+      103,
+      63,
+      37,
+      22
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "乘号重复序列",
+      "列表",
+      "列表元素赋值",
+      "len()",
+      "计算序列的长度和最值",
+      "整数",
+      "赋值语句",
+      "关系运算符",
+      "输出函数",
+      "if语句",
+      "有分支的条件语句",
+      "嵌套的条件语句",
+      "连缀的if-elif-else",
+      "for...in循环",
+      "range()函数",
+      "函数的定义",
+      "函数的调用",
+      "关键字参数",
+      "跳出循环break",
+      "while循环",
+      "while循环语法格式"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 89,
+    "content": "<p>将数学表达式转换成后缀表达式，同时验证计算结果是否正确，例如：表达式2*(2+3*4)=24，它的后缀表达式为2 2 3 4 <em>+ </em>，而答案28是错误的答案，因此输出“错误！”。</p><p>备注：所有计算数字都是一位数字。</p><img src=\"https://coding-platform.oss-cn-beijing.aliyuncs.com/12/19.png\">",
+    "knowledge_point": "列表",
+    "grade": "11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      90,
+      80,
+      18,
+      99,
+      107,
+      5,
+      50,
+      62,
+      82,
+      103,
+      63,
+      37,
+      22
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "列表",
+      "列表元素赋值",
+      "len()",
+      "计算序列的长度和最值",
+      "整数",
+      "赋值语句",
+      "关系运算符",
+      "输出函数",
+      "if语句",
+      "有分支的条件语句",
+      "嵌套的条件语句",
+      "连缀的if-elif-else",
+      "for...in循环",
+      "range()函数",
+      "函数的定义",
+      "函数的调用",
+      "关键字参数",
+      "跳出循环break",
+      "while循环",
+      "while循环语法格式"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 90,
+    "content": "<p>将上题中的代码进行简化。</p><img src=\"https://coding-platform.oss-cn-beijing.aliyuncs.com/12/19.png\">",
+    "knowledge_point": "列表",
+    "grade": "11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      90,
+      80,
+      18,
+      99,
+      107,
+      5,
+      50,
+      62,
+      82,
+      103,
+      63,
+      37,
+      22
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "乘号重复序列",
+      "列表",
+      "列表元素赋值",
+      "len()",
+      "计算序列的长度和最值",
+      "整数",
+      "赋值语句",
+      "关系运算符",
+      "输出函数",
+      "if语句",
+      "有分支的条件语句",
+      "嵌套的条件语句",
+      "连缀的if-elif-else",
+      "for...in循环",
+      "range()函数",
+      "函数的定义",
+      "函数的调用",
+      "关键字参数",
+      "跳出循环break",
+      "while循环",
+      "while循环语法格式"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 91,
+    "content": "<p>浙江工业大学三位一体的要求是学考A等级大于等于7个，</p><p>某考生的学考成绩如表中所示（[\"A\",\"B\",\"A\",\"A\",\"A\",\"D\",\"C\",\"A\",\"A\",\"A\"]），</p><p>判断其是否具备参加浙江工业大学三位一体的资格。</p><p>用Python语言编程实现</p><p></p>",
+    "knowledge_point": "字符串",
+    "grade": "11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      93,
+      18,
+      99,
+      107,
+      103,
+      5,
+      50
+    ],
+    "related_knowledge_names": [
+      "字符串",
+      "字符",
+      "赋值语句",
+      "整数",
+      "关系运算符",
+      "输出函数",
+      "for...in循环",
+      "if语句",
+      "有分支的条件语句"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 92,
+    "content": "<p>浙江师范大学对考生的学业水平考试成绩有如下的要求：</p><p>学业水平考试（10门）等第折算成绩满分为100分，</p><p>其中A等计10分，B等计8分，C等计4分，D等及以下不计分，</p><p>折算分必须达到82分及以上。</p><p>根据考生10门学考等级的数据（“[\"A\",\"B\",\"A\",\"A\",\"A\",\"D\",\"C\",\"A\",\"A\",\"A\"]”），</p><p>输出折算后的分数，并判断其是否具备参加</p><p>浙江师范大学三位一体的资格。用Python语言编程实现</p><img src=\"https://s2.loli.net/2024/11/11/hKc4GYWaIM8Jb3F.png\">",
+    "knowledge_point": "字符串",
+    "grade": "11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      93,
+      18,
+      99,
+      107,
+      103,
+      5,
+      50,
+      82
+    ],
+    "related_knowledge_names": [
+      "字符串",
+      "字符",
+      "赋值语句",
+      "整数",
+      "关系运算符",
+      "输出函数",
+      "for...in循环",
+      "if语句",
+      "有分支的条件语句",
+      "连缀的if-elif-else"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 93,
+    "content": "<pre><code class=\"language-markdown\">宁波大学对考生的学业水平考试成绩有如下的要求：\n学业水平考试（10门）等第折算成绩满分为100分，\n其中A等计10分，B等计8分，C等计4分，\n报考学生所有高中学业水平考试科目的成绩必须\n为C等（含）以上，折算分必须达到82分及以上。\n\n有一位同学的10门学考等级的数据\n（[\"A\",\"B\",\"A\",\"A\",\"A\",\"D\",\"C\",\"A\",\"A\",\"A\"]），\nA等级10分，B等级8分，C等于4分，\n若出现D等级，则总成绩为0，不能参加三位一体。\n输出折算后的分数，判断其是否具备参加宁波大学三位一体的资格。</code></pre><img src=\"https://s2.loli.net/2024/11/11/Qur73yU9Sze4B6x.png\"><pre><code class=\"language-markdown\">\n</code></pre>",
+    "knowledge_point": "字符串",
+    "grade": "11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      93,
+      18,
+      99,
+      90,
+      97,
+      107,
+      103,
+      5,
+      50,
+      82
+    ],
+    "related_knowledge_names": [
+      "字符串",
+      "字符",
+      "赋值语句",
+      "整数",
+      "关系运算符",
+      "列表",
+      "元组",
+      "输出函数",
+      "for...in循环",
+      "if语句",
+      "有分支的条件语句",
+      "连缀的if-elif-else"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 94,
+    "content": "<p>请实现单行动态刷新的文本进度条，并加入时间的计算：</p><p>100%[************************************-&gt;]5.20s</p>",
+    "knowledge_point": "输出函数",
+    "grade": "21",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      18,
+      107,
+      99,
+      103,
+      90,
+      37
+    ],
+    "related_knowledge_names": [
+      "丰富的库",
+      "赋值语句",
+      "输出函数",
+      "关系运算符",
+      "for...in循环",
+      "字符",
+      "range()函数",
+      "列表",
+      "format()函数",
+      "函数的调用"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 95,
+    "content": "<img src=\"https://coding-platform.oss-cn-beijing.aliyuncs.com/%E6%B5%B7%E5%AE%81%E4%B8%AD%E5%AD%A6/3.2%E5%88%86%E6%94%AF%E7%BB%93%E6%9E%84/if1.png\"><p>编写Python程序，实现以下功能：根据各班上学期的产量和管理得分计算总分，总分高者获得续包权。</p>",
+    "knowledge_point": "元组",
+    "grade": "11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      97,
+      44,
+      18,
+      99,
+      107,
+      5,
+      50
+    ],
+    "related_knowledge_names": [
+      "元组",
+      "浮点数",
+      "赋值语句",
+      "关系运算符",
+      "输出函数",
+      "if语句",
+      "有分支的条件语句"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 96,
+    "content": "<p>3班现在也想参与竞争，相应数据如下，请完善程序，实现3个班级竞标程序。</p><img src=\"https://coding-platform.oss-cn-beijing.aliyuncs.com/%E6%B5%B7%E5%AE%81%E4%B8%AD%E5%AD%A6/3.2%E5%88%86%E6%94%AF%E7%BB%93%E6%9E%84/if2.png\">",
+    "knowledge_point": "元组",
+    "grade": "11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      97,
+      44,
+      18,
+      99,
+      107,
+      5,
+      82
+    ],
+    "related_knowledge_names": [
+      "元组",
+      "浮点数",
+      "赋值语句",
+      "关系运算符",
+      "输出函数",
+      "if语句",
+      "连缀的if-elif-else"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 97,
+    "content": "<img src=\"https://coding-platform.oss-cn-beijing.aliyuncs.com/%E6%B5%B7%E5%AE%81%E4%B8%AD%E5%AD%A6/3.2%E5%88%86%E6%94%AF%E7%BB%93%E6%9E%84/if3.jpg\"><p>①调试程序：修改2班数据为55和84，会发现，2班总分与3班相同时，也是显示“3班获得续包权”，请分析原因？&nbsp;&nbsp;</p><p>&nbsp;②修改程序，实现功能：当总分相同时，以管理分高者获得续包权。</p>",
+    "knowledge_point": "元组",
+    "grade": "11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      97,
+      44,
+      18,
+      99,
+      107,
+      5,
+      50,
+      82
+    ],
+    "related_knowledge_names": [
+      "元组",
+      "浮点数",
+      "赋值语句",
+      "关系运算符",
+      "逻辑运算符",
+      "输出函数",
+      "if语句",
+      "有分支的条件语句",
+      "连缀的if-elif-else"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 98,
+    "content": "<p>核心要素：</p><p>已知：身高米数（变量h）</p><p>           体重公斤数（变量w）</p><p>           BMI=体重÷身高的平方</p><p>所求：身休质量指数BMI（变量BMI）</p><p></p><p>解决问题的计算模型：</p><p>           <strong>BMI=体重÷身高的平方</strong></p>",
+    "knowledge_point": "关系运算符",
+    "grade": "10",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      43,
+      107,
+      44,
+      18,
+      99
+    ],
+    "related_knowledge_names": [
+      "输入函数",
+      "输出函数",
+      "浮点数",
+      "赋值语句",
+      "关系运算符"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 99,
+    "content": "<p><strong>已知A、B两位同学的体重分别为58.5、61，BMI分别为20.7、22.9，比比谁的身高比较高。</strong></p><p></p><p><strong>已知：两位同学的体重、BMI值</strong></p><p><strong>BMI=体重÷身高的平方</strong></p><p><strong>所求：两位同学身高，比较身高得出结果</strong></p><p></p><p></p>",
+    "knowledge_point": "关系运算符",
+    "grade": "10",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      90,
+      18,
+      107,
+      44,
+      5,
+      50,
+      102
+    ],
+    "related_knowledge_names": [
+      "列表",
+      "赋值语句",
+      "输出函数",
+      "浮点数",
+      "if语句",
+      "有分支的条件语句",
+      "数学库（math库）的使用"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 100,
+    "content": "<p><strong>有一组学生体检数据，体重与身高依次对应存储在w、h两个列表中。</strong></p><p>w=[52,49,82,63,45.5,39.5,61]</p><p>h=[1.65,1.61,1.81,1.72,1.59,1.55,1.73]</p><p><strong>求该组学生的平均体重及BMI在标准范围[18.5～23.9]的人数。</strong></p>",
+    "knowledge_point": "列表、关系运算符",
+    "grade": "10",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      90,
+      18,
+      107,
+      44,
+      5,
+      50,
+      99,
+      103,
+      80
+    ],
+    "related_knowledge_names": [
+      "列表",
+      "赋值语句",
+      "输出函数",
+      "整数",
+      "浮点数",
+      "if语句",
+      "有分支的条件语句",
+      "关系运算符",
+      "逻辑运算符",
+      "for...in循环",
+      "range()函数",
+      "len()",
+      "计算序列的长度和最值"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 101,
+    "content": "<p><strong>请思考以下问题，并完善代码：</strong></p><p><strong>        一年365天，每天进步1‰，累计进步多少呢？</strong></p><p><strong>        一年365天，每天退步1‰，累计剩下多少呢？</strong></p><p></p>",
+    "knowledge_point": "数学库（math库）的使用",
+    "grade": "21",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      102,
+      18,
+      37,
+      44,
+      107
+    ],
+    "related_knowledge_names": [
+      "数学库（math库）的使用",
+      "赋值语句",
+      "函数的调用",
+      "浮点数",
+      "输出函数"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 102,
+    "content": "<p><strong>请思考以下问题，并完善代码：</strong></p><p></p><p><strong>一年365天，每天进步5‰或1%，累计进步多少呢？</strong></p><p><strong>一年365天，每天退步5‰或1%，累计剩下多少呢？</strong></p><p></p>",
+    "knowledge_point": "数学库（math库）的使用",
+    "grade": "21",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      102,
+      18,
+      37,
+      44,
+      107
+    ],
+    "related_knowledge_names": [
+      "数学库（math库）的使用",
+      "赋值语句",
+      "函数的调用",
+      "浮点数",
+      "输出函数"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 103,
+    "content": "<p><strong>请思考以下问题，并完善代码：</strong></p><p></p><p>    <strong>一年365天，一周5个工作日，每天进步1%</strong></p><p><strong>     一年365天，一周2个休息日，每天退步1%</strong></p><p><strong>     这种工作日的力量，如何呢？</strong></p>",
+    "knowledge_point": "for...in循环",
+    "grade": "21",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      18,
+      44,
+      107,
+      99,
+      103,
+      90,
+      5,
+      50
+    ],
+    "related_knowledge_names": [
+      "赋值语句",
+      "浮点数",
+      "输出函数",
+      "关系运算符",
+      "for...in循环",
+      "字符",
+      "range()函数",
+      "列表",
+      "format()函数",
+      "if语句",
+      "有分支的条件语句"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 104,
+    "content": "<p><strong>请思考以下问题，并完善代码：</strong></p><p></p><p><strong>工作日模式要努力到什么水平，才能与每天努力1%一样？</strong></p><p>- <strong>A君: 一年365天，每天进步1%，不停歇</strong></p><p>- <strong>B君: 一年365天，每周工作5天休息2天，休息日下降1%，要多努力呢？</strong></p>",
+    "knowledge_point": "for...in循环、while循环",
+    "grade": "21",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      18,
+      44,
+      107,
+      99,
+      103,
+      90,
+      5,
+      50,
+      22,
+      63,
+      37
+    ],
+    "related_knowledge_names": [
+      "赋值语句",
+      "浮点数",
+      "输出函数",
+      "关系运算符",
+      "for...in循环",
+      "字符",
+      "range()函数",
+      "列表",
+      "format()函数",
+      "if语句",
+      "有分支的条件语句",
+      "while循环",
+      "while循环语法格式",
+      "函数的定义",
+      "函数的调用",
+      "关键字参数"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 105,
+    "content": "<p><strong>请选择下列问题之一，进行代码的编写：</strong></p><p></p><p>- <strong>工作日模式中，如果休息日不下降呢？</strong></p><p>- <strong>如果努力每天提高1%，休息时每天下降1‰呢？</strong></p><p>- <strong>如果工作3天休息1天呢？</strong></p>",
+    "knowledge_point": "for...in循环、while循环",
+    "grade": "21",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      18,
+      44,
+      107,
+      99,
+      103,
+      90,
+      5,
+      50,
+      22,
+      63,
+      37
+    ],
+    "related_knowledge_names": [
+      "赋值语句",
+      "浮点数",
+      "输出函数",
+      "关系运算符",
+      "for...in循环",
+      "字符",
+      "range()函数",
+      "列表",
+      "format()函数",
+      "if语句",
+      "有分支的条件语句",
+      "while循环",
+      "while循环语法格式",
+      "函数的定义",
+      "函数的调用",
+      "关键字参数"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 106,
+    "content": "<p><strong>请输出如下所示的多行进度条：</strong></p><img src=\"https://coding-platform.oss-cn-beijing.aliyuncs.com/HZNU/%E5%A4%9A%E8%A1%8C%E8%BF%9B%E5%BA%A6%E6%9D%A1.png\">",
+    "knowledge_point": "输出函数",
+    "grade": "21",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      18,
+      107,
+      99,
+      103,
+      90,
+      37
+    ],
+    "related_knowledge_names": [
+      "丰富的库",
+      "赋值语句",
+      "输出函数",
+      "关系运算符",
+      "for...in循环",
+      "字符",
+      "range()函数",
+      "列表",
+      "format()函数",
+      "函数的调用"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 107,
+    "content": "<p>设计你的专属进度条（修改文字/颜色等…）</p>",
+    "knowledge_point": "输出函数",
+    "grade": "21",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      18,
+      107,
+      99,
+      103,
+      90,
+      37
+    ],
+    "related_knowledge_names": [
+      "丰富的库",
+      "赋值语句",
+      "输出函数",
+      "关系运算符",
+      "for...in循环",
+      "字符",
+      "range()函数",
+      "列表",
+      "format()函数",
+      "函数的调用"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 123,
+    "content": "\"<h1>测试标题</h1><p>测试文本</p><p>ID: 328</p>\"",
+    "knowledge_point": "",
+    "grade": "1,2,3,4,5,6,7,8,9,10,11,12,20,21",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      5
+    ],
+    "related_knowledge_names": [
+      "if语句"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 124,
+    "content": "<h1>测试标题</h1><img src=\"http://coding-platform.oss-cn-beijing.aliyuncs.com/uploads/20250929_212606_8df1ca35\"><p>测试文本内容1</p><img src=\"http://coding-platform.oss-cn-beijing.aliyuncs.com/uploads/20250929_212606_2405c9f3\"><h2>测试副标题</h2><p> 测试文本内容2</p>",
+    "knowledge_point": "",
+    "grade": "1,2,3,4,5,6,7,8,9,10,11,12,20,21",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      5
+    ],
+    "related_knowledge_names": [
+      "if语句",
+      "测试1",
+      "测试知识点"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 125,
+    "content": "\"<p>这是一段测试内容</p>\"",
+    "knowledge_point": "",
+    "grade": "10,11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [],
+    "related_knowledge_names": [
+      "函数定义"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 126,
+    "content": "\"<p>测试内容</p>\"",
+    "knowledge_point": "",
+    "grade": "10,11",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [],
+    "related_knowledge_names": [
+      "函数定义"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 127,
+    "content": "\"<h1>测试标题</h1>\"",
+    "knowledge_point": "",
+    "grade": "1,2,3,4,5,6,7,8,9,10,11,12,20,21",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [],
+    "related_knowledge_names": [
+      "测试知识点"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 128,
+    "content": "\"<h1>测试标题</h1>\"",
+    "knowledge_point": "",
+    "grade": "1,2,3,4,5,6,7,8,9,10,11,12,20,21",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [],
+    "related_knowledge_names": [
+      "测试知识点"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 129,
+    "content": "<h1>完全测试标题</h1>",
+    "knowledge_point": "",
+    "grade": "1,2,3,4,5,6,7,8,9,10,11,12,20,21",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      5,
+      82
+    ],
+    "related_knowledge_names": [
+      "if语句",
+      "连缀的if-elif-else",
+      "测试知识点3"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 130,
+    "content": "<p>本课程微测试内容</p>",
+    "knowledge_point": "",
+    "grade": "3,4,5,6,7,8,10,11,20,21",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      28
+    ],
+    "related_knowledge_names": [
+      "丰富的库",
+      "二分搜索",
+      "二进制数"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 131,
+    "content": "<p><strong>请思考以下问题，并完善代码：</strong></p><p><strong>一年365天，每天进步1%，累计进步多少呢？</strong></p><p><strong>一年365天，每天退步1%，累计剩下多少呢？</strong></p><p></p><p></p>",
+    "knowledge_point": "",
+    "grade": "3,4,5,6,7,8,10,11,20,21",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [],
+    "related_knowledge_names": [
+      "丰富的库"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 132,
+    "content": "<p>123</p>",
+    "knowledge_point": "",
+    "grade": "7,8,9",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      61
+    ],
+    "related_knowledge_names": [
+      "ASCII码"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 133,
+    "content": "<p>本节课的重要内容是</p>",
+    "knowledge_point": "",
+    "grade": "7,8,9",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      93
+    ],
+    "related_knowledge_names": [
+      "字符串"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 134,
+    "content": "<h1>测试标题</h1>",
+    "knowledge_point": "",
+    "grade": "1,2,3,4,5,6,7,8,9,10,11,12,20,21",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      61
+    ],
+    "related_knowledge_names": [
+      "ASCII码"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 135,
+    "content": "<h1>测试标题</h1><p>测试文本</p>",
+    "knowledge_point": "",
+    "grade": "1,2,3,4,5,6,7,8,9,10,11,12,20,21",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      61
+    ],
+    "related_knowledge_names": [
+      "ASCII码"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 136,
+    "content": "<h1>测试标题</h1>",
+    "knowledge_point": "",
+    "grade": "7,8,9",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      61,
+      59
+    ],
+    "related_knowledge_names": [
+      "ASCII码",
+      "chr()函数"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 137,
+    "content": "<p></p>",
+    "knowledge_point": "",
+    "grade": "7,8,9",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [],
+    "related_knowledge_names": [
+      "HTML标签"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 138,
+    "content": "<p></p>",
+    "knowledge_point": "",
+    "grade": "7,8,9",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      61
+    ],
+    "related_knowledge_names": [
+      "ASCII码"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 139,
+    "content": "<p>123</p>",
+    "knowledge_point": "",
+    "grade": "7,8,9",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [],
+    "related_knowledge_names": [
+      "丰富的库"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 140,
+    "content": "<h1>目标</h1><p>掌握 while 循环的基本语法结构，能够正确书写简单的 while 循环代码</p><p>学会使用 while 循环解决简单的实际问题，如累加求和、计数等</p><h1>题目</h1><h3>从1开始累加求和的程序</h3><p>设计一个从1开始累加求和的程序，利用while循环得出最后的结果并输出。现在请你将下划线处空缺的代码补上</p>",
+    "knowledge_point": "",
+    "grade": "7,8,9",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      103,
+      22
+    ],
+    "related_knowledge_names": [
+      "for...in循环",
+      "while循环",
+      "while循环语法格式"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 141,
+    "content": "<p>设计一个能够输出10次“爱上学习”的程序</p>",
+    "knowledge_point": "",
+    "grade": "7,8,9",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [],
+    "related_knowledge_names": [
+      "while循环"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 142,
+    "content": "<p>项目化学习——跳蚤市场自助零售系统项目</p><p>任务一:假设小摊有不多于5件商品，分别为笔记本: 10元, 书签: 5元,钥匙扣:15元,贴纸: 8元,小摆件: 20元，设计一个程序，使得能够根据用户所选商品，报出对应价格</p><p></p>",
+    "knowledge_point": "",
+    "grade": "7,8,9",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      5
+    ],
+    "related_knowledge_names": [
+      "if语句"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 143,
+    "content": "<p><strong>项目化学习——跳蚤市场自助零售系统项目</strong></p><p>任务二：2.0版本核心要求：能否让自助零售系统可以循环执行。</p>",
+    "knowledge_point": "",
+    "grade": "7,8,9",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [],
+    "related_knowledge_names": [
+      "while循环"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 144,
+    "content": "<p><strong>项目化学习——跳蚤市场自助零售系统项目</strong></p><p>任务三：进阶要求（自主零售系统3.0）：在任务二的基础上去循环计算出客户购买的总价</p>",
+    "knowledge_point": "",
+    "grade": "7,8,9",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [
+      5
+    ],
+    "related_knowledge_names": [
+      "if语句",
+      "while循环"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 145,
+    "content": "<p>s = '我爱学习</p><p></p><p>请将该字符串中的‘我’和‘习’分别用两种方法表示并输出</p><p></p>",
+    "knowledge_point": "",
+    "grade": "7,8,9",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [],
+    "related_knowledge_names": [
+      "字符"
+    ],
+    "created_at": null,
+    "updated_at": null
+  },
+  {
+    "id": 146,
+    "content": "<p>尝试运行代码，看看</p>",
+    "knowledge_point": "",
+    "grade": "7,8,9",
+    "type": "知识点",
+    "parent_id": null,
+    "parent_name": null,
+    "related_knowledge_ids": [],
+    "related_knowledge_names": [
+      "字符"
+    ],
+    "created_at": null,
+    "updated_at": null
+  }
+]
