@@ -60,4 +60,31 @@ export class StudentController {
       throw new HttpException('学生不存在', HttpStatus.NOT_FOUND);
     }
   }
+
+  // 获取所有可用的学校列表
+  @Get('/options/schools')
+  async getSchools() {
+    return this.studentService.getSchools();
+  }
+
+  // 根据学校获取年级列表
+  @Get('/options/grades')
+  async getGradesBySchool(@Query('school') school: string) {
+    if (!school) {
+      throw new HttpException('学校参数不能为空', HttpStatus.BAD_REQUEST);
+    }
+    return this.studentService.getGradesBySchool(school);
+  }
+
+  // 根据学校和年级获取班级列表
+  @Get('/options/classes')
+  async getClassesBySchoolAndGrade(
+    @Query('school') school: string,
+    @Query('grade') grade: string
+  ) {
+    if (!school || !grade) {
+      throw new HttpException('学校和年级参数不能为空', HttpStatus.BAD_REQUEST);
+    }
+    return this.studentService.getClassesBySchoolAndGrade(school, grade);
+  }
 }

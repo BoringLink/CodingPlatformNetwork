@@ -23,8 +23,8 @@ export interface KnowledgeProfile {
   type: string;
   parentId: string | null;
   parentName: string | null;
-  relatedKnowledgeIds: string;
-  relatedKnowledgeNames: string;
+  relatedKnowledgeIds: string[];
+  relatedKnowledgeNames: string[];
 }
 
 export interface Node {

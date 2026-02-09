@@ -80,30 +80,64 @@ export class GraphService {
         },
       })),
       // 知识点节点
-      ...knowledge.map(k => ({
-        id: k.id,
-        type: 'KNOWLEDGE' as const,
-        name: k.knowledgePoint,
-        group: 2,
-        val: 15,
-        knowledgeProfile: {
-          content: k.content,
-          type: k.type,
-          parentId: k.parentId,
-          parentName: k.parentName,
-          relatedKnowledgeIds: JSON.parse(k.relatedKnowledgeIds),
-          relatedKnowledgeNames: JSON.parse(k.relatedKnowledgeNames),
-        },
-      })),
+      ...knowledge.map(k => {
+        let relatedKnowledgeIds: string[] = [];
+        let relatedKnowledgeNames: string[] = [];
+        
+        // 安全解析 JSON 字符串
+        try {
+          relatedKnowledgeIds = JSON.parse(k.relatedKnowledgeIds) || [];
+          if (!Array.isArray(relatedKnowledgeIds)) {
+            relatedKnowledgeIds = [];
+          }
+        } catch (error) {
+          console.warn(`Failed to parse relatedKnowledgeIds for knowledge ${k.id}:`, error);
+          relatedKnowledgeIds = [];
+        }
+        
+        try {
+          relatedKnowledgeNames = JSON.parse(k.relatedKnowledgeNames) || [];
+          if (!Array.isArray(relatedKnowledgeNames)) {
+            relatedKnowledgeNames = [];
+          }
+        } catch (error) {
+          console.warn(`Failed to parse relatedKnowledgeNames for knowledge ${k.id}:`, error);
+          relatedKnowledgeNames = [];
+        }
+        
+        return {
+          id: k.id,
+          type: 'KNOWLEDGE' as const,
+          name: k.knowledgePoint,
+          group: 2,
+          val: 15,
+          knowledgeProfile: {
+            content: k.content,
+            type: k.type,
+            parentId: k.parentId,
+            parentName: k.parentName,
+            relatedKnowledgeIds,
+            relatedKnowledgeNames,
+          },
+        };
+      }),
     ];
 
-    // 构建链接数据
-    const links: Link[] = interactions.map(interaction => ({
-      source: interaction.sourceId,
-      target: interaction.targetId,
-      value: interaction.value,
-      type: interaction.type,
-    }));
+    // 构建节点ID集合用于快速查找
+    const nodeIds = new Set(nodes.map(node => node.id));
+
+    // 构建链接数据，过滤掉无效的链接
+    const links: Link[] = interactions
+      .filter(interaction => {
+        // 只保留sourceId和targetId都在节点集合中的链接
+        return nodeIds.has(interaction.sourceId) && nodeIds.has(interaction.targetId);
+      })
+      .map(interaction => ({
+        source: interaction.sourceId,
+        target: interaction.targetId,
+        value: interaction.value,
+        type: interaction.type,
+      }));
 
     return { nodes, links } as GraphData;
   }
