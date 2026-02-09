@@ -31,7 +31,7 @@ export interface CognitiveAttributes {
 }
 
 export interface StudentProfile extends CognitiveAttributes {
-  gender: "男" | "女";
+  gender?: "男" | "女";
   school: string;
   grade: string;
   classId: string;
@@ -39,12 +39,12 @@ export interface StudentProfile extends CognitiveAttributes {
 
 export interface KnowledgeProfile {
   content: string; // 知识点具体内容/操作步骤
-  category: string; // 分类，如 Word操作，数学概念
+  category?: string; // 分类，如 Word操作，数学概念
   type: "知识单元" | "知识点"; // 知识点类型
   parentId?: string; // 上级知识点ID
   parentName?: string; // 上级知识点名称
-  relatedKnowledgeIds?: string[]; // 关联知识点ID数组
-  relatedKnowledgeNames?: string[]; // 关联知识点名称数组
+  relatedKnowledgeIds: string[]; // 关联知识点ID数组
+  relatedKnowledgeNames: string[]; // 关联知识点名称数组
 }
 
 export interface TeacherProfile {

@@ -1,44 +1,53 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Settings, Users, Network, BookOpen, BarChart3, RefreshCw, Wand2, X, User, Lightbulb, Book, Link as LinkIcon, ExternalLink, GraduationCap, PieChart, GitGraph, ChevronRight, LayoutDashboard, Layers, Activity } from 'lucide-react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { Settings, Users, Network, BookOpen, BarChart3, RefreshCw, X, User, Lightbulb, Book, Link as LinkIcon, ExternalLink, GraduationCap, PieChart, GitGraph, ChevronRight, LayoutDashboard, Layers, Activity, Loader2, AlertCircle } from 'lucide-react';
 import NetworkGraph from './components/NetworkGraph';
 import AnalysisPanel from './components/AnalysisPanel';
-import { generateGraphData, generateResources, getClassOptions } from './services/dataService';
-import { analyzeNetwork } from './services/geminiService';
+import { fetchGraphData, generateResources, getSchools, getGradesBySchool, getClassesBySchoolAndGrade } from './services/dataService';
 import { getStrategy } from './services/strategies';
 import { Scenario, GraphData, Resource, ClassInfo, NodeType, GraphNode, CognitiveAttributes } from './types';
+import { debounce } from './services/performanceUtils';
 
 const App: React.FC = () => {
     // State
-    const [scenario, setScenario] = useState<Scenario>(Scenario.ONLINE_COURSE);
-    const [classInfo, setClassInfo] = useState<ClassInfo>({
-        school: '三墩小学',
-        grade: '五年级',
-        classId: '2班'
-    });
+  const [scenario, setScenario] = useState<Scenario>(Scenario.ONLINE_COURSE);
+  const [classInfo, setClassInfo] = useState<ClassInfo>({
+    school: '',
+    grade: '',
+    classId: ''
+  });
 
-    const [graphData, setGraphData] = useState<GraphData>({ nodes: [], links: [] });
-    const [resources, setResources] = useState<Resource[]>([]);
-    const [selectedResource, setSelectedResource] = useState<string | null>(null);
-    const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
-    const [highlightedNodeIds, setHighlightedNodeIds] = useState<string[]>([]);
-    const [studentAcceptance, setStudentAcceptance] = useState<Record<string, 'accept' | 'reject'>>({});
-    const [aiAnalysis, setAiAnalysis] = useState<string>("");
-    const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [graphData, setGraphData] = useState<GraphData>({ nodes: [], links: [] });
+  const [resources, setResources] = useState<Resource[]>([]);
+  const [selectedResource, setSelectedResource] = useState<string | null>(null);
+  const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
+  const [highlightedNodeIds, setHighlightedNodeIds] = useState<string[]>([]);
+  const [studentAcceptance, setStudentAcceptance] = useState<Record<string, 'accept' | 'reject'>>({});
 
-    // Analysis Panel State
-    const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
-    const [analysisDefaultTab, setAnalysisDefaultTab] = useState<'overview' | 'subgraph'>('overview');
+  // Loading and Error State
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-    // Tooltip State
-    const [hoveredAttribute, setHoveredAttribute] = useState<{ key: keyof CognitiveAttributes, score: number } | null>(null);
-    const [tooltipPosition, setTooltipPosition] = useState<{ x: number, y: number } | null>(null);
+  // Analysis Panel State
+  const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
+  const [analysisDefaultTab, setAnalysisDefaultTab] = useState<'overview' | 'subgraph'>('overview');
 
-    // Class options state (loaded async)
-    const [classOptions, setClassOptions] = useState<{ schools: string[], grades: string[], classes: string[] }>({
-        schools: [],
-        grades: [],
-        classes: []
-    });
+  // Tooltip State
+  const [hoveredAttribute, setHoveredAttribute] = useState<{ key: keyof CognitiveAttributes, score: number } | null>(null);
+  const [tooltipPosition, setTooltipPosition] = useState<{ x: number, y: number } | null>(null);
+
+  // Class options state (loaded async)
+  const [classOptions, setClassOptions] = useState<{ schools: string[], grades: string[], classes: string[] }>({
+    schools: [],
+    grades: [],
+    classes: []
+  });
+
+  // Options loading state
+  const [optionsLoading, setOptionsLoading] = useState({
+    schools: false,
+    grades: false,
+    classes: false
+  });
 
     // Constants
     const scenarios = Object.values(Scenario);
@@ -56,49 +65,142 @@ const App: React.FC = () => {
     };
 
     // Reset filters function - clears all selection states
-    const resetFilters = useCallback(() => {
-        if (classOptions.schools.length > 0 && classOptions.grades.length > 0 && classOptions.classes.length > 0) {
-            setClassInfo({
-                school: classOptions.schools[0],
-                grade: classOptions.grades[0],
-                classId: classOptions.classes[0]
-            });
+  const resetFilters = useCallback(() => {
+    if (classOptions.schools.length > 0) {
+      setClassInfo({
+        school: classOptions.schools[0],
+        grade: '',
+        classId: ''
+      });
+    }
+    setScenario(Scenario.ONLINE_COURSE);
+  }, [classOptions.schools]);
+
+  // Load schools on mount
+  useEffect(() => {
+    const loadSchools = async () => {
+      setOptionsLoading(prev => ({ ...prev, schools: true }));
+      try {
+        const schools = await getSchools();
+        setClassOptions(prev => ({ ...prev, schools }));
+        
+        // Set initial school if available
+        if (schools.length > 0) {
+          setClassInfo(prev => ({
+            ...prev,
+            school: schools[0],
+            grade: '',
+            classId: ''
+          }));
         }
-        setScenario(Scenario.ONLINE_COURSE);
-    }, [classOptions]);
+      } catch (error) {
+        console.error('加载学校列表失败:', error);
+      } finally {
+        setOptionsLoading(prev => ({ ...prev, schools: false }));
+      }
+    };
+    
+    loadSchools();
+  }, []);
 
-    // Load class options on mount
-    useEffect(() => {
-        const options = getClassOptions();
-        setClassOptions(options);
+  // Load grades when school changes
+  useEffect(() => {
+    if (!classInfo.school) return;
+    
+    const loadGrades = async () => {
+      setOptionsLoading(prev => ({ ...prev, grades: true }));
+      try {
+        const grades = await getGradesBySchool(classInfo.school);
+        setClassOptions(prev => ({ ...prev, grades }));
+        
+        // Reset grade and classId when school changes
+        setClassInfo(prev => ({
+          ...prev,
+          grade: grades.length > 0 ? grades[0] : '',
+          classId: ''
+        }));
+      } catch (error) {
+        console.error('加载年级列表失败:', error);
+        setClassOptions(prev => ({ ...prev, grades: [] }));
+      } finally {
+        setOptionsLoading(prev => ({ ...prev, grades: false }));
+      }
+    };
+    
+    loadGrades();
+  }, [classInfo.school]);
 
-        // Set initial class info to first available option
-        if (options.schools.length > 0 && options.grades.length > 0 && options.classes.length > 0) {
-            setClassInfo({
-                school: options.schools[0],
-                grade: options.grades[0],
-                classId: options.classes[0]
-            });
+  // Load classes when school or grade changes
+  useEffect(() => {
+    if (!classInfo.school || !classInfo.grade) return;
+    
+    const loadClasses = async () => {
+      setOptionsLoading(prev => ({ ...prev, classes: true }));
+      try {
+        const classes = await getClassesBySchoolAndGrade(classInfo.school, classInfo.grade);
+        setClassOptions(prev => ({ ...prev, classes }));
+        
+        // Set initial class if available
+        if (classes.length > 0) {
+          setClassInfo(prev => ({
+            ...prev,
+            classId: classes[0]
+          }));
+        } else {
+          setClassInfo(prev => ({
+            ...prev,
+            classId: ''
+          }));
         }
-    }, []);
+      } catch (error) {
+        console.error('加载班级列表失败:', error);
+        setClassOptions(prev => ({ ...prev, classes: [] }));
+      } finally {
+        setOptionsLoading(prev => ({ ...prev, classes: false }));
+      }
+    };
+    
+    loadClasses();
+  }, [classInfo.school, classInfo.grade]);
 
-    // Load Data Effect
-    const loadData = useCallback(() => {
-        // Skip if classOptions not loaded yet
-        if (classOptions.schools.length === 0) return;
+    // Load Data Effect with debounce
+  const loadData = useCallback(async () => {
+    // Skip if classInfo is not complete
+    if (!classInfo.school || !classInfo.grade || !classInfo.classId) return;
 
-        const data = generateGraphData(scenario, classInfo);
-        setGraphData(data);
+    setLoading(true);
+    setError(null);
+    setSelectedResource(null);
+    setSelectedNode(null);
+    setHighlightedNodeIds([]);
+    setStudentAcceptance({});
 
-        // Generate resources based on new knowledge points
-        const kNodes = data.nodes.filter(n => n.type === NodeType.KNOWLEDGE);
-        const newResources = generateResources(kNodes);
-        setResources(newResources);
-    }, [scenario, classInfo, classOptions.schools.length]);
+    try {
+      // 从API获取数据
+      const data = await fetchGraphData(scenario, classInfo);
+      setGraphData(data);
 
-    useEffect(() => {
-        loadData();
+      // 生成资源基于新的知识点
+      const kNodes = data.nodes.filter(n => n.type === NodeType.KNOWLEDGE);
+      const newResources = generateResources(kNodes);
+      setResources(newResources);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : '加载数据失败，请重试';
+      setError(errorMessage);
+      console.error('加载数据失败:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [scenario, classInfo]);
+
+    // 防抖处理的loadData函数
+    const debouncedLoadData = useMemo(() => {
+        return debounce(loadData, 300); // 300ms防抖
     }, [loadData]);
+
+    useEffect(() => {
+        debouncedLoadData();
+    }, [debouncedLoadData]);
 
     // Handlers
     const openAnalysis = (tab: 'overview' | 'subgraph') => {
@@ -158,16 +260,7 @@ const App: React.FC = () => {
         setHoveredAttribute(null); // Clear tooltip
     };
 
-    const handleAIAnalyze = async () => {
-        setIsAnalyzing(true);
-        const sCount = graphData.nodes.filter(n => n.type === NodeType.STUDENT).length;
-        const tCount = graphData.nodes.filter(n => n.type === NodeType.TEACHER).length;
-        const avgAcc = Math.floor(resources.reduce((acc, r) => acc + r.accuracy, 0) / resources.length);
 
-        const analysis = await analyzeNetwork(scenario, sCount, tCount, avgAcc);
-        setAiAnalysis(analysis);
-        setIsAnalyzing(false);
-    };
 
     const handleAttributeEnter = (e: React.MouseEvent, key: keyof CognitiveAttributes, score: number) => {
         const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
@@ -255,11 +348,22 @@ const App: React.FC = () => {
                                         className="w-full appearance-none bg-slate-50 border border-slate-200 rounded-lg py-2 pl-3 pr-8 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all cursor-pointer hover:border-slate-300"
                                         value={classInfo.school}
                                         onChange={(e) => setClassInfo({ ...classInfo, school: e.target.value })}
+                                        disabled={optionsLoading.schools}
                                     >
-                                        {classOptions.schools.map(o => <option key={o} value={o}>{o}</option>)}
+                                        {optionsLoading.schools ? (
+                                            <option value="">加载中...</option>
+                                        ) : classOptions.schools.length > 0 ? (
+                                            classOptions.schools.map(o => <option key={o} value={o}>{o}</option>)
+                                        ) : (
+                                            <option value="">暂无学校数据</option>
+                                        )}
                                     </select>
                                     <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400">
-                                        <ChevronRight className="w-3 h-3 rotate-90" />
+                                        {optionsLoading.schools ? (
+                                            <Loader2 className="w-3 h-3 animate-spin" />
+                                        ) : (
+                                            <ChevronRight className="w-3 h-3 rotate-90" />
+                                        )}
                                     </div>
                                 </div>
 
@@ -269,11 +373,22 @@ const App: React.FC = () => {
                                             className="w-full appearance-none bg-slate-50 border border-slate-200 rounded-lg py-2 pl-3 pr-8 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all cursor-pointer hover:border-slate-300"
                                             value={classInfo.grade}
                                             onChange={(e) => setClassInfo({ ...classInfo, grade: e.target.value })}
+                                            disabled={optionsLoading.grades || !classInfo.school}
                                         >
-                                            {classOptions.grades.map(o => <option key={o} value={o}>{o}</option>)}
+                                            {optionsLoading.grades ? (
+                                                <option value="">加载中...</option>
+                                            ) : classOptions.grades.length > 0 ? (
+                                                classOptions.grades.map(o => <option key={o} value={o}>{o}</option>)
+                                            ) : (
+                                                <option value="">请选择学校</option>
+                                            )}
                                         </select>
                                         <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400">
-                                            <ChevronRight className="w-3 h-3 rotate-90" />
+                                            {optionsLoading.grades ? (
+                                                <Loader2 className="w-3 h-3 animate-spin" />
+                                            ) : (
+                                                <ChevronRight className="w-3 h-3 rotate-90" />
+                                            )}
                                         </div>
                                     </div>
                                     <div className="relative w-1/2">
@@ -281,11 +396,22 @@ const App: React.FC = () => {
                                             className="w-full appearance-none bg-slate-50 border border-slate-200 rounded-lg py-2 pl-3 pr-8 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all cursor-pointer hover:border-slate-300"
                                             value={classInfo.classId}
                                             onChange={(e) => setClassInfo({ ...classInfo, classId: e.target.value })}
+                                            disabled={optionsLoading.classes || !classInfo.school || !classInfo.grade}
                                         >
-                                            {classOptions.classes.map(o => <option key={o} value={o}>{o}</option>)}
+                                            {optionsLoading.classes ? (
+                                                <option value="">加载中...</option>
+                                            ) : classOptions.classes.length > 0 ? (
+                                                classOptions.classes.map(o => <option key={o} value={o}>{o}</option>)
+                                            ) : (
+                                                <option value="">请选择年级</option>
+                                            )}
                                         </select>
                                         <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400">
-                                            <ChevronRight className="w-3 h-3 rotate-90" />
+                                            {optionsLoading.classes ? (
+                                                <Loader2 className="w-3 h-3 animate-spin" />
+                                            ) : (
+                                                <ChevronRight className="w-3 h-3 rotate-90" />
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -318,6 +444,60 @@ const App: React.FC = () => {
                         </div>
 
                         <div className="flex-1 overflow-hidden p-0 relative bg-slate-50/30">
+                            {/* Loading Indicator */}
+                            {loading && (
+                                <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50">
+                                    <div className="flex flex-col items-center gap-3">
+                                        <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
+                                        <p className="text-sm font-medium text-slate-600">加载数据中...</p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Error Message */}
+                            {error && (
+                                <div className="absolute inset-0 bg-red-50/50 backdrop-blur-sm flex items-center justify-center z-50 p-8">
+                                    <div className="bg-white rounded-xl shadow-lg p-6 max-w-md text-center">
+                                        <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+                                        <h3 className="text-lg font-bold text-slate-800 mb-2">加载失败</h3>
+                                        <p className="text-sm text-slate-600 mb-4">{error}</p>
+                                        <button
+                                            onClick={loadData}
+                                            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium"
+                                        >
+                                            重试
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Empty State */}
+                            {!loading && !error && graphData.nodes.length === 0 && (
+                                <div className="absolute inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center z-40">
+                                    <div className="flex flex-col items-center gap-3 max-w-md px-6 text-center">
+                                        <Network className="w-16 h-16 text-slate-300" />
+                                        <h3 className="text-lg font-bold text-slate-700">暂无数据</h3>
+                                        <p className="text-sm text-slate-500 mb-4">
+                                            未找到符合当前筛选条件的数据，请尝试调整筛选选项或联系管理员确认数据是否存在。
+                                        </p>
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={loadData}
+                                                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium"
+                                            >
+                                                重新加载
+                                            </button>
+                                            <button
+                                                onClick={resetFilters}
+                                                className="px-4 py-2 bg-slate-200 text-slate-600 rounded-lg hover:bg-slate-300 transition-colors text-sm font-medium"
+                                            >
+                                                重置筛选
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
                             <NetworkGraph
                                 data={graphData}
                                 highlightedNodeIds={highlightedNodeIds}
@@ -562,41 +742,7 @@ const App: React.FC = () => {
                         ))}
                     </div>
 
-                    {/* Gemini AI Analysis Section */}
-                    <div className="p-5 bg-white border-t border-slate-200">
-                        <div className="mb-3 flex items-center justify-between">
-                            <h4 className="text-xs font-bold text-slate-400 uppercase flex items-center gap-2 tracking-wider">
-                                <Wand2 className="w-3 h-3" /> AI 智能拓扑分析
-                            </h4>
-                        </div>
 
-                        {aiAnalysis ? (
-                            <div className="bg-gradient-to-br from-indigo-50 to-white border border-indigo-100 rounded-xl p-4 shadow-sm relative group">
-                                <p className="text-xs text-slate-600 leading-relaxed font-medium">
-                                    {aiAnalysis}
-                                </p>
-                                <button onClick={() => setAiAnalysis("")} className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-slate-200 rounded text-slate-400">
-                                    <X className="w-3 h-3" />
-                                </button>
-                            </div>
-                        ) : (
-                            <button
-                                onClick={handleAIAnalyze}
-                                disabled={isAnalyzing}
-                                className="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold rounded-xl shadow-lg shadow-slate-200 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed hover:translate-y-[-1px] active:translate-y-[1px]"
-                            >
-                                {isAnalyzing ? (
-                                    <>
-                                        <RefreshCw className="w-3.5 h-3.5 animate-spin" /> 正在分析网络拓扑...
-                                    </>
-                                ) : (
-                                    <>
-                                        生成网络诊断报告
-                                    </>
-                                )}
-                            </button>
-                        )}
-                    </div>
                 </aside>
             </div>
 
