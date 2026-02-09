@@ -1,7 +1,10 @@
 import { GraphData } from "../types";
 
 // API基础URL
-const API_BASE_URL = "http://localhost:3001/api/v1";
+const API_BASE_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://interaction-network.mgsai.cn/api/v1"
+    : "http://localhost:3001/api/v1";
 
 // 带重试机制的fetch函数
 export const fetchWithRetry = async (
