@@ -53,7 +53,7 @@ export class TeacherClassMappingController {
     try {
       const result = await this.teacherClassMappingService.delete(id);
       return result;
-    } catch (error) {
+    } catch {
       throw new HttpException("教师-班级关联不存在", HttpStatus.NOT_FOUND);
     }
   }

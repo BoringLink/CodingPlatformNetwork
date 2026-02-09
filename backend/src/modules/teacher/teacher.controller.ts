@@ -54,7 +54,7 @@ export class TeacherController {
     try {
       const result = await this.teacherService.delete(id);
       return result;
-    } catch (error) {
+    } catch {
       throw new HttpException('教师不存在', HttpStatus.NOT_FOUND);
     }
   }

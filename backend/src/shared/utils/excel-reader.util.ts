@@ -125,11 +125,11 @@ if __name__ == "__main__":
       try {
         // 尝试使用虚拟环境
         output = execSync(`"${venvPath}" "${scriptPath}" "${filePath}"`, { encoding: 'utf8' });
-      } catch (venvError) {
+      } catch {
         // 如果虚拟环境失败，尝试使用系统Python
         try {
           output = execSync(`python3 "${scriptPath}" "${filePath}"`, { encoding: 'utf8' });
-        } catch (systemError) {
+        } catch {
           // 如果系统Python也失败，尝试使用python命令
           output = execSync(`python "${scriptPath}" "${filePath}"`, { encoding: 'utf8' });
         }

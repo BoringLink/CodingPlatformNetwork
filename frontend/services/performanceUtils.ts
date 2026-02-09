@@ -13,7 +13,7 @@ export class Cache {
   /**
    * 设置缓存
    */
-  set(key: string, data: any, ttl?: number): void {
+  set(key: string, data: any, _ttl?: number): void {
     this.cache.set(key, {
       data,
       timestamp: Date.now(),
@@ -83,11 +83,9 @@ export const debounce = <T extends (...args: any[]) => any>(
   let timeout: NodeJS.Timeout | null = null;
 
   return function(this: any, ...args: Parameters<T>) {
-    const context = this;
-
     const later = () => {
       timeout = null;
-      if (!immediate) func.apply(context, args);
+      if (!immediate) func.apply(this, args);
     };
 
     const callNow = immediate && !timeout;
@@ -95,7 +93,7 @@ export const debounce = <T extends (...args: any[]) => any>(
     if (timeout) clearTimeout(timeout);
     timeout = setTimeout(later, wait);
 
-    if (callNow) func.apply(context, args);
+    if (callNow) func.apply(this, args);
   };
 };
 
@@ -109,10 +107,8 @@ export const throttle = <T extends (...args: any[]) => any>(
   let inThrottle = false;
 
   return function(this: any, ...args: Parameters<T>) {
-    const context = this;
-
     if (!inThrottle) {
-      func.apply(context, args);
+      func.apply(this, args);
       inThrottle = true;
       setTimeout(() => inThrottle = false, limit);
     }

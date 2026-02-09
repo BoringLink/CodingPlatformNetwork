@@ -56,7 +56,7 @@ export class KnowledgeController {
     try {
       const result = await this.knowledgeService.delete(id);
       return result;
-    } catch (error) {
+    } catch {
       throw new HttpException('知识点不存在', HttpStatus.NOT_FOUND);
     }
   }

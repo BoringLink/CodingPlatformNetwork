@@ -353,7 +353,7 @@ export class DataMigrationService {
   private async createWorkInteraction(row: any, interactionType: 'comment' | 'like') {
     const workId = row['作品id'] || row['作品ID'];
     const studentId = row['点赞学生id'] || row['学生ID'];
-    const studentSchoolId = row['点赞学生学校id'] || row['学校ID'];
+    // const studentSchoolId = row['点赞学生学校id'] || row['学校ID'];
 
     if (!workId || !studentId) {
       throw new Error('缺少必要字段');

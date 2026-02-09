@@ -56,7 +56,7 @@ export class StudentController {
     try {
       const result = await this.studentService.delete(id);
       return result;
-    } catch (error) {
+    } catch {
       throw new HttpException('学生不存在', HttpStatus.NOT_FOUND);
     }
   }
