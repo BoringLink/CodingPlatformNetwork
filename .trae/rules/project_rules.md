@@ -20,9 +20,7 @@ language: 中文
 ### git
 
 - 使用 git 作为版本控制工具
-- 每个功能点都对应一个 git 分支
 - 提交信息使用中文
-- 每个分支都对应一个 PR
 
 ### 问题修复
 
@@ -32,10 +30,6 @@ language: 中文
 
 - 使用Oxlint进行代码检查和格式化
 
-### 方案确认
-
-- 引入新工具需要使用context7-docs-lookup skill调研其文档，确认其符合设计方案
-
 ### 测试
 
 - 使用webapp-testing skill进行E2E测试
@@ -43,5 +37,4 @@ language: 中文
 
 ## 参考资料
 
-- Real Data目录存储了需要存储到数据库的真实数据
 - .trae/documents目录存储了后端和数据库的设计方案以及需要参考的方案文档
