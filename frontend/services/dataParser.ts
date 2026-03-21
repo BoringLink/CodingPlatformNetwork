@@ -138,8 +138,6 @@ export async function parseStudentNodes(classInfo: ClassInfo): Promise<GraphNode
     // 生成学生节点
     filteredData.forEach((row, index) => {
         const name = String(row[SURVEY_COLUMN_INDEX.姓名] || `学生${index + 1}`);
-        const genderStr = String(row[SURVEY_COLUMN_INDEX.性别] || '男');
-        const gender: '男' | '女' = genderStr === '女' ? '女' : '男'; // 确保类型正确
         const school = String(row[SURVEY_COLUMN_INDEX.学校] || '');
         const grade = String(row[SURVEY_COLUMN_INDEX.年级] || '');
         const classId = String(row[SURVEY_COLUMN_INDEX.班级] || '');
@@ -199,7 +197,6 @@ export async function parseStudentNodes(classInfo: ClassInfo): Promise<GraphNode
             group: 3,
             val: 8,
             studentProfile: {
-                gender,
                 school,
                 grade,
                 classId,

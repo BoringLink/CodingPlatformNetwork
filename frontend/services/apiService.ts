@@ -1,10 +1,84 @@
 import { GraphData } from "../types";
 
+export interface StudentCognitiveTemplateApiResponse {
+  student: {
+    id: string;
+    name: string;
+    school: string | null;
+    grade: string | null;
+    classId: string | null;
+    learningStylePreference?: string | null;
+    personality?: string | null;
+    groupBehavior?: string | null;
+  };
+  profile: {
+    version: string;
+    generatedAt: string;
+    totalScore: number;
+  } | null;
+  dimensions: Array<{
+    dimensionCode: string;
+    dimensionNameZh: string;
+    categoryName: string;
+    scoreValue: number;
+    scoreLevel: string;
+  }>;
+}
+
 // API基础URL
 const API_BASE_URL =
   process.env.NODE_ENV === "production"
     ? "http://interaction-network.mgsai.cn/api/v1"
-    : "http://localhost:3001/api/v1";
+    : "http://localhost:3333/api/v1";
+
+const scenarioCodeMap: Record<string, string> = {
+  学科课程在线学习: "ONLINE_COURSE",
+  课后线上教师授课答疑: "AFTER_SCHOOL_QA",
+  家庭在线学习: "HOME_LEARNING",
+  在线协作学习: "COLLABORATIVE",
+  社团课等非正式学习: "INFORMAL_CLUBS",
+};
+
+const schoolNameToId = new Map<string, string>();
+const gradeKeyToId = new Map<string, string>();
+const classKeyToId = new Map<string, string>();
+
+type OrgOptionLike =
+  | string
+  | {
+      id?: string;
+      name?: string;
+      schoolName?: string;
+      gradeName?: string;
+      className?: string;
+    };
+
+const normalizeOrgOption = (
+  item: OrgOptionLike,
+): { id: string; label: string } | null => {
+  if (typeof item === "string") {
+    const value = item.trim();
+    return value ? { id: value, label: value } : null;
+  }
+
+  if (!item || typeof item !== "object") {
+    return null;
+  }
+
+  const labelRaw =
+    item.name ?? item.schoolName ?? item.gradeName ?? item.className;
+  const label = typeof labelRaw === "string" ? labelRaw.trim() : "";
+  const id =
+    typeof item.id === "string" && item.id.trim() !== ""
+      ? item.id.trim()
+      : label;
+
+  if (!label) {
+    return null;
+  }
+
+  return { id, label };
+};
 
 // 带重试机制的fetch函数
 export const fetchWithRetry = async (
@@ -78,10 +152,43 @@ export const fetchGraphData = async (params: {
   try {
     // 构建查询参数
     const queryParams = new URLSearchParams();
-    if (params.school) queryParams.append("school", params.school);
-    if (params.grade) queryParams.append("grade", params.grade);
-    if (params.classId) queryParams.append("class_id", params.classId);
-    if (params.scenario) queryParams.append("scenario", params.scenario);
+    const scenarioCode = params.scenario
+      ? scenarioCodeMap[params.scenario] || params.scenario
+      : undefined;
+    if (scenarioCode) queryParams.append("scenario_code", scenarioCode);
+
+    // 优先使用ID参数兼容v2后端；找不到映射时回退到旧参数名。
+    const schoolId = params.school
+      ? schoolNameToId.get(params.school)
+      : undefined;
+    const gradeId =
+      params.school && params.grade
+        ? gradeKeyToId.get(`${params.school}::${params.grade}`)
+        : undefined;
+    const classId =
+      params.school && params.grade && params.classId
+        ? classKeyToId.get(
+            `${params.school}::${params.grade}::${params.classId}`,
+          )
+        : undefined;
+
+    if (schoolId) {
+      queryParams.append("school_id", schoolId);
+    } else if (params.school) {
+      queryParams.append("school", params.school);
+    }
+
+    if (gradeId) {
+      queryParams.append("grade_id", gradeId);
+    } else if (params.grade) {
+      queryParams.append("grade", params.grade);
+    }
+
+    if (classId) {
+      queryParams.append("class_id", classId);
+    } else if (params.classId) {
+      queryParams.append("class_id", params.classId);
+    }
 
     // 构建完整URL
     const url = `${API_BASE_URL}/graph-data${
@@ -107,7 +214,8 @@ export const fetchGraphData = async (params: {
     }
 
     // 解析响应数据
-    const data = await response.json();
+    const payload = await response.json();
+    const data = payload?.data ?? payload;
     console.log("获取图谱数据成功:", {
       nodeCount: data.nodes?.length || 0,
       linkCount: data.links?.length || 0,
@@ -122,7 +230,7 @@ export const fetchGraphData = async (params: {
       throw new Error("API返回数据结构错误: links数组缺失");
     }
 
-    // 验证节点数据结构
+    // 验证节点数据结构（容错降级，避免因单条脏数据导致整页不可用）
     const validNodeTypes = ["STUDENT", "TEACHER", "KNOWLEDGE"];
     data.nodes.forEach((node, index) => {
       if (!node.id) {
@@ -138,60 +246,42 @@ export const fetchGraphData = async (params: {
       // 验证节点特定属性
       if (node.type === "STUDENT" && node.studentProfile) {
         const profile = node.studentProfile;
-        if (!profile.school || !profile.grade || !profile.classId) {
-          throw new Error(
-            `API返回数据结构错误: 学生节点 ${node.id} 缺少必要的学生信息`,
-          );
-        }
+        // v2 后端允许组织字段为空，前端只在有值时展示
+        profile.school = profile.school ?? "";
+        profile.grade = profile.grade ?? "";
+        profile.classId = profile.classId ?? "";
       }
 
       if (node.type === "TEACHER" && node.teacherProfile) {
         const profile = node.teacherProfile;
-        if (
-          !profile.school ||
-          !profile.teachingGrade ||
-          !profile.teachingClass
-        ) {
-          throw new Error(
-            `API返回数据结构错误: 教师节点 ${node.id} 缺少必要的教师信息`,
-          );
-        }
+        profile.school = profile.school ?? "";
+        profile.teachingGrade = profile.teachingGrade ?? "";
+        profile.teachingClass = profile.teachingClass ?? "";
       }
 
       if (node.type === "KNOWLEDGE" && node.knowledgeProfile) {
         const profile = node.knowledgeProfile;
-        if (!profile.content || !profile.type) {
-          throw new Error(
-            `API返回数据结构错误: 知识点节点 ${node.id} 缺少必要的知识点信息`,
-          );
-        }
-        if (!Array.isArray(profile.relatedKnowledgeIds)) {
-          throw new Error(
-            `API返回数据结构错误: 知识点节点 ${node.id} 的 relatedKnowledgeIds 不是数组`,
-          );
-        }
-        if (!Array.isArray(profile.relatedKnowledgeNames)) {
-          throw new Error(
-            `API返回数据结构错误: 知识点节点 ${node.id} 的 relatedKnowledgeNames 不是数组`,
-          );
-        }
+        profile.content = profile.content || node.name || "未命名知识点";
+        profile.type = profile.type || "知识点";
+        profile.relatedKnowledgeIds = Array.isArray(profile.relatedKnowledgeIds)
+          ? profile.relatedKnowledgeIds
+          : [];
+        profile.relatedKnowledgeNames = Array.isArray(
+          profile.relatedKnowledgeNames,
+        )
+          ? profile.relatedKnowledgeNames
+          : [];
       }
     });
 
-    // 验证链接数据结构
-    data.links.forEach((link, index) => {
-      if (!link.source || !link.target) {
-        throw new Error(
-          `API返回数据结构错误: 链接 ${index} 缺少源节点或目标节点`,
-        );
-      }
-      if (typeof link.value !== "number") {
-        throw new Error(`API返回数据结构错误: 链接 ${index} 的 value 不是数字`);
-      }
-      if (!link.type) {
-        throw new Error(`API返回数据结构错误: 链接 ${index} 缺少 type 字段`);
-      }
-    });
+    // 过滤不完整链接，避免 forceLink 因非法数据抛错。
+    data.links = data.links
+      .filter((link) => Boolean(link?.source) && Boolean(link?.target))
+      .map((link) => ({
+        ...link,
+        value: typeof link.value === "number" ? link.value : 1,
+        type: link.type || "PLATFORM",
+      }));
 
     return data;
   } catch (error) {
@@ -351,7 +441,7 @@ export const fetchInteractions = async (params: {
 // 获取学校列表
 export const fetchSchools = async (): Promise<string[]> => {
   try {
-    const url = `${API_BASE_URL}/students/options/schools`;
+    const url = `${API_BASE_URL}/org/schools`;
     console.log("请求学校列表:", url);
 
     const response = await fetchWithRetry(url, {
@@ -365,9 +455,20 @@ export const fetchSchools = async (): Promise<string[]> => {
       throw new Error(`API请求失败: ${response.status}`);
     }
 
-    const data = await response.json();
-    console.log("获取学校列表成功:", data.length);
-    return data;
+    const payload = await response.json();
+    const list = Array.isArray(payload?.data) ? payload.data : [];
+
+    schoolNameToId.clear();
+    const names: string[] = [];
+    list.forEach((item: OrgOptionLike) => {
+      const normalized = normalizeOrgOption(item);
+      if (!normalized) return;
+      schoolNameToId.set(normalized.label, normalized.id);
+      names.push(normalized.label);
+    });
+
+    console.log("获取学校列表成功:", names.length);
+    return names;
   } catch (error) {
     console.error("获取学校列表失败:", error);
     throw error;
@@ -379,8 +480,13 @@ export const fetchGradesBySchool = async (
   school: string,
 ): Promise<string[]> => {
   try {
-    const url = `${API_BASE_URL}/students/options/grades?school=${encodeURIComponent(
-      school,
+    const schoolId = schoolNameToId.get(school);
+    if (!schoolId) {
+      return [];
+    }
+
+    const url = `${API_BASE_URL}/org/grades?school_id=${encodeURIComponent(
+      schoolId,
     )}`;
     console.log("请求年级列表:", url);
 
@@ -395,9 +501,19 @@ export const fetchGradesBySchool = async (
       throw new Error(`API请求失败: ${response.status}`);
     }
 
-    const data = await response.json();
-    console.log("获取年级列表成功:", data.length);
-    return data;
+    const payload = await response.json();
+    const list = Array.isArray(payload?.data) ? payload.data : [];
+
+    const gradeNames: string[] = [];
+    list.forEach((item: OrgOptionLike) => {
+      const normalized = normalizeOrgOption(item);
+      if (!normalized) return;
+      gradeKeyToId.set(`${school}::${normalized.label}`, normalized.id);
+      gradeNames.push(normalized.label);
+    });
+
+    console.log("获取年级列表成功:", gradeNames.length);
+    return gradeNames;
   } catch (error) {
     console.error("获取年级列表失败:", error);
     throw error;
@@ -410,9 +526,15 @@ export const fetchClassesBySchoolAndGrade = async (
   grade: string,
 ): Promise<string[]> => {
   try {
-    const url = `${API_BASE_URL}/students/options/classes?school=${encodeURIComponent(
-      school,
-    )}&grade=${encodeURIComponent(grade)}`;
+    const schoolId = schoolNameToId.get(school);
+    const gradeId = gradeKeyToId.get(`${school}::${grade}`);
+    if (!schoolId || !gradeId) {
+      return [];
+    }
+
+    const url = `${API_BASE_URL}/org/classes?school_id=${encodeURIComponent(
+      schoolId,
+    )}&grade_id=${encodeURIComponent(gradeId)}`;
     console.log("请求班级列表:", url);
 
     const response = await fetchWithRetry(url, {
@@ -426,11 +548,69 @@ export const fetchClassesBySchoolAndGrade = async (
       throw new Error(`API请求失败: ${response.status}`);
     }
 
-    const data = await response.json();
-    console.log("获取班级列表成功:", data.length);
-    return data;
+    const payload = await response.json();
+    const list = Array.isArray(payload?.data) ? payload.data : [];
+
+    const classNames: string[] = [];
+    list.forEach((item: OrgOptionLike) => {
+      const normalized = normalizeOrgOption(item);
+      if (!normalized) return;
+      classKeyToId.set(
+        `${school}::${grade}::${normalized.label}`,
+        normalized.id,
+      );
+      classNames.push(normalized.label);
+    });
+
+    console.log("获取班级列表成功:", classNames.length);
+    return classNames;
   } catch (error) {
     console.error("获取班级列表失败:", error);
+    throw error;
+  }
+};
+
+export const fetchStudentCognitiveTemplate = async (
+  studentNodeId: string,
+): Promise<StudentCognitiveTemplateApiResponse> => {
+  try {
+    const url = `${API_BASE_URL}/students/${encodeURIComponent(
+      studentNodeId,
+    )}/cognitive-template`;
+    console.log("请求学生认知模板:", url);
+
+    const response = await fetchWithRetry(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`API请求失败: ${response.status}`);
+    }
+
+    const payload = await response.json();
+    const data = payload?.data ?? payload;
+    if (!data || !data.student) {
+      throw new Error("认知模板返回结构无效");
+    }
+
+    const normalized: StudentCognitiveTemplateApiResponse = {
+      student: data.student,
+      profile: data.profile
+        ? {
+            version: data.profile.profileVersion,
+            generatedAt: data.profile.generatedAt,
+            totalScore: data.profile.totalScore,
+          }
+        : null,
+      dimensions: Array.isArray(data.dimensions) ? data.dimensions : [],
+    };
+
+    return normalized;
+  } catch (error) {
+    console.error("获取学生认知模板失败:", error);
     throw error;
   }
 };

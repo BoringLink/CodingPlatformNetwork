@@ -1,9 +1,15 @@
 import { GraphData, GraphNode, GraphLink, NodeType, InteractionType } from '../types';
 
+type GraphDataAssertion = (data: any) => asserts data is GraphData;
+type GraphNodeAssertion = (node: any, index: number) => asserts node is GraphNode;
+type GraphLinkAssertion = (link: any, index: number) => asserts link is GraphLink;
+type ClassInfoAssertion = (classInfo: any) => asserts classInfo is { school: string; grade: string; classId: string };
+type ScenarioAssertion = (scenario: any) => asserts scenario is string;
+
 /**
  * 验证GraphData数据结构
  */
-export const validateGraphData = (data: any): asserts data is GraphData => {
+export const validateGraphData: GraphDataAssertion = (data) => {
   if (!data) {
     throw new Error('数据为空');
   }
@@ -54,7 +60,7 @@ export const validateGraphData = (data: any): asserts data is GraphData => {
 /**
  * 验证GraphNode数据结构
  */
-export const validateGraphNode = (node: any, index: number): asserts node is GraphNode => {
+export const validateGraphNode: GraphNodeAssertion = (node, index) => {
   if (!node) {
     throw new Error(`节点 ${index} 为空`);
   }
@@ -83,7 +89,7 @@ export const validateGraphNode = (node: any, index: number): asserts node is Gra
 /**
  * 验证GraphLink数据结构
  */
-export const validateGraphLink = (link: any, index: number): asserts link is GraphLink => {
+export const validateGraphLink: GraphLinkAssertion = (link, index) => {
   if (!link) {
     throw new Error(`链接 ${index} 为空`);
   }
@@ -140,7 +146,7 @@ export const transformGraphData = (data: any): GraphData => {
 /**
  * 验证ClassInfo数据结构
  */
-export const validateClassInfo = (classInfo: any): asserts classInfo is { school: string; grade: string; classId: string } => {
+export const validateClassInfo: ClassInfoAssertion = (classInfo) => {
   if (!classInfo) {
     throw new Error('班级信息为空');
   }
@@ -161,7 +167,7 @@ export const validateClassInfo = (classInfo: any): asserts classInfo is { school
 /**
  * 验证Scenario数据
  */
-export const validateScenario = (scenario: any): asserts scenario is string => {
+export const validateScenario: ScenarioAssertion = (scenario) => {
   if (!scenario || typeof scenario !== 'string') {
     throw new Error('场景类型必须是字符串');
   }

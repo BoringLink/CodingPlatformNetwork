@@ -30,11 +30,82 @@ export interface CognitiveAttributes {
   learningAttitude: number; // 学习态度
 }
 
+export interface LearningStyleProfile {
+  preference?: "和他人一起学习" | "独自学习" | string;
+  personality?: "外向" | "内向" | string;
+  groupBehavior?: "挺身而出，畅所欲言" | "保持安静，倾听意见" | string;
+}
+
+export interface StudentTemplateDimension {
+  code: string;
+  name: string;
+  category: string;
+  score: number;
+  level: string;
+}
+
+export interface StudentCognitiveTemplate {
+  // 认知模板文档中的完整结构（用于详情面板或后续扩展）
+  profileMeta?: {
+    version?: string;
+    generatedAt?: string;
+    totalScore?: number;
+  };
+  dimensions?: StudentTemplateDimension[];
+  learningStyle?: LearningStyleProfile;
+  knowledgeReserve?: {
+    dataConcept?: number;
+    algorithmConcept?: number;
+    networkConcept?: number;
+    informationProcessing?: number;
+    informationSecurity?: number;
+    aiConcept?: number;
+  };
+  learningMotivation?: {
+    interest?: number;
+    usefulness?: number;
+    expectation?: number;
+  };
+  learningAttitude?: {
+    enjoyment?: number;
+    confidence?: number;
+    interest?: number;
+  };
+  learningEngagement?: {
+    cognitiveEngagement?: number[];
+  };
+  selfRegulatedLearning?: number[];
+  computationalThinking?: {
+    evaluation?: number[];
+  };
+  learningApproach?: {
+    deepLearning?: number[];
+  };
+  cognitiveLoad?: {
+    internalLoad?: number[];
+  };
+  humanMachineTrust?: number[];
+  aiLiteracy?: number[];
+}
+
 export interface StudentProfile extends CognitiveAttributes {
-  gender?: "男" | "女";
   school: string;
   grade: string;
   classId: string;
+
+  // 认知模板文档中的非8维核心字段
+  learningStylePreference?: LearningStyleProfile["preference"];
+  personality?: LearningStyleProfile["personality"];
+  groupBehavior?: LearningStyleProfile["groupBehavior"];
+  selfRegulatedLearning?: number;
+  aiLiteracy?: number;
+
+  // 文档命名兼容别名
+  humanMachineTrust?: number; // = humanAiTrust
+  learningApproach?: number; // = learningMethod
+  priorKnowledge?: number; // = knowledgeReserve
+
+  template?: StudentCognitiveTemplate;
 }
 
 export interface KnowledgeProfile {
@@ -51,6 +122,11 @@ export interface TeacherProfile {
   school: string;
   teachingGrade: string;
   teachingClass: string;
+  slogan?: string;
+  employeeId?: string;
+  age?: number;
+  title?: string;
+  subject?: string;
 }
 
 export interface GraphNode extends SimulationNodeDatum {

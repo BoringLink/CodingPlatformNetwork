@@ -22,7 +22,6 @@ export const realStudentData: Array<{
             grade: '5年级',
             classId: '新五年级2班',
             profile: {
-                gender: '女',
                 school: '湖州市爱山小学教育集团常溪小学',
                 grade: '5年级',
                 classId: '新五年级2班',
@@ -42,7 +41,6 @@ export const realStudentData: Array<{
             grade: '4年级',
             classId: '四年级10班',
             profile: {
-                gender: '女',
                 school: '杭州市文澜实验学校',
                 grade: '4年级',
                 classId: '四年级10班',
@@ -62,7 +60,6 @@ export const realStudentData: Array<{
             grade: '4年级',
             classId: '四年级6班',
             profile: {
-                gender: '女',
                 school: '杭州市文澜实验学校',
                 grade: '4年级',
                 classId: '四年级6班',
@@ -82,7 +79,6 @@ export const realStudentData: Array<{
             grade: '8年级',
             classId: '初二20班',
             profile: {
-                gender: '男',
                 school: '乐清市城东第二中学',
                 grade: '8年级',
                 classId: '初二20班',
@@ -103,7 +99,6 @@ export const realStudentData: Array<{
             grade: '4年级',
             classId: '四年级10班',
             profile: {
-                gender: '男',
                 school: '杭州市文澜实验学校',
                 grade: '4年级',
                 classId: '四年级10班',
@@ -123,7 +118,6 @@ export const realStudentData: Array<{
             grade: '4年级',
             classId: '四年级10班',
             profile: {
-                gender: '女',
                 school: '杭州市文澜实验学校',
                 grade: '4年级',
                 classId: '四年级10班',
@@ -143,7 +137,6 @@ export const realStudentData: Array<{
             grade: '4年级',
             classId: '四年级10班',
             profile: {
-                gender: '男',
                 school: '杭州市文澜实验学校',
                 grade: '4年级',
                 classId: '四年级10班',
@@ -163,7 +156,6 @@ export const realStudentData: Array<{
             grade: '4年级',
             classId: '四年级10班',
             profile: {
-                gender: '女',
                 school: '杭州市文澜实验学校',
                 grade: '4年级',
                 classId: '四年级10班',
@@ -183,7 +175,6 @@ export const realStudentData: Array<{
             grade: '4年级',
             classId: '四年级6班',
             profile: {
-                gender: '男',
                 school: '杭州市文澜实验学校',
                 grade: '4年级',
                 classId: '四年级6班',
@@ -203,7 +194,6 @@ export const realStudentData: Array<{
             grade: '4年级',
             classId: '四年级6班',
             profile: {
-                gender: '女',
                 school: '杭州市文澜实验学校',
                 grade: '4年级',
                 classId: '四年级6班',
@@ -224,7 +214,6 @@ export const realStudentData: Array<{
             grade: '4年级',
             classId: '四年级6班',
             profile: {
-                gender: '男',
                 school: '杭州市文澜实验学校',
                 grade: '4年级',
                 classId: '四年级6班',
@@ -244,7 +233,6 @@ export const realStudentData: Array<{
             grade: '5年级',
             classId: '新五年级2班',
             profile: {
-                gender: '女',
                 school: '湖州市爱山小学教育集团常溪小学',
                 grade: '5年级',
                 classId: '新五年级2班',
@@ -264,7 +252,6 @@ export const realStudentData: Array<{
             grade: '5年级',
             classId: '新五年级2班',
             profile: {
-                gender: '男',
                 school: '湖州市爱山小学教育集团常溪小学',
                 grade: '5年级',
                 classId: '新五年级2班',
@@ -284,7 +271,6 @@ export const realStudentData: Array<{
             grade: '8年级',
             classId: '初二20班',
             profile: {
-                gender: '女',
                 school: '乐清市城东第二中学',
                 grade: '8年级',
                 classId: '初二20班',
@@ -304,7 +290,6 @@ export const realStudentData: Array<{
             grade: '8年级',
             classId: '初二20班',
             profile: {
-                gender: '男',
                 school: '乐清市城东第二中学',
                 grade: '8年级',
                 classId: '初二20班',
