@@ -4,90 +4,215 @@ generator client {
 
 datasource db {
   provider = "sqlserver"
-  url      = env("DATABASE_URL")
 }
 
-model Student {
-  id                  String   @id @default(cuid())
-  name                String
-  school              String
-  grade               String
-  classId             String
-  knowledgeReserve    Float
-  learningEngagement  Float
-  cognitiveLoad       Float
-  learningMotivation  Float
-  computationalThinking Float
-  humanAiTrust        Float
-  learningMethod      Float
-  learningAttitude    Float
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+/// 学习场景/教学模式定义，如"AI答疑"、"协作学习"等
+model LearningScenario {
+  id        String               @id @default(cuid())
+  code      String               @unique
+  nameZh    String
+  sortOrder Int                  @default(0)
+  isActive  Boolean              @default(true)
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+  sessions  InteractionSession[]
 
-  @@map("students")
-  @@index([school, grade, classId])
+  @@map("learning_scenarios")
 }
 
-model Teacher {
-  id            String   @id @default(cuid())
-  name          String
-  school        String
-  teachingGrade String
-  teachingClass String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  @@map("teachers")
-  @@index([school])
-  @@index([teachingGrade, teachingClass])
-}
-
-model TeacherClassMapping {
+/// 学校/校区节点，顶级组织单位
+model School {
   id        String   @id @default(cuid())
-  teacherId String
-  grade     String
-  classId   String
+  name      String   @unique
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  grades    Grade[]
 
-  @@map("teacher_class_mappings")
-  @@index([teacherId])
-  @@index([grade, classId])
+  @@map("schools")
 }
 
-model Knowledge {
-  id                    String   @id @default(cuid())
-  content               String
-  knowledgePoint        String
-  grade                 String
-  type                  String
-  parentId              String?
-  parentName            String?
-  relatedKnowledgeIds   String
-  relatedKnowledgeNames String
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+/// 年级节点，属某一学校
+model Grade {
+  id        String        @id @default(cuid())
+  schoolId  String
+  gradeName String
+  createdAt DateTime      @default(now())
+  classes   SchoolClass[]
+  school    School        @relation(fields: [schoolId], references: [id])
 
-  @@map("knowledge_points")
-  @@index([grade])
-  @@index([type])
-  @@index([parentId])
+  @@unique([schoolId, gradeName])
+  @@index([schoolId])
+  @@map("grades")
 }
 
+/// 班级节点，属某一年级
+model SchoolClass {
+  id        String   @id @default(cuid())
+  gradeId   String
+  className String
+  createdAt DateTime @default(now())
+  grade     Grade    @relation(fields: [gradeId], references: [id])
+
+  @@unique([gradeId, className])
+  @@index([gradeId])
+  @@map("classes")
+}
+
+/// 三元交互网络的核心节点表
+/// nodeType 取值: Student | Teacher | Knowledge | Class | School | Grade
+/// 通过 nodeType 区分不同类型节点，关联的扩展信息存储在对应的 Profile 表中
+model GraphNode {
+  id                String                    @id @default(cuid())
+  nodeType          String
+  displayName       String
+  schoolId          String?
+  gradeId           String?
+  classId           String?
+  createdAt         DateTime                  @default(now())
+  updatedAt         DateTime                  @updatedAt
+  sourceEdges       Interaction[]             @relation("SourceNode")
+  targetEdges       Interaction[]             @relation("TargetNode")
+  knowledgeProfile  KnowledgeProfile?
+  cognitiveProfiles StudentCognitiveProfile[]
+  studentProfile    StudentProfile?
+  teacherProfile    TeacherProfile?
+
+  @@index([nodeType])
+  @@index([schoolId, gradeId, classId])
+  @@map("graph_nodes")
+}
+
+/// 学生节点扩展属性，1:1 关联 GraphNode (nodeType = Student)
+model StudentProfile {
+  nodeId                  String    @id
+  learningStylePreference String?
+  personality             String?
+  groupBehavior           String?
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+  node                    GraphNode @relation(fields: [nodeId], references: [id])
+
+  @@map("student_profiles")
+}
+
+/// 教师节点扩展属性，1:1 关联 GraphNode (nodeType = Teacher)
+model TeacherProfile {
+  nodeId        String    @id
+  subject       String?
+  teachingGrade String?
+  teachingClass String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  node          GraphNode @relation(fields: [nodeId], references: [id])
+
+  @@map("teacher_profiles")
+}
+
+/// 知识点节点扩展属性，1:1 关联 GraphNode (nodeType = Knowledge)
+/// parentNodeId 指向父级知识点节点，支持树状结构
+model KnowledgeProfile {
+  nodeId        String    @id
+  content       String?
+  knowledgeType String?
+  category      String?
+  parentNodeId  String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  node          GraphNode @relation(fields: [nodeId], references: [id])
+
+  @@index([parentNodeId])
+  @@map("knowledge_profiles")
+}
+
+/// 一次交互会话，记录某学习场景在某班级/时间下的完整交互记录
+model InteractionSession {
+  id           String           @id @default(cuid())
+  scenarioId   String
+  schoolId     String
+  gradeId      String
+  classId      String?
+  sessionName  String?
+  occurredAt   DateTime
+  createdAt    DateTime         @default(now())
+  scenario     LearningScenario @relation(fields: [scenarioId], references: [id])
+  interactions Interaction[]
+
+  @@index([scenarioId, occurredAt])
+  @@index([schoolId, gradeId, classId, occurredAt])
+  @@map("interaction_sessions")
+}
+
+/// 三元交互网络的有向边
+/// sourceNode -> targetNode 表示从源节点到目标节点的交互关系
+/// interactionType 区分交互类型（如提问、回答、评价等）
+/// actionType 为可选的细分子类型
+/// strength 表示交互强度/频次，decimal(10,4) 保证精度
 model Interaction {
-  id            String   @id @default(cuid())
-  sourceId      String
-  targetId      String
-  sourceType    String
-  targetType    String
-  value         Float
-  type          String
-  interactionType String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id              String             @id @default(cuid())
+  interactionType String
+  createdAt       DateTime           @default(now())
+  actionType      String?
+  durationSec     Int?
+  sessionId       String
+  sourceNodeId    String
+  strength        Decimal                 @db.Decimal(10, 4)
+  targetNodeId    String
+  session         InteractionSession @relation(fields: [sessionId], references: [id])
+  sourceNode      GraphNode          @relation("SourceNode", fields: [sourceNodeId], references: [id], onUpdate: NoAction)
+  targetNode      GraphNode          @relation("TargetNode", fields: [targetNodeId], references: [id], onUpdate: NoAction)
 
+  @@unique([sessionId, sourceNodeId, targetNodeId, interactionType, actionType])
+  @@index([sessionId])
+  @@index([sourceNodeId, targetNodeId])
+  @@index([interactionType, createdAt])
   @@map("interactions")
-  @@index([sourceId, sourceType])
-  @@index([targetId, targetType])
-  @@index([type])
+}
+
+/// 认知维度定义表，枚举所有可测量的认知能力维度
+/// dimensionCode 为维度唯一标识，minScore/maxScore 定义该维度的量表范围
+model CognitiveDimensionDef {
+  id              String                           @id @default(cuid())
+  dimensionCode   String                           @unique
+  dimensionNameZh String
+  categoryName    String
+  minScore        Decimal                          @db.Decimal(5, 2)
+  maxScore        Decimal                          @db.Decimal(5, 2)
+  sortOrder       Int                              @default(0)
+  isActive        Boolean                          @default(true)
+  dimensionScores StudentCognitiveDimensionScore[]
+
+  @@map("cognitive_dimension_defs")
+}
+
+/// 学生认知能力画像，按时间版本生成
+/// profileVersion 标识画像版本，generatedAt 为实际计算时间点
+/// totalScore 为该时间点认知能力综合得分
+model StudentCognitiveProfile {
+  id              String                           @id @default(cuid())
+  studentNodeId   String
+  profileVersion  String
+  generatedAt     DateTime
+  totalScore      Decimal                          @db.Decimal(10, 4)
+  createdAt       DateTime                         @default(now())
+  dimensionScores StudentCognitiveDimensionScore[]
+  studentNode     GraphNode                        @relation(fields: [studentNodeId], references: [id])
+
+  @@index([studentNodeId, generatedAt(sort: Desc)])
+  @@map("student_cognitive_profiles")
+}
+
+/// 学生认知维度得分，关联至 CognitiveDimensionDef
+/// scoreLevel 表示该维度的评级（如高/中/低）
+model StudentCognitiveDimensionScore {
+  id            String                  @id @default(cuid())
+  profileId     String
+  dimensionCode String
+  scoreValue    Decimal                 @db.Decimal(10, 4)
+  scoreLevel    String
+  createdAt     DateTime                @default(now())
+  dimensionDef  CognitiveDimensionDef   @relation(fields: [dimensionCode], references: [dimensionCode])
+  profile       StudentCognitiveProfile @relation(fields: [profileId], references: [id])
+
+  @@unique([profileId, dimensionCode])
+  @@index([profileId])
+  @@map("student_cognitive_dimension_scores")
 }

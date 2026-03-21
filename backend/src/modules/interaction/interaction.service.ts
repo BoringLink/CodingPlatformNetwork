@@ -1,63 +1,173 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
+import { Prisma } from "@prisma/client";
 import { PrismaService } from "../../shared/utils/prisma.service";
-import { CreateInteractionDto, UpdateInteractionDto } from "./interaction.dto";
+import {
+  BatchCreateInteractionsDto,
+  QueryInteractionsDto,
+} from "./interaction.dto";
 
 @Injectable()
 export class InteractionService {
+  private readonly recentIdempotency = new Map<string, number>();
+
   constructor(private prisma: PrismaService) {}
 
-  async findAll(params: {
-    sourceId?: string;
-    targetId?: string;
-    sourceType?: string;
-    targetType?: string;
-    type?: string;
-  }) {
-    const { sourceId, targetId, sourceType, targetType, type } = params;
+  async findAll(params: QueryInteractionsDto) {
+    const {
+      scenarioCode,
+      sessionId,
+      sourceNodeId,
+      targetNodeId,
+      page,
+      pageSize,
+    } = params;
 
-    const where = {
-      ...(sourceId && { sourceId }),
-      ...(targetId && { targetId }),
-      ...(sourceType && { sourceType }),
-      ...(targetType && { targetType }),
-      ...(type && { type }),
+    let sessionFilter: Prisma.InteractionWhereInput["session"] = undefined;
+    if (scenarioCode) {
+      const scenario = await this.prisma.learningScenario.findUnique({
+        where: { code: scenarioCode },
+        select: { id: true },
+      });
+
+      if (!scenario) {
+        throw new BadRequestException("SCENARIO_CODE_INVALID");
+      }
+
+      sessionFilter = {
+        scenarioId: scenario.id,
+      };
+    }
+
+    const where: Prisma.InteractionWhereInput = {
+      ...(sessionId ? { sessionId } : {}),
+      ...(sourceNodeId ? { sourceNodeId } : {}),
+      ...(targetNodeId ? { targetNodeId } : {}),
+      ...(sessionFilter ? { session: sessionFilter } : {}),
     };
 
-    const interactions = await this.prisma.interaction.findMany({
-      where,
-      orderBy: { createdAt: "desc" },
-    });
+    const [interactions, total] = await this.prisma.$transaction([
+      this.prisma.interaction.findMany({
+        where,
+        include: {
+          session: {
+            include: {
+              scenario: {
+                select: {
+                  code: true,
+                  nameZh: true,
+                },
+              },
+            },
+          },
+        },
+        orderBy: { createdAt: "desc" },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      this.prisma.interaction.count({ where }),
+    ]);
 
-    return { data: interactions };
-  }
-
-  async findOne(id: string) {
-    return this.prisma.interaction.findUnique({ where: { id } });
-  }
-
-  async create(data: CreateInteractionDto) {
-    return this.prisma.interaction.create({
-      data: {
-        sourceId: data.sourceId,
-        targetId: data.targetId,
-        sourceType: data.sourceType,
-        targetType: data.targetType,
-        value: data.value,
-        type: data.type,
-        interactionType: data.interactionType || null,
+    return {
+      data: interactions,
+      meta: {
+        page,
+        pageSize,
+        total,
       },
-    });
+      error: null,
+    };
   }
 
-  async update(id: string, data: UpdateInteractionDto) {
-    return this.prisma.interaction.update({
-      where: { id },
-      data,
+  async batchCreate(data: BatchCreateInteractionsDto, idempotencyKey?: string) {
+    if (!idempotencyKey) {
+      throw new BadRequestException(
+        "VALIDATION_ERROR: Idempotency-Key required",
+      );
+    }
+
+    const now = Date.now();
+    const duplicateWindowMs = 60 * 1000;
+    const previous = this.recentIdempotency.get(idempotencyKey);
+    if (previous && now - previous < duplicateWindowMs) {
+      return {
+        data: {
+          createdCount: 0,
+          duplicateCount: data.items.length,
+        },
+        meta: { idempotencyKey, duplicatedRequest: true },
+        error: null,
+      };
+    }
+
+    const session = await this.prisma.interactionSession.findUnique({
+      where: { id: data.sessionId },
+      select: { id: true },
     });
+
+    if (!session) {
+      throw new BadRequestException("SESSION_NOT_FOUND");
+    }
+
+    const nodeIds = Array.from(
+      new Set(
+        data.items.flatMap((item) => [item.sourceNodeId, item.targetNodeId]),
+      ),
+    );
+
+    const nodes = await this.prisma.graphNode.findMany({
+      where: { id: { in: nodeIds } },
+      select: { id: true },
+    });
+
+    if (nodes.length !== nodeIds.length) {
+      throw new BadRequestException("NODE_NOT_FOUND");
+    }
+
+    let createdCount = 0;
+    let duplicateCount = 0;
+
+    for (const item of data.items) {
+      try {
+        await this.prisma.interaction.create({
+          data: {
+            sessionId: data.sessionId,
+            sourceNodeId: item.sourceNodeId,
+            targetNodeId: item.targetNodeId,
+            interactionType: item.interactionType,
+            strength: new Prisma.Decimal(item.strength),
+            actionType: item.actionType ?? null,
+            durationSec: item.durationSec ?? null,
+          },
+        });
+        createdCount += 1;
+      } catch (error: any) {
+        if (error?.code === "P2002") {
+          duplicateCount += 1;
+          continue;
+        }
+        throw error;
+      }
+    }
+
+    this.recentIdempotency.set(idempotencyKey, now);
+
+    return {
+      data: {
+        createdCount,
+        duplicateCount,
+      },
+      meta: { idempotencyKey, duplicatedRequest: false },
+      error: null,
+    };
   }
 
-  async delete(id: string) {
-    await this.prisma.interaction.delete({ where: { id } });
-    return { message: "交互删除成功" };
+  // 仅保留最近请求窗口，避免内存持续增长。
+  pruneIdempotencyCache() {
+    const now = Date.now();
+    for (const [key, ts] of this.recentIdempotency.entries()) {
+      if (now - ts > 5 * 60 * 1000) {
+        this.recentIdempotency.delete(key);
+      }
+    }
   }
 }

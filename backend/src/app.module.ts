@@ -1,13 +1,13 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { StudentModule } from "./modules/student/student.module";
-import { TeacherModule } from "./modules/teacher/teacher.module";
-import { KnowledgeModule } from "./modules/knowledge/knowledge.module";
-import { InteractionModule } from "./modules/interaction/interaction.module";
-import { DataMigrationModule } from "./modules/data-migration/data-migration.module";
 import { GraphModule } from "./modules/graph/graph.module";
-import { TeacherClassMappingModule } from "./modules/teacher-class-mapping/teacher-class-mapping.module";
-import { PrismaService } from "./shared/utils/prisma.service";
+import { ScenarioModule } from "./modules/scenario/scenario.module";
+import { OrgModule } from "./modules/org/org.module";
+import { NodeModule } from "./modules/node/node.module";
+import { InteractionSessionModule } from "./modules/interaction-session/interaction-session.module";
+import { InteractionModule } from "./modules/interaction/interaction.module";
+import { PrismaModule } from "./shared/utils/prisma.module";
 
 @Module({
   imports: [
@@ -15,16 +15,17 @@ import { PrismaService } from "./shared/utils/prisma.service";
       isGlobal: true,
       envFilePath: ".env",
     }),
+    PrismaModule,
+    ScenarioModule,
+    OrgModule,
     StudentModule,
-    TeacherModule,
-    KnowledgeModule,
+    NodeModule,
+    InteractionSessionModule,
     InteractionModule,
-    DataMigrationModule,
     GraphModule,
-    TeacherClassMappingModule,
   ],
   controllers: [],
-  providers: [PrismaService],
-  exports: [PrismaService],
+  providers: [],
+  exports: [],
 })
 export class AppModule {}

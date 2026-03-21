@@ -1,61 +1,63 @@
-import { Controller, Get, Post, Put, Delete, Param, Query, Body, HttpException, HttpStatus } from '@nestjs/common';
-import { InteractionService } from './interaction.service';
-import { CreateInteractionDto, UpdateInteractionDto, createInteractionSchema, updateInteractionSchema } from './interaction.dto';
+import {
+  Body,
+  Controller,
+  Get,
+  Headers,
+  HttpException,
+  HttpStatus,
+  Post,
+  Query,
+} from "@nestjs/common";
+import { InteractionService } from "./interaction.service";
+import {
+  batchCreateInteractionsSchema,
+  queryInteractionsSchema,
+} from "./interaction.dto";
 
-@Controller('api/v1/interactions')
+@Controller("api/v1/interactions")
 export class InteractionController {
   constructor(private readonly interactionService: InteractionService) {}
 
   @Get()
   async findAll(
-    @Query('source_id') sourceId?: string,
-    @Query('target_id') targetId?: string,
-    @Query('source_type') sourceType?: string,
-    @Query('target_type') targetType?: string,
-    @Query('type') type?: string,
+    @Query("scenario_code") scenarioCode?: string,
+    @Query("session_id") sessionId?: string,
+    @Query("source_node_id") sourceNodeId?: string,
+    @Query("target_node_id") targetNodeId?: string,
+    @Query("page") page?: string,
+    @Query("page_size") pageSize?: string,
   ) {
-    return this.interactionService.findAll({ sourceId, targetId, sourceType, targetType, type });
-  }
-
-  @Get(':id')
-  async findOne(@Param('id') id: string) {
-    const interaction = await this.interactionService.findOne(id);
-    if (!interaction) {
-      throw new HttpException('交互不存在', HttpStatus.NOT_FOUND);
-    }
-    return interaction;
-  }
-
-  @Post()
-  async create(@Body() body: CreateInteractionDto) {
     try {
-      const validatedData = createInteractionSchema.parse(body);
-      return this.interactionService.create(validatedData);
-    } catch (error) {
-      throw new HttpException(error.errors || '请求参数错误', HttpStatus.BAD_REQUEST);
+      const query = queryInteractionsSchema.parse({
+        scenarioCode,
+        sessionId,
+        sourceNodeId,
+        targetNodeId,
+        page,
+        pageSize,
+      });
+      return this.interactionService.findAll(query);
+    } catch (error: any) {
+      throw new HttpException(
+        error.errors || "VALIDATION_ERROR",
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
-  @Put(':id')
-  async update(@Param('id') id: string, @Body() body: UpdateInteractionDto) {
+  @Post("batchCreate")
+  async batchCreate(
+    @Body() body: unknown,
+    @Headers("idempotency-key") idempotencyKey?: string,
+  ) {
     try {
-      const validatedData = updateInteractionSchema.parse(body);
-      const interaction = await this.interactionService.update(id, validatedData);
-      if (!interaction) {
-        throw new HttpException('交互不存在', HttpStatus.NOT_FOUND);
-      }
-      return interaction;
-    } catch (error) {
-      throw new HttpException(error.errors || '请求参数错误', HttpStatus.BAD_REQUEST);
-    }
-  }
-
-  @Delete(':id')
-  async delete(@Param('id') id: string) {
-    try {
-      return this.interactionService.delete(id);
-    } catch {
-      throw new HttpException('交互不存在', HttpStatus.NOT_FOUND);
+      const dto = batchCreateInteractionsSchema.parse(body);
+      return this.interactionService.batchCreate(dto, idempotencyKey);
+    } catch (error: any) {
+      throw new HttpException(
+        error.errors || "VALIDATION_ERROR",
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 }
