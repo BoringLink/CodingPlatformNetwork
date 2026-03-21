@@ -1,0 +1,5 @@
+ignoredBuiltDependencies:
+  - '@nestjs/core'
+  - '@prisma/engines'
+  - '@swc/core'
+  - prisma

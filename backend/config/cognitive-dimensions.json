@@ -1,0 +1,92 @@
+[
+  {
+    "code": "LEARNING_MOTIVATION",
+    "name": "学习动机",
+    "category": "学习情况",
+    "minScore": 0,
+    "maxScore": 100,
+    "sortOrder": 1,
+    "description": "学生对信息科技课程的学习兴趣和期望"
+  },
+  {
+    "code": "LEARNING_ATTITUDE",
+    "name": "学习态度",
+    "category": "学习情况",
+    "minScore": 0,
+    "maxScore": 100,
+    "sortOrder": 2,
+    "description": "学生对信息科技课程的享受度和自信心"
+  },
+  {
+    "code": "LEARNING_ENGAGEMENT",
+    "name": "学习投入",
+    "category": "学习情况",
+    "minScore": 0,
+    "maxScore": 100,
+    "sortOrder": 3,
+    "description": "学生在信息科技课程中的认知投入程度"
+  },
+  {
+    "code": "SELF_REGULATED_LEARNING",
+    "name": "自我调节学习",
+    "category": "学习情况",
+    "minScore": 0,
+    "maxScore": 100,
+    "sortOrder": 4,
+    "description": "学生的自我调节学习能力"
+  },
+  {
+    "code": "COMPUTATIONAL_THINKING",
+    "name": "计算思维",
+    "category": "计算思维水平",
+    "minScore": 0,
+    "maxScore": 100,
+    "sortOrder": 5,
+    "description": "学生的问题解决和计算思维能力"
+  },
+  {
+    "code": "LEARNING_METHOD",
+    "name": "学习方法",
+    "category": "学习情况",
+    "minScore": 0,
+    "maxScore": 100,
+    "sortOrder": 6,
+    "description": "学生使用深度学习方法的程度"
+  },
+  {
+    "code": "COGNITIVE_LOAD",
+    "name": "认知负荷",
+    "category": "学习情况",
+    "minScore": 0,
+    "maxScore": 100,
+    "sortOrder": 7,
+    "description": "学生在信息科技课程中的认知负荷程度"
+  },
+  {
+    "code": "HUMAN_AI_TRUST",
+    "name": "人机信任",
+    "category": "学习情况",
+    "minScore": 0,
+    "maxScore": 100,
+    "sortOrder": 8,
+    "description": "学生对人工智能的信任程度"
+  },
+  {
+    "code": "AI_LITERACY",
+    "name": "人工智能素养",
+    "category": "学习情况",
+    "minScore": 0,
+    "maxScore": 100,
+    "sortOrder": 9,
+    "description": "学生的人工智能素养水平"
+  },
+  {
+    "code": "KNOWLEDGE_RESERVE",
+    "name": "知识储备",
+    "category": "计算思维水平",
+    "minScore": 0,
+    "maxScore": 100,
+    "sortOrder": 10,
+    "description": "学生对信息科技基础概念的认知程度"
+  }
+]
