@@ -6,7 +6,7 @@ datasource db {
   provider = "sqlserver"
 }
 
-/// 学习场景/教学模式定义，如"AI答疑"、"协作学习"等
+/// 学习场景
 model LearningScenario {
   id        String               @id @default(cuid())
   code      String               @unique
@@ -16,6 +16,7 @@ model LearningScenario {
   createdAt DateTime             @default(now())
   updatedAt DateTime             @updatedAt
   sessions  InteractionSession[]
+  nodes     GraphNode[]
 
   @@map("learning_scenarios")
 }
@@ -34,7 +35,7 @@ model School {
 model Grade {
   id        String        @id @default(cuid())
   schoolId  String
-  gradeName String
+  gradeName Int
   createdAt DateTime      @default(now())
   classes   SchoolClass[]
   school    School        @relation(fields: [schoolId], references: [id])
@@ -64,6 +65,7 @@ model GraphNode {
   id                String                    @id @default(cuid())
   nodeType          String
   displayName       String
+  scenarioId        String
   schoolId          String?
   gradeId           String?
   classId           String?
@@ -75,8 +77,10 @@ model GraphNode {
   cognitiveProfiles StudentCognitiveProfile[]
   studentProfile    StudentProfile?
   teacherProfile    TeacherProfile?
+  scenario          LearningScenario          @relation(fields: [scenarioId], references: [id])
 
   @@index([nodeType])
+  @@index([scenarioId])
   @@index([schoolId, gradeId, classId])
   @@map("graph_nodes")
 }
@@ -98,7 +102,7 @@ model StudentProfile {
 model TeacherProfile {
   nodeId        String    @id
   subject       String?
-  teachingGrade String?
+  teachingGrade Int?
   teachingClass String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -143,7 +147,7 @@ model InteractionSession {
 
 /// 三元交互网络的有向边
 /// sourceNode -> targetNode 表示从源节点到目标节点的交互关系
-/// interactionType 区分交互类型（如提问、回答、评价等）
+/// interactionType 区分交互类型（物理空间采集(PHYSICAL) ｜ 平台采集(PLATFORM)）
 /// actionType 为可选的细分子类型
 /// strength 表示交互强度/频次，decimal(10,4) 保证精度
 model Interaction {
@@ -173,7 +177,7 @@ model CognitiveDimensionDef {
   id              String                           @id @default(cuid())
   dimensionCode   String                           @unique
   dimensionNameZh String
-  categoryName    String
+  category        String
   minScore        Decimal                          @db.Decimal(5, 2)
   maxScore        Decimal                          @db.Decimal(5, 2)
   sortOrder       Int                              @default(0)
@@ -191,7 +195,7 @@ model StudentCognitiveProfile {
   studentNodeId   String
   profileVersion  String
   generatedAt     DateTime
-  totalScore      Decimal                          @db.Decimal(10, 4)
+  totalScore      Decimal                          @db.Decimal(5, 2)
   createdAt       DateTime                         @default(now())
   dimensionScores StudentCognitiveDimensionScore[]
   studentNode     GraphNode                        @relation(fields: [studentNodeId], references: [id])
@@ -206,7 +210,7 @@ model StudentCognitiveDimensionScore {
   id            String                  @id @default(cuid())
   profileId     String
   dimensionCode String
-  scoreValue    Decimal                 @db.Decimal(10, 4)
+  scoreValue    Decimal                 @db.Decimal(5, 2)
   scoreLevel    String
   createdAt     DateTime                @default(now())
   dimensionDef  CognitiveDimensionDef   @relation(fields: [dimensionCode], references: [dimensionCode])
