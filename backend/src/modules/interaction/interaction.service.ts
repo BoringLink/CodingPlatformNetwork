@@ -6,6 +6,11 @@ import {
   QueryInteractionsDto,
 } from "./interaction.dto";
 
+/**
+ * 交互服务
+ * 支持按场景隔离的交互管理和验证
+ */
+
 @Injectable()
 export class InteractionService {
   private readonly recentIdempotency = new Map<string, number>();
@@ -101,7 +106,7 @@ export class InteractionService {
 
     const session = await this.prisma.interactionSession.findUnique({
       where: { id: data.sessionId },
-      select: { id: true },
+      select: { id: true, scenarioId: true },
     });
 
     if (!session) {
@@ -116,11 +121,18 @@ export class InteractionService {
 
     const nodes = await this.prisma.graphNode.findMany({
       where: { id: { in: nodeIds } },
-      select: { id: true },
+      select: { id: true, scenarioId: true },
     });
 
     if (nodes.length !== nodeIds.length) {
       throw new BadRequestException("NODE_NOT_FOUND");
+    }
+
+    // 验证所有节点的场景ID与会话的场景ID一致
+    for (const node of nodes) {
+      if (node.scenarioId !== session.scenarioId) {
+        throw new BadRequestException("NODE_SCENARIO_MISMATCH");
+      }
     }
 
     let createdCount = 0;

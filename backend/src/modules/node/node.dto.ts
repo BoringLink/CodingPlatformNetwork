@@ -5,6 +5,7 @@ export const nodeTypeSchema = z.enum(["STUDENT", "TEACHER", "KNOWLEDGE"]);
 export const createNodeSchema = z.object({
   nodeType: nodeTypeSchema,
   displayName: z.string().min(1),
+  scenarioId: z.string().trim(),
   schoolId: z.string().trim().optional().nullable(),
   gradeId: z.string().trim().optional().nullable(),
   classId: z.string().trim().optional().nullable(),
@@ -13,7 +14,7 @@ export const createNodeSchema = z.object({
       learningStylePreference: z.string().optional().nullable(),
       personality: z.string().optional().nullable(),
       groupBehavior: z.string().optional().nullable(),
-      teachingGrade: z.string().optional().nullable(),
+      teachingGrade: z.number().optional().nullable(),
       teachingClass: z.string().optional().nullable(),
       subject: z.string().optional().nullable(),
       content: z.string().optional(),
@@ -26,6 +27,7 @@ export const createNodeSchema = z.object({
 
 export const queryNodeSchema = z.object({
   nodeType: nodeTypeSchema.optional(),
+  scenarioId: z.string().optional(),
   schoolId: z.string().optional(),
   gradeId: z.string().optional(),
   classId: z.string().optional(),

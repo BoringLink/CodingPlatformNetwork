@@ -3,6 +3,11 @@ import { Prisma } from "@prisma/client";
 import { PrismaService } from "../../shared/utils/prisma.service";
 import { GraphData, Link, Node } from "../../shared/types/graph-data.type";
 
+/**
+ * 图服务
+ * 支持按场景隔离的图数据查询和统计
+ */
+
 type GraphQuery = {
   scenarioCode?: string;
   schoolId?: string;
@@ -24,50 +29,58 @@ export class GraphService {
       select: { id: true },
     });
 
-    if (sessions.length === 0) {
-      return {
-        data: {
-          nodes: [],
-          links: [],
-          meta: {
-            nodeCount: 0,
-            linkCount: 0,
-            scenarioCode: params.scenarioCode ?? "ALL",
-          },
-        },
-        meta: null,
-        error: null,
-      };
-    }
-
     const schoolNames = await this.buildSchoolNameMap();
     const gradeNames = await this.buildGradeNameMap();
     const classNames = await this.buildClassNameMap();
 
-    const sessionIds = sessions.map((session) => session.id);
+    // 从params中获取scenarioCode，用于后续的场景过滤
+    let scenarioId: string | undefined;
+    if (params.scenarioCode) {
+      const scenario = await this.prisma.learningScenario.findUnique({
+        where: { code: params.scenarioCode },
+        select: { id: true },
+      });
+      if (scenario) {
+        scenarioId = scenario.id;
+      }
+    }
 
-    const interactions = await this.prisma.interaction.findMany({
-      where: { sessionId: { in: sessionIds } },
-      include: {
-        sourceNode: {
-          include: {
-            studentProfile: true,
-            teacherProfile: true,
-            knowledgeProfile: true,
+    // 只有当有会话时才查询交互
+    let interactions = [];
+    if (sessions.length > 0) {
+      const sessionIds = sessions.map((session) => session.id);
+      interactions = await this.prisma.interaction.findMany({
+        where: {
+          sessionId: { in: sessionIds },
+          ...(scenarioId
+            ? {
+                sourceNode: { scenarioId },
+                targetNode: { scenarioId },
+              }
+            : {}),
+        },
+        include: {
+          sourceNode: {
+            include: {
+              studentProfile: true,
+              teacherProfile: true,
+              knowledgeProfile: true,
+            },
+          },
+          targetNode: {
+            include: {
+              studentProfile: true,
+              teacherProfile: true,
+              knowledgeProfile: true,
+            },
           },
         },
-        targetNode: {
-          include: {
-            studentProfile: true,
-            teacherProfile: true,
-            knowledgeProfile: true,
-          },
-        },
-      },
-    });
+      });
+    }
 
     const nodeMap = new Map<string, Node>();
 
+    // 从交互中提取节点
     for (const interaction of interactions) {
       this.putNode(
         nodeMap,
@@ -85,9 +98,39 @@ export class GraphService {
       );
     }
 
+    // 直接查询符合条件的所有节点（包括没有参与交互的教师节点）
+    // 构建节点查询条件，确保使用正确的场景ID
+    const nodeWhere: any = {
+      ...(scenarioId ? { scenarioId } : {})
+    };
+    
+    // 只有当params中存在对应的ID时才添加到查询条件中
+    if (params.schoolId) nodeWhere.schoolId = params.schoolId;
+    if (params.gradeId) nodeWhere.gradeId = params.gradeId;
+    if (params.classId) nodeWhere.classId = params.classId;
+    
+    const directNodes = await this.prisma.graphNode.findMany({
+      where: nodeWhere,
+      include: {
+        studentProfile: true,
+        teacherProfile: true,
+        knowledgeProfile: true,
+      },
+    });
+
+    // 添加直接查询到的节点
+    for (const node of directNodes) {
+      this.putNode(
+        nodeMap,
+        node,
+        schoolNames,
+        gradeNames,
+        classNames,
+      );
+    }
+
     const mapInteractionType = (type: string): "PHYSICAL" | "PLATFORM" => {
-      const platformTypes = ["DISCUSS", "ASK", "ANSWER", "EVALUATE", "AI_QA"];
-      return platformTypes.includes(type) ? "PLATFORM" : "PHYSICAL";
+      return type === "PLATFORM" ? "PLATFORM" : "PHYSICAL";
     };
 
     const links: Link[] = interactions.map((interaction) => ({
@@ -272,7 +315,7 @@ export class GraphService {
       return;
     }
 
-    if (node.nodeType === "STUDENT") {
+    if (node.nodeType?.toUpperCase() === "STUDENT") {
       nodeMap.set(node.id, {
         id: node.id,
         type: "STUDENT",
@@ -298,7 +341,7 @@ export class GraphService {
       return;
     }
 
-    if (node.nodeType === "TEACHER") {
+    if (node.nodeType?.toUpperCase() === "TEACHER") {
       nodeMap.set(node.id, {
         id: node.id,
         type: "TEACHER",
@@ -357,7 +400,7 @@ export class GraphService {
       select: { id: true, gradeName: true },
     });
     for (const grade of grades) {
-      gradeNames.set(grade.id, grade.gradeName);
+      gradeNames.set(grade.id, grade.gradeName.toString());
     }
     return gradeNames;
   }
@@ -368,7 +411,7 @@ export class GraphService {
       select: { id: true, className: true },
     });
     for (const cls of classes) {
-      classNames.set(cls.id, cls.className);
+      classNames.set(cls.id, String(cls.className));
     }
     return classNames;
   }

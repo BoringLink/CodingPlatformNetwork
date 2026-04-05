@@ -259,7 +259,7 @@ export const fetchStudentCognitiveTemplate = async (
     dimensions: result.dimensions.map((dimension) => ({
       code: dimension.dimensionCode,
       name: dimension.dimensionNameZh,
-      category: dimension.categoryName,
+      category: dimension.category,
       score: dimension.scoreValue,
       level: dimension.scoreLevel,
     })),

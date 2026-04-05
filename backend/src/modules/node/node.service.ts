@@ -3,15 +3,21 @@ import { Prisma } from "@prisma/client";
 import { PrismaService } from "../../shared/utils/prisma.service";
 import { CreateNodeDto, QueryNodeDto } from "./node.dto";
 
+/**
+ * 节点服务
+ * 支持按场景隔离的节点管理
+ */
+
 @Injectable()
 export class NodeService {
   constructor(private readonly prisma: PrismaService) {}
 
   async queryNodes(query: QueryNodeDto) {
-    const { nodeType, schoolId, gradeId, classId, page, pageSize } = query;
+    const { nodeType, scenarioId, schoolId, gradeId, classId, page, pageSize } = query;
 
     const where: Prisma.GraphNodeWhereInput = {
       ...(nodeType ? { nodeType } : {}),
+      ...(scenarioId ? { scenarioId } : {}),
       ...(schoolId ? { schoolId } : {}),
       ...(gradeId ? { gradeId } : {}),
       ...(classId ? { classId } : {}),
@@ -49,6 +55,7 @@ export class NodeService {
         data: {
           nodeType: dto.nodeType,
           displayName: dto.displayName,
+          scenarioId: dto.scenarioId,
           schoolId: dto.schoolId ?? null,
           gradeId: dto.gradeId ?? null,
           classId: dto.classId ?? null,

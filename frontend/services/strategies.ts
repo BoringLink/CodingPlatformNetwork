@@ -62,7 +62,7 @@ const STRATEGIES: StrategyMap = {
       low: "1.设定小目标并逐步实现：从简单的编程任务开始，积累小成功。2.多与老师和同学交流：遇到代码问题时主动寻求帮助。"
     }
   },
-  [Scenario.AFTER_SCHOOL_QA]: {
+  [Scenario.TEACHER_QA]: {
     knowledgeReserve: {
       high: "1.按照个人需求定制学习路径：与教师讨论个人的学习方向，选择深度知识模块。2.分析课程中的难点：深入分析并探讨更高阶的概念。3.完善自己的编程笔记。",
       medium: "1.结合实例解释编程知识：通过具体实例理解如何运用学过的概念。2.主动寻求扩展知识：在答疑时提出更高阶的问题。3.使用教学资源巩固知识。",
@@ -146,7 +146,7 @@ const STRATEGIES: StrategyMap = {
       low: "1.安排短时学习任务：分割时间段完成简单任务。2.融入趣味奖励机制：完成任务后设置小奖励。"
     }
   },
-  [Scenario.INFORMAL_CLUBS]: {
+  [Scenario.INFORMAL_LEARNING]: {
     knowledgeReserve: {
       high: "1.引导社团成员共同攻克复杂编程问题。2.分享高级编程知识和项目经验：分享高级技术、框架或工具。",
       medium: "1.参与编程项目并应用编程知识。2.向社团成员分享编程经验：分享心得和经验，传授技巧。3.组织小组讨论。",
@@ -188,7 +188,7 @@ const STRATEGIES: StrategyMap = {
       low: "1.从兴趣入手：设置感兴趣的任务内容激发动力。2.记录活动精彩瞬间：通过照片视频记录亮点。"
     }
   },
-  [Scenario.COLLABORATIVE]: {
+  [Scenario.COLLABORATIVE_LEARNING]: {
     knowledgeReserve: {
       high: "1.设计协作项目并指导同伴：主动提出计划并带领团队完成。2.探索团队协作的最佳编程实践：讨论优化工作流程。",
       medium: "1.扩展编程知识以提升协作效率：提出新的概念或技巧。2.分享自己学习的资源和材料。3.共同进行编程挑战。",

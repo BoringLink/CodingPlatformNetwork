@@ -39,4 +39,9 @@ export class OrgController {
 
     return this.orgService.getClasses(gradeId);
   }
+
+  @Get("hierarchy")
+  async getOrgHierarchy() {
+    return this.orgService.getOrgHierarchy();
+  }
 }

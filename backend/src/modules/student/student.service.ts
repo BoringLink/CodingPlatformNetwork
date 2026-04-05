@@ -63,7 +63,7 @@ export class StudentService {
           latestProfile?.dimensionScores.map((item) => ({
             dimensionCode: item.dimensionCode,
             dimensionNameZh: item.dimensionDef.dimensionNameZh,
-            categoryName: item.dimensionDef.categoryName,
+            category: item.dimensionDef.category,
             scoreValue: Number(item.scoreValue),
             scoreLevel: item.scoreLevel,
           })) ?? [],
