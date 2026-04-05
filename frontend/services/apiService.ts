@@ -19,7 +19,7 @@ export interface StudentCognitiveTemplateApiResponse {
   dimensions: Array<{
     dimensionCode: string;
     dimensionNameZh: string;
-    categoryName: string;
+    category: string;
     scoreValue: number;
     scoreLevel: string;
   }>;
@@ -32,16 +32,19 @@ const API_BASE_URL =
     : "http://localhost:3333/api/v1";
 
 const scenarioCodeMap: Record<string, string> = {
+  展示场景: "SHOW_CASE",
   学科课程在线学习: "ONLINE_COURSE",
-  课后线上教师授课答疑: "AFTER_SCHOOL_QA",
+  课后线上教师授课答疑: "TEACHER_QA",
   家庭在线学习: "HOME_LEARNING",
-  在线协作学习: "COLLABORATIVE",
-  社团课等非正式学习: "INFORMAL_CLUBS",
+  在线协作学习: "COLLABORATIVE_LEARNING",
+  社团课等非正式学习: "INFORMAL_LEARNING",
 };
 
 const schoolNameToId = new Map<string, string>();
 const gradeKeyToId = new Map<string, string>();
 const classKeyToId = new Map<string, string>();
+const gradeDisplayToRaw = new Map<string, string>();
+const classDisplayToRaw = new Map<string, string>();
 
 type OrgOptionLike =
   | string
@@ -55,10 +58,10 @@ type OrgOptionLike =
 
 const normalizeOrgOption = (
   item: OrgOptionLike,
-): { id: string; label: string } | null => {
+): { id: string; label: string; rawLabel: string } | null => {
   if (typeof item === "string") {
     const value = item.trim();
-    return value ? { id: value, label: value } : null;
+    return value ? { id: value, label: value, rawLabel: value } : null;
   }
 
   if (!item || typeof item !== "object") {
@@ -67,17 +70,25 @@ const normalizeOrgOption = (
 
   const labelRaw =
     item.name ?? item.schoolName ?? item.gradeName ?? item.className;
-  const label = typeof labelRaw === "string" ? labelRaw.trim() : "";
+  let rawLabel = typeof labelRaw === "string" ? labelRaw.trim() : String(labelRaw);
+  
+  let label = rawLabel;
+  if (item.gradeName !== undefined) {
+    label = `${rawLabel}年级`;
+  } else if (item.className !== undefined) {
+    label = `${rawLabel}班`;
+  }
+  
   const id =
     typeof item.id === "string" && item.id.trim() !== ""
       ? item.id.trim()
-      : label;
+      : rawLabel;
 
-  if (!label) {
+  if (!rawLabel) {
     return null;
   }
 
-  return { id, label };
+  return { id, label, rawLabel };
 };
 
 // 带重试机制的fetch函数
@@ -161,33 +172,36 @@ export const fetchGraphData = async (params: {
     const schoolId = params.school
       ? schoolNameToId.get(params.school)
       : undefined;
+    
+    // 转换显示格式回原始值
+    const rawGrade = params.grade 
+      ? (gradeDisplayToRaw.get(params.grade) || params.grade)
+      : undefined;
+    const rawClassId = params.classId 
+      ? (classDisplayToRaw.get(params.classId) || params.classId)
+      : undefined;
+    
     const gradeId =
-      params.school && params.grade
-        ? gradeKeyToId.get(`${params.school}::${params.grade}`)
+      params.school && rawGrade
+        ? gradeKeyToId.get(`${params.school}::${rawGrade}`)
         : undefined;
     const classId =
-      params.school && params.grade && params.classId
+      params.school && rawGrade && rawClassId
         ? classKeyToId.get(
-            `${params.school}::${params.grade}::${params.classId}`,
+            `${params.school}::${rawGrade}::${rawClassId}`,
           )
         : undefined;
 
     if (schoolId) {
       queryParams.append("school_id", schoolId);
-    } else if (params.school) {
-      queryParams.append("school", params.school);
     }
 
     if (gradeId) {
       queryParams.append("grade_id", gradeId);
-    } else if (params.grade) {
-      queryParams.append("grade", params.grade);
     }
 
     if (classId) {
       queryParams.append("class_id", classId);
-    } else if (params.classId) {
-      queryParams.append("class_id", params.classId);
     }
 
     // 构建完整URL
@@ -508,11 +522,14 @@ export const fetchGradesBySchool = async (
     list.forEach((item: OrgOptionLike) => {
       const normalized = normalizeOrgOption(item);
       if (!normalized) return;
-      gradeKeyToId.set(`${school}::${normalized.label}`, normalized.id);
+      gradeKeyToId.set(`${school}::${normalized.rawLabel}`, normalized.id);
+      gradeDisplayToRaw.set(normalized.label, normalized.rawLabel);
       gradeNames.push(normalized.label);
     });
 
     console.log("获取年级列表成功:", gradeNames.length);
+    console.log("gradeKeyToId 映射:", Array.from(gradeKeyToId.entries()));
+    console.log("gradeDisplayToRaw 映射:", Array.from(gradeDisplayToRaw.entries()));
     return gradeNames;
   } catch (error) {
     console.error("获取年级列表失败:", error);
@@ -527,14 +544,26 @@ export const fetchClassesBySchoolAndGrade = async (
 ): Promise<string[]> => {
   try {
     const schoolId = schoolNameToId.get(school);
-    const gradeId = gradeKeyToId.get(`${school}::${grade}`);
+    const rawGrade = gradeDisplayToRaw.get(grade) || grade;
+    const gradeId = gradeKeyToId.get(`${school}::${rawGrade}`);
+    
+    console.log("fetchClassesBySchoolAndGrade 调试信息:");
+    console.log("- school:", school);
+    console.log("- grade:", grade);
+    console.log("- schoolId:", schoolId);
+    console.log("- rawGrade:", rawGrade);
+    console.log("- gradeId:", gradeId);
+    console.log("- gradeKeyToId 可用键:", Array.from(gradeKeyToId.keys()));
+    console.log("- gradeDisplayToRaw 可用键:", Array.from(gradeDisplayToRaw.keys()));
+    
     if (!schoolId || !gradeId) {
+      console.log("缺少 schoolId 或 gradeId，返回空数组");
       return [];
     }
 
-    const url = `${API_BASE_URL}/org/classes?school_id=${encodeURIComponent(
-      schoolId,
-    )}&grade_id=${encodeURIComponent(gradeId)}`;
+    const url = `${API_BASE_URL}/org/classes?grade_id=${encodeURIComponent(
+      gradeId,
+    )}`;
     console.log("请求班级列表:", url);
 
     const response = await fetchWithRetry(url, {
@@ -556,9 +585,10 @@ export const fetchClassesBySchoolAndGrade = async (
       const normalized = normalizeOrgOption(item);
       if (!normalized) return;
       classKeyToId.set(
-        `${school}::${grade}::${normalized.label}`,
+        `${school}::${rawGrade}::${normalized.rawLabel}`,
         normalized.id,
       );
+      classDisplayToRaw.set(normalized.label, normalized.rawLabel);
       classNames.push(normalized.label);
     });
 
