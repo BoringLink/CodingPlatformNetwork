@@ -12,11 +12,12 @@ export enum InteractionType {
 }
 
 export enum Scenario {
+  SHOW_CASE = "展示场景",
   ONLINE_COURSE = "学科课程在线学习",
-  AFTER_SCHOOL_QA = "课后线上教师授课答疑",
+  TEACHER_QA = "课后线上教师授课答疑",
   HOME_LEARNING = "家庭在线学习",
-  COLLABORATIVE = "在线协作学习",
-  INFORMAL_CLUBS = "社团课等非正式学习",
+  COLLABORATIVE_LEARNING = "在线协作学习",
+  INFORMAL_LEARNING = "社团课等非正式学习",
 }
 
 export interface CognitiveAttributes {
@@ -122,10 +123,6 @@ export interface TeacherProfile {
   school: string;
   teachingGrade: string;
   teachingClass: string;
-  slogan?: string;
-  employeeId?: string;
-  age?: number;
-  title?: string;
   subject?: string;
 }
 
