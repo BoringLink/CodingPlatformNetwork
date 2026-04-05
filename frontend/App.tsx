@@ -60,7 +60,7 @@ const dimensionCodeToStrategyKey: Record<string, keyof CognitiveAttributes> = {
 
 const App: React.FC = () => {
   // State
-  const [scenario, setScenario] = useState<Scenario>(Scenario.ONLINE_COURSE);
+  const [scenario, setScenario] = useState<Scenario>(Object.values(Scenario)[0]);
   const [classInfo, setClassInfo] = useState<ClassInfo>({
     school: "",
     grade: "",
@@ -145,7 +145,7 @@ const App: React.FC = () => {
         classId: "",
       });
     }
-    setScenario(Scenario.ONLINE_COURSE);
+    setScenario(Object.values(Scenario)[0]);
   }, [classOptions.schools]);
 
   // Load schools on mount
@@ -204,7 +204,14 @@ const App: React.FC = () => {
 
   // Load classes when school or grade changes
   useEffect(() => {
-    if (!classInfo.school || !classInfo.grade) return;
+    console.log("班级加载 useEffect 触发:", { 
+      school: classInfo.school, 
+      grade: classInfo.grade 
+    });
+    if (!classInfo.school || !classInfo.grade) {
+      console.log("缺少学校或年级，跳过加载班级");
+      return;
+    }
 
     const loadClasses = async () => {
       setOptionsLoading((prev) => ({ ...prev, classes: true }));
@@ -479,7 +486,12 @@ const App: React.FC = () => {
                     className="w-full appearance-none bg-slate-50 border border-slate-200 rounded-lg py-2 pl-3 pr-8 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all cursor-pointer hover:border-slate-300"
                     value={classInfo.school}
                     onChange={(e) =>
-                      setClassInfo({ ...classInfo, school: e.target.value })
+                      setClassInfo({ 
+                        ...classInfo, 
+                        school: e.target.value, 
+                        grade: "", 
+                        classId: "" 
+                      })
                     }
                     disabled={optionsLoading.schools}
                   >
@@ -510,7 +522,11 @@ const App: React.FC = () => {
                       className="w-full appearance-none bg-slate-50 border border-slate-200 rounded-lg py-2 pl-3 pr-8 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all cursor-pointer hover:border-slate-300"
                       value={classInfo.grade}
                       onChange={(e) =>
-                        setClassInfo({ ...classInfo, grade: e.target.value })
+                        setClassInfo({ 
+                          ...classInfo, 
+                          grade: e.target.value, 
+                          classId: "" 
+                        })
                       }
                       disabled={optionsLoading.grades || !classInfo.school}
                     >
@@ -522,6 +538,8 @@ const App: React.FC = () => {
                             {o}
                           </option>
                         ))
+                      ) : classInfo.school ? (
+                        <option value="">暂无年级数据</option>
                       ) : (
                         <option value="">请选择学校</option>
                       )}
@@ -555,6 +573,8 @@ const App: React.FC = () => {
                             {o}
                           </option>
                         ))
+                      ) : classInfo.school && classInfo.grade ? (
+                        <option value="">暂无班级数据</option>
                       ) : (
                         <option value="">请选择班级</option>
                       )}
@@ -951,41 +971,13 @@ const App: React.FC = () => {
                     {selectedNode.type === NodeType.TEACHER &&
                       selectedNode.teacherProfile && (
                         <div className="space-y-4">
-                          <div className="bg-gradient-to-r from-violet-50 to-indigo-50 p-4 rounded-xl border border-violet-100 italic text-violet-800 text-sm text-center font-medium shadow-sm">
-                            "{selectedNode.teacherProfile.slogan}"
-                          </div>
-
                           <div className="grid grid-cols-2 gap-3 text-xs">
-                            <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-100">
-                              <span className="text-slate-400 block mb-1 scale-90 origin-top-left">
-                                工号
-                              </span>
-                              <span className="font-semibold text-slate-700">
-                                {selectedNode.teacherProfile.employeeId}
-                              </span>
-                            </div>
-                            <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-100">
-                              <span className="text-slate-400 block mb-1 scale-90 origin-top-left">
-                                年龄
-                              </span>
-                              <span className="font-semibold text-slate-700">
-                                {selectedNode.teacherProfile.age}岁
-                              </span>
-                            </div>
-                            <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-100">
-                              <span className="text-slate-400 block mb-1 scale-90 origin-top-left">
-                                职称
-                              </span>
-                              <span className="font-semibold text-slate-700">
-                                {selectedNode.teacherProfile.title}
-                              </span>
-                            </div>
                             <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-100">
                               <span className="text-slate-400 block mb-1 scale-90 origin-top-left">
                                 学科
                               </span>
                               <span className="font-semibold text-slate-700">
-                                {selectedNode.teacherProfile.subject}
+                                {selectedNode.teacherProfile.subject || "-"}
                               </span>
                             </div>
                             <div className="col-span-2 p-2.5 bg-slate-50 rounded-lg border border-slate-100">
@@ -994,7 +986,7 @@ const App: React.FC = () => {
                               </span>
                               <span className="font-semibold text-slate-700">
                                 {selectedNode.teacherProfile.school}{" "}
-                                {selectedNode.teacherProfile.teachingGrade}
+                                {selectedNode.teacherProfile.teachingGrade}{" "}
                                 {selectedNode.teacherProfile.teachingClass}
                               </span>
                             </div>
