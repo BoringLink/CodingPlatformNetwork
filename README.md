@@ -240,12 +240,10 @@ cd ..
 # 启动后端服务
 cd backend
 pnpm start:dev
-# 后端服务将运行在 http://localhost:3000
 
 # 启动前端服务 (在另一个终端)
 cd frontend
 pnpm dev
-# 前端服务将运行在 http://localhost:8080
 ```
 
 ### 3.3 命名规范
